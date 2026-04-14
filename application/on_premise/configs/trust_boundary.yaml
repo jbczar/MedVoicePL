@@ -1,0 +1,17 @@
+# Trust boundary policy
+# Defines the whitelist of data fields allowed to leave the on-premise module.
+# Any field NOT listed here is blocked by trust_gate.py.
+
+allowed_outbound_fields:
+  - anonymized_transcript
+  - soap_note
+  - extracted_symptoms
+  - extracted_drugs
+  - visit_metadata.specialization
+  - visit_metadata.timestamp
+  - visit_metadata.session_id
+
+blocked_patterns:
+  - "\\b\\d{11}\\b"          # PESEL
+  - "\\b\\d{10}\\b"          # NIP
+  - "\\b\\+?48\\d{9}\\b"     # Polish phone numbers

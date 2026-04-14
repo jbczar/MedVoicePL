@@ -1,0 +1,7 @@
+# NFZ reimbursement data source configuration
+formulary:
+  source_url: "https://dane.gov.pl/pl/dataset/397"
+  local_path: "data/nfz_formulary/"
+  format: "csv"
+  cache_ttl_hours: 168  # 1 week
+  encoding: "utf-8"

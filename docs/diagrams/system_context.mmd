@@ -1,0 +1,21 @@
+C4Context
+    title MedVoicePL — System Context Diagram
+
+    Person(doctor, "Lekarz", "Prowadzi wizytę lekarską i zatwierdza sugestie systemu")
+
+    System_Boundary(medvoice, "MedVoicePL CDSS") {
+        System(on_premise, "On-Premise", "STT, SLM, Anonimizacja")
+        System(cloud, "Cloud", "LLM, RAG, NFZ")
+        System(gateway, "Gateway", "API, Orkiestrator")
+        System(frontend, "Frontend", "Dashboard lekarza")
+    }
+
+    System_Ext(llm, "Cloud LLM API", "OpenAI / Anthropic / Google")
+    System_Ext(nfz, "Baza NFZ", "Lista leków refundowanych")
+
+    Rel(doctor, frontend, "Nagrywa wizytę, zatwierdza sugestie")
+    Rel(frontend, gateway, "REST / WebSocket")
+    Rel(gateway, on_premise, "Audio → zanonimizowane dane")
+    Rel(gateway, cloud, "Zanonimizowane dane → sugestie")
+    Rel(cloud, llm, "Analiza kliniczna")
+    Rel(cloud, nfz, "Wyszukiwanie refundacji")

@@ -1,0 +1,17 @@
+{
+  "scenario_id": "general_practice_01",
+  "specialization": "medycyna_rodzinna",
+  "chief_complaint": "Infekcja górnych dróg oddechowych",
+  "patient_profile": {
+    "age": 27,
+    "sex": "F",
+    "known_conditions": []
+  },
+  "expected_soap": {
+    "subjective": "Pacjentka zgłasza ból gardła, katar, suchy kaszel od 3 dni. Gorączka do 38.2°C.",
+    "objective": "Gardło zaczerwienione, migdałki bez nalotów. Węzły chłonne szyjne niepowiększone.",
+    "assessment": "Ostra infekcja górnych dróg oddechowych — etiologia wirusowa.",
+    "plan": "Leczenie objawowe. Bez antybiotyku. Kontrola w razie pogorszenia."
+  },
+  "expected_drugs": ["paracetamol", "ibuprofen"]
+}

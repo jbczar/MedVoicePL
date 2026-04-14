@@ -1,0 +1,17 @@
+{
+  "scenario_id": "pulmonology_01",
+  "specialization": "pulmonologia",
+  "chief_complaint": "Wizyta kontrolna — astma oskrzelowa",
+  "patient_profile": {
+    "age": 34,
+    "sex": "F",
+    "known_conditions": ["astma oskrzelowa"]
+  },
+  "expected_soap": {
+    "subjective": "Pacjentka zgłasza sporadyczny kaszel poranny, duszność wysiłkowa 1-2x/tydzień.",
+    "objective": "Osłuchowo: szmer pęcherzykowy prawidłowy, bez świstów. SpO2 98%.",
+    "assessment": "Astma oskrzelowa częściowo kontrolowana.",
+    "plan": "Kontynuacja ICS/LABA, spirometria kontrolna za 3 miesiące."
+  },
+  "expected_drugs": ["budezonid", "formoterol", "salbutamol"]
+}

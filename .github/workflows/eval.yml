@@ -1,0 +1,35 @@
+name: Evaluation Benchmarks
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 6 * * 1"  # Every Monday at 06:00 UTC
+
+jobs:
+  eval:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: uv sync --all-packages
+
+      - name: Run benchmarks
+        run: uv run python research_and_testing/scripts/run_all_benchmarks.py
+
+      - name: Generate report
+        run: uv run python research_and_testing/scripts/generate_eval_report.py
+
+      - name: Upload results
+        uses: actions/upload-artifact@v4
+        with:
+          name: eval-results-${{ github.run_number }}
+          path: research_and_testing/results/

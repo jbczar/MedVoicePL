@@ -1,0 +1,21 @@
+graph TD
+    subgraph ON_PREMISE["On-Premise Agent Graph"]
+        START([Audio Input]) --> STT[Whisper STT Agent]
+        STT --> VAD[VAD / Segmentation]
+        VAD --> DIAR[Diarization Agent]
+        DIAR --> SLM[SLM Structuring Agent]
+        SLM --> NER[Entity Extraction Agent]
+        NER --> ANON[Presidio Anonymization Agent]
+        ANON --> GATE{Trust Gate}
+    end
+
+    subgraph CLOUD["Cloud Agent Graph"]
+        LLM[LLM Analysis Agent] --> RAG[RAG Retrieval Agent]
+        RAG --> RERANK[Reranker Agent]
+        RERANK --> NFZ[NFZ Drug Matching Agent]
+        NFZ --> REIMB[Reimbursement Agent]
+        REIMB --> RESULT([Drug Suggestions])
+    end
+
+    GATE -->|AnonymizedPayload| LLM
+    GATE -.->|BLOCKED if PII detected| REJECT([Reject & Alert])

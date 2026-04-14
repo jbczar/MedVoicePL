@@ -1,0 +1,17 @@
+{
+  "scenario_id": "cardiology_01",
+  "specialization": "kardiologia",
+  "chief_complaint": "Nadciśnienie tętnicze, współistniejąca cukrzyca typu 2",
+  "patient_profile": {
+    "age": 58,
+    "sex": "M",
+    "known_conditions": ["nadciśnienie tętnicze", "cukrzyca typu 2"]
+  },
+  "expected_soap": {
+    "subjective": "Pacjent zgłasza bóle głowy, zawroty głowy od 2 tygodni.",
+    "objective": "BP 160/95 mmHg, HR 88/min, BMI 31.2",
+    "assessment": "Nadciśnienie tętnicze niedostatecznie kontrolowane.",
+    "plan": "Modyfikacja farmakoterapii hipotensyjnej."
+  },
+  "expected_drugs": ["ramipril", "amlodypina", "metformina"]
+}

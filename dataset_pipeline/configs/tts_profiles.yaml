@@ -1,0 +1,22 @@
+# XTTSv2 voice profiles
+profiles:
+  doctor_male:
+    reference_audio: "reference_voices/doctor_male_01.wav"
+    language: "pl"
+    speed: 1.0
+  doctor_female:
+    reference_audio: "reference_voices/doctor_female_01.wav"
+    language: "pl"
+    speed: 1.0
+  patient_male:
+    reference_audio: "reference_voices/patient_male_01.wav"
+    language: "pl"
+    speed: 0.95
+  patient_female:
+    reference_audio: "reference_voices/patient_female_01.wav"
+    language: "pl"
+    speed: 0.95
+
+synthesis:
+  sample_rate: 22050
+  output_format: "wav"

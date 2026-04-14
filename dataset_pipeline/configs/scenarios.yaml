@@ -1,0 +1,19 @@
+# Scenario generation parameters
+specializations:
+  - kardiologia
+  - pulmonologia
+  - medycyna_rodzinna
+  - endokrynologia
+  - neurologia
+
+turns_per_scenario:
+  min: 6
+  max: 20
+
+scenarios_per_specialization: 50
+
+llm:
+  provider: "${DATASET_LLM_PROVIDER}"
+  model: "${DATASET_LLM_MODEL}"
+  temperature: 0.8
+  max_tokens: 4096

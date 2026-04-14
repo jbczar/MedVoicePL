@@ -1,0 +1,16 @@
+# RAG configuration
+embedding:
+  model: "${EMBEDDING_MODEL}"
+  dimension: 1024
+
+vectorstore:
+  provider: "${VECTORDB_PROVIDER}"
+  host: "${VECTORDB_HOST}"
+  port: "${VECTORDB_PORT}"
+  collection: "medical_knowledge"
+
+retrieval:
+  chunk_size: "${RAG_CHUNK_SIZE}"
+  chunk_overlap: "${RAG_CHUNK_OVERLAP}"
+  top_k: "${RAG_TOP_K}"
+  score_threshold: 0.7

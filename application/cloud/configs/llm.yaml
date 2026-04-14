@@ -1,0 +1,9 @@
+# Cloud LLM configuration
+provider: "${OPENAI_API_KEY:+openai}"
+model: "gpt-4o"
+temperature: 0.2
+max_tokens: 4096
+timeout_seconds: 30
+retry:
+  max_attempts: 3
+  backoff_factor: 2

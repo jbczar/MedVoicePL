@@ -1,0 +1,8 @@
+# Local SLM configuration
+model:
+  id: "${SLM_MODEL_ID}"
+  quantization: "${SLM_QUANTIZATION}"
+  device: "${SLM_DEVICE}"
+  max_new_tokens: 2048
+  temperature: 0.1
+  do_sample: false

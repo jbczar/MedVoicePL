@@ -1,0 +1,29 @@
+# Microsoft Presidio anonymization rules
+language: "pl"
+
+entities:
+  - PERSON
+  - PESEL
+  - PHONE_NUMBER
+  - EMAIL_ADDRESS
+  - LOCATION
+  - DATE_TIME
+  - NIP
+  - IBAN
+
+operators:
+  default:
+    type: "replace"
+    new_value: "<ANONYMIZED>"
+  PERSON:
+    type: "replace"
+    new_value: "<OSOBA>"
+  PESEL:
+    type: "replace"
+    new_value: "<PESEL>"
+  PHONE_NUMBER:
+    type: "replace"
+    new_value: "<TELEFON>"
+  LOCATION:
+    type: "replace"
+    new_value: "<ADRES>"

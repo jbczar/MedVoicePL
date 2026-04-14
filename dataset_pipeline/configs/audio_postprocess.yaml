@@ -1,0 +1,28 @@
+# Audio post-processing parameters
+noise:
+  enabled: true
+  types:
+    - clinic_ambient
+    - corridor
+    - keyboard
+  snr_db:
+    min: 15
+    max: 30
+
+crossfade:
+  duration_ms: 200
+  pause_between_turns_ms:
+    min: 300
+    max: 1500
+
+augmentation:
+  tempo_range: [0.9, 1.1]
+  pitch_shift_semitones: [-1, 1]
+  reverb:
+    enabled: false
+    room_size: 0.3
+
+output:
+  sample_rate: 16000
+  format: "wav"
+  normalize: true

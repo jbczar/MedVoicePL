@@ -1,0 +1,23 @@
+flowchart LR
+    subgraph TRUST_INTERNAL["Trust Boundary: INTERNAL"]
+        direction TB
+        A["🎤 Raw Audio"] --> B["Whisper STT"]
+        B --> C["Raw Transcript\n(contains PII)"]
+        C --> D["SLM Structuring"]
+        D --> E["SOAP Note\n(contains PII)"]
+        E --> F["Presidio\nAnonymization"]
+        F --> G["AnonymizedPayload"]
+    end
+
+    subgraph TRUST_EXTERNAL["Trust Boundary: EXTERNAL"]
+        direction TB
+        H["LLM Analysis"] --> I["RAG"]
+        I --> J["NFZ Search"]
+        J --> K["Drug Suggestions"]
+    end
+
+    G -->|"Validated by\ntrust_gate.py"| H
+    K --> L["Doctor Dashboard"]
+
+    style TRUST_INTERNAL fill:#1a472a,stroke:#2d6a4f,color:#fff
+    style TRUST_EXTERNAL fill:#4a1942,stroke:#7b2d8e,color:#fff
