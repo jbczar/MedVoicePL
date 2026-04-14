@@ -13,11 +13,11 @@ jobs:
     strategy:
       matrix:
         service:
-          - { name: on-premise, context: application/on_premise, dockerfile: application/on_premise/Dockerfile }
-          - { name: cloud, context: application/cloud, dockerfile: application/cloud/Dockerfile }
-          - { name: gateway, context: application/gateway, dockerfile: application/gateway/Dockerfile }
-          - { name: frontend, context: application/frontend, dockerfile: application/frontend/Dockerfile }
-          - { name: dataset-pipeline, context: dataset_pipeline, dockerfile: dataset_pipeline/Dockerfile }
+          - { name: on-premise, context: application/on_premise }
+          - { name: cloud, context: application/cloud }
+          - { name: gateway, context: application/gateway }
+          - { name: frontend, context: application/frontend }
+          - { name: dataset-pipeline, context: dataset_pipeline }
     steps:
       - uses: actions/checkout@v4
 
@@ -28,7 +28,6 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: ${{ matrix.service.context }}
-          dockerfile: ${{ matrix.service.dockerfile }}
           push: false
           tags: medvoicepl/${{ matrix.service.name }}:${{ github.sha }}
           cache-from: type=gha
