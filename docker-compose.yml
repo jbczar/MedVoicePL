@@ -1,0 +1,136 @@
+# ============================================================================
+# MedVoicePL — Docker Compose (Production-like)
+# ============================================================================
+# Network isolation: on-premise has NO access to external networks.
+# Only the gateway can communicate with both on-premise and cloud.
+# ============================================================================
+
+services:
+  # --------------------------------------------------------------------------
+  # On-Premise — Local processing (Trust Boundary: INTERNAL)
+  # Raw audio and unredacted transcripts NEVER leave this container.
+  # --------------------------------------------------------------------------
+  on-premise:
+    build:
+      context: ./application/on_premise
+      dockerfile: Dockerfile
+    container_name: medvoicepl-on-premise
+    env_file: .env
+    volumes:
+      - model-cache:/app/models
+    networks:
+      - internal          # on-premise ↔ gateway ONLY
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # --------------------------------------------------------------------------
+  # Cloud — External processing (Trust Boundary: EXTERNAL)
+  # Operates exclusively on anonymized data.
+  # --------------------------------------------------------------------------
+  cloud:
+    build:
+      context: ./application/cloud
+      dockerfile: Dockerfile
+    container_name: medvoicepl-cloud
+    env_file: .env
+    depends_on:
+      vectordb:
+        condition: service_healthy
+    networks:
+      - cloud             # cloud ↔ gateway + vectordb + internet
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # --------------------------------------------------------------------------
+  # Gateway — API Gateway / Master Orchestrator
+  # Bridges on-premise and cloud; enforces trust boundary.
+  # --------------------------------------------------------------------------
+  gateway:
+    build:
+      context: ./application/gateway
+      dockerfile: Dockerfile
+    container_name: medvoicepl-gateway
+    env_file: .env
+    ports:
+      - "${GATEWAY_PORT:-8080}:8080"
+    depends_on:
+      on-premise:
+        condition: service_healthy
+      cloud:
+        condition: service_healthy
+    networks:
+      - internal          # gateway ↔ on-premise
+      - cloud             # gateway ↔ cloud
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # --------------------------------------------------------------------------
+  # Vector Database — Semantic search backend for RAG
+  # --------------------------------------------------------------------------
+  vectordb:
+    image: chromadb/chroma:latest
+    container_name: medvoicepl-vectordb
+    ports:
+      - "${VECTORDB_PORT:-8000}:8000"
+    volumes:
+      - vectordb-data:/chroma/chroma
+    networks:
+      - cloud
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/heartbeat"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # --------------------------------------------------------------------------
+  # Frontend — Doctor's dashboard (Next.js)
+  # --------------------------------------------------------------------------
+  frontend:
+    build:
+      context: ./application/frontend
+      dockerfile: Dockerfile
+    container_name: medvoicepl-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://gateway:8080
+    depends_on:
+      gateway:
+        condition: service_healthy
+    networks:
+      - cloud             # frontend ↔ gateway (via cloud network)
+
+# ============================================================================
+# Networks — Enforce trust boundary via network isolation
+# ============================================================================
+networks:
+  internal:
+    driver: bridge
+    internal: true        # NO internet access — critical for trust boundary
+  cloud:
+    driver: bridge        # Has internet access for LLM API calls
+
+# ============================================================================
+# Volumes
+# ============================================================================
+volumes:
+  model-cache:
+    driver: local
+  vectordb-data:
+    driver: local

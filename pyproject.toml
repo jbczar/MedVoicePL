@@ -1,0 +1,81 @@
+[project]
+name = "medvoicepl"
+version = "0.1.0"
+description = "Multimodal multi-agent clinical decision support system for Polish medical visits."
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.11"
+
+[tool.uv.workspace]
+members = [
+    "dataset_pipeline",
+    "application/on_premise",
+    "application/cloud",
+    "application/gateway",
+    "application/shared",
+    "research_and_testing",
+]
+
+# ---------------------------------------------------------------------------
+# Linting — ruff
+# ---------------------------------------------------------------------------
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+src = [
+    "dataset_pipeline/src",
+    "application/on_premise/src",
+    "application/cloud/src",
+    "application/gateway/src",
+    "application/shared/src",
+    "research_and_testing",
+]
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "N",   # pep8-naming
+    "UP",  # pyupgrade
+    "B",   # flake8-bugbear
+    "SIM", # flake8-simplify
+    "TCH", # flake8-type-checking
+    "RUF", # ruff-specific rules
+]
+ignore = ["E501"]  # line length handled by formatter
+
+[tool.ruff.lint.isort]
+known-first-party = [
+    "dataset_pipeline",
+    "on_premise",
+    "cloud",
+    "gateway",
+    "shared",
+    "research_and_testing",
+]
+
+# ---------------------------------------------------------------------------
+# Type checking — mypy
+# ---------------------------------------------------------------------------
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false          # relaxed for initial development
+ignore_missing_imports = true
+
+# ---------------------------------------------------------------------------
+# Testing — pytest
+# ---------------------------------------------------------------------------
+[tool.pytest.ini_options]
+testpaths = [
+    "dataset_pipeline/tests",
+    "application/on_premise/tests",
+    "application/cloud/tests",
+    "application/gateway/tests",
+    "application/shared/tests",
+    "research_and_testing",
+]
+addopts = "-v --tb=short"
