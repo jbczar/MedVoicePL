@@ -3,7 +3,15 @@ name = "dataset-pipeline"
 version = "0.1.0"
 description = "Synthetic Polish medical visit dataset generation pipeline."
 requires-python = ">=3.11"
-dependencies = []
+dependencies = [
+    "google-genai>=0.3",
+    "pydantic>=2.6",
+    "pyyaml>=6.0",
+    "python-dotenv>=1.0",
+    "tenacity>=8.2",
+    "typer>=0.12",
+    "rich>=13.7",
+]
 
 [build-system]
 requires = ["hatchling"]

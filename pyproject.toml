@@ -58,6 +58,13 @@ select = [
 ]
 ignore = ["E501"]  # line length handled by formatter
 
+[tool.ruff.lint.per-file-ignores]
+"**/scripts/*.py" = ["B008"]  # Typer idiom: Option() in argument defaults
+"**/tests/**/*.py" = ["TC001", "TC003"]  # tests import types at runtime
+
+[tool.ruff.lint.flake8-type-checking]
+runtime-evaluated-base-classes = ["pydantic.BaseModel"]
+
 [tool.ruff.lint.isort]
 known-first-party = [
     "dataset_pipeline",
@@ -78,6 +85,7 @@ warn_unused_configs = true
 disallow_untyped_defs = false          # relaxed for initial development
 ignore_missing_imports = true
 explicit_package_bases = true
+disable_error_code = ["import-untyped"]
 
 # ---------------------------------------------------------------------------
 # Testing — pytest
