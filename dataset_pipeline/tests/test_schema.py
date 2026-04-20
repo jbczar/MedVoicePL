@@ -4,7 +4,8 @@ from __future__ import annotations
 
 import pytest
 from pydantic import ValidationError
-from src.scenario_generator.schema import (
+
+from dataset_pipeline.scenario_generator.schema import (
     DialogueTurn,
     ScenarioModel,
     SpeakerRole,

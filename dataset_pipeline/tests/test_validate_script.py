@@ -6,9 +6,10 @@ from pathlib import Path
 
 import pytest
 from scripts.validate_dataset import app
-from src.scenario_generator.prompts import FEW_SHOT_EXAMPLES
-from src.scenario_generator.schema import Specialization
 from typer.testing import CliRunner
+
+from dataset_pipeline.scenario_generator.prompts import FEW_SHOT_EXAMPLES
+from dataset_pipeline.scenario_generator.schema import Specialization
 
 runner = CliRunner()
 

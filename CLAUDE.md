@@ -88,12 +88,16 @@ Podział na cztery moduły:
 
 ### Phase 1a — decyzje projektowe
 
-- **LLM provider**: Google Gemini Developer API (AI Studio), nie Vertex AI. Uwierzytelnianie przez `GOOGLE_API_KEY`. SDK: `google-genai`.
-- **Uwaga bilingowa**: klucz z AI Studio **nie** konsumuje kredytów $300 Vertex AI — to osobne produkty. Vertex AI wymaga ADC/service account i `google-cloud-aiplatform`. Migracja możliwa później (`google-genai` wspiera oba tryby).
+- **LLM provider**: Google Gemini przez **Vertex AI** (konsumuje kredyty $300 z GCP). SDK: `google-genai` w trybie `vertexai=True`. Uwierzytelnianie przez Application Default Credentials (ADC): `gcloud auth application-default login` **lub** `GOOGLE_APPLICATION_CREDENTIALS` wskazujący na service-account JSON.
+- **Wymagane env**: `GOOGLE_CLOUD_PROJECT` (ID projektu GCP), `GOOGLE_CLOUD_LOCATION` (np. `us-central1`, domyślnie `us-central1`). Klucz `GOOGLE_API_KEY` (AI Studio) zostaje w `.env` na później dla modułu `cloud/`, ale **nie jest używany przez dataset pipeline**.
+- **Setup dla nowego środowiska**:
+  1. `gcloud auth application-default login`
+  2. Włącz Vertex AI API: `gcloud services enable aiplatform.googleapis.com`
+  3. Ustaw `GOOGLE_CLOUD_PROJECT` w `.env`
 - **Skala MVP**: 2 scenariusze × 5 specjalizacji = 10 scenariuszy na pierwszy przebieg.
-- **Kontrakt danych**: `dataset_pipeline/src/scenario_generator/schema.py` (`ScenarioModel`) — stabilny interfejs dla Phase 1b (TTS) i `research_and_testing`.
+- **Kontrakt danych**: `dataset_pipeline/src/dataset_pipeline/scenario_generator/schema.py` (`ScenarioModel`) — stabilny interfejs dla Phase 1b (TTS) i `research_and_testing`.
 - **Enforcement JSON**: Gemini `response_schema=ScenarioModel` (structured output) zamiast parsowania tekstu.
-- **Współbieżność**: `ThreadPoolExecutor`, domyślnie 4 wątki (ograniczenie RPM darmowego tieru Gemini). Konfigurowalne przez `DATASET_LLM_MAX_CONCURRENCY`.
+- **Współbieżność**: `ThreadPoolExecutor`, domyślnie 4 wątki (Vertex AI ma wyższe limity niż AI Studio, można zwiększyć). Konfigurowalne przez `DATASET_LLM_MAX_CONCURRENCY`.
 - **Retry strategy**: tenacity (exp backoff, 4 próby) dla błędów przejściowych 5xx/429; osobny mechanizm retry z "correction hint" przy błędach walidacji Pydantic (2 próby).
 - **Few-shot examples**: pięć ręcznie napisanych scenariuszy (po jednym na specjalizację) w `prompts.py` — nie zastępować outputem modelu, żeby uniknąć drift.
 
@@ -101,11 +105,11 @@ Podział na cztery moduły:
 
 | Plik | Rola |
 |---|---|
-| `dataset_pipeline/src/scenario_generator/schema.py` | `ScenarioModel`, `DialogueTurn`, `Specialization`, `SpeakerRole` — kontrakt Pydantic |
-| `dataset_pipeline/src/scenario_generator/prompts.py` | `SYSTEM_PROMPT_PL`, `FEW_SHOT_EXAMPLES`, `render_user_prompt` |
-| `dataset_pipeline/src/scenario_generator/llm_client.py` | `GeminiClient`, `LLMClient` Protocol, `TransientLLMError`/`PermanentLLMError` |
-| `dataset_pipeline/src/scenario_generator/generator.py` | `ScenarioGenerator` (batch + retry + failures.json), `load_scenarios_config` |
-| `dataset_pipeline/src/pipeline.py` | `run_scenarios()` — entrypoint do chainowania z TTS w Phase 1b |
+| `dataset_pipeline/src/dataset_pipeline/scenario_generator/schema.py` | `ScenarioModel`, `DialogueTurn`, `Specialization`, `SpeakerRole` — kontrakt Pydantic |
+| `dataset_pipeline/src/dataset_pipeline/scenario_generator/prompts.py` | `SYSTEM_PROMPT_PL`, `FEW_SHOT_EXAMPLES`, `render_user_prompt` |
+| `dataset_pipeline/src/dataset_pipeline/scenario_generator/llm_client.py` | `GeminiClient`, `LLMClient` Protocol, `TransientLLMError`/`PermanentLLMError` |
+| `dataset_pipeline/src/dataset_pipeline/scenario_generator/generator.py` | `ScenarioGenerator` (batch + retry + failures.json), `load_scenarios_config` |
+| `dataset_pipeline/src/dataset_pipeline/pipeline.py` | `run_scenarios()` — entrypoint do chainowania z TTS w Phase 1b |
 | `dataset_pipeline/scripts/run_generation.py` | Typer CLI: generacja |
 | `dataset_pipeline/scripts/validate_dataset.py` | Typer CLI: ponowna walidacja plików JSON |
 | `dataset_pipeline/scripts/export_manifest.py` | Typer CLI: `manifest.json` z SHA-256 |
@@ -114,7 +118,14 @@ Podział na cztery moduły:
 ### Phase 1a — uruchomienie
 
 ```bash
-cp .env.example .env   # uzupełnić GOOGLE_API_KEY=AI...
+# 1. Uwierzytelnienie Vertex AI (raz per maszyna)
+gcloud auth application-default login
+gcloud services enable aiplatform.googleapis.com --project=<YOUR_PROJECT>
+
+# 2. Konfiguracja env
+cp .env.example .env   # uzupełnić GOOGLE_CLOUD_PROJECT
+
+# 3. Sync zależności + generacja
 uv sync --all-packages
 uv run python dataset_pipeline/scripts/run_generation.py --per-specialization 2
 uv run python dataset_pipeline/scripts/validate_dataset.py
@@ -140,3 +151,6 @@ make eval             # Uruchomienie benchmarków ewaluacyjnych
 | 2026-04-14 | Zaprojektowano strukturę monorepo: trzy filary (dataset_pipeline, application, research_and_testing). Zdefiniowano trust boundary, podział on-premise/cloud, gateway jako mediator. |
 | 2026-04-20 | Phase 1a rozpoczęta: scenariusze generowane przez Gemini Developer API (`google-genai`, klucz API). Zmiana domyślnego providera w `dataset_pipeline` z OpenAI → Google. TTS/postprocessing (XTTSv2, pydub, sox) odłożone do Phase 1b — czekają na próbki referencyjne głosów. |
 | 2026-04-20 | Phase 1a zaimplementowana: `ScenarioModel` (Pydantic v2) jako stabilny kontrakt dialogu, `GeminiClient` z `response_schema=ScenarioModel` + tenacity retry, `ScenarioGenerator` z walidacyjnym retry + `failures.json`, Typer CLI (generate / validate / manifest). 25 testów zielonych, ruff + mypy czyste. Zmiany lint-config: `B008` zignorowane w `scripts/**`, `TC00x` w `tests/**`, `disable_error_code=["import-untyped"]` dla mypy. |
+| 2026-04-20 | Workflowy GitHub Actions (`ci.yml`, `docker-build.yml`, `eval.yml`) tymczasowo wyłączone przez zmianę rozszerzenia na `.yml.disabled`. Zostaną przywrócone po ukończeniu implementacji — lint/test/build lokalnie przez `uv run ...`. |
+| 2026-04-20 | **Migracja z Gemini Developer API (AI Studio) na Vertex AI** (user uzyskał kredyty $300). `GeminiClient` używa `genai.Client(vertexai=True, project=..., location=...)`. Autoryzacja: ADC (`gcloud auth application-default login`) lub `GOOGLE_APPLICATION_CREDENTIALS`. Dodane env: `GOOGLE_CLOUD_PROJECT`, `GOOGLE_CLOUD_LOCATION`. Żadne zmiany w schema, promptach ani generatorze — tylko inicjalizacja klienta. |
+| 2026-04-20 | **Fix kolizji pakietów w workspace uv.** Każdy workspace member (`dataset_pipeline`, `application/{cloud,gateway,on_premise,shared}`) miał `packages = ["src"]` w hatchlingu → wszystkie instalowały się jako top-level `src`, kolidowały i `from src.xyz` losowo trafiał w innego membera (alfabetycznie pierwszy `cloud` wygrywał). Restrukturyzacja src-layout: `<member>/src/<pkg>/...` z `packages = ["src/<pkg>"]`. Importy: `from src.pipeline` → `from dataset_pipeline.pipeline`. Usunięte sys.path hacki w scriptach i `conftest.py`. Smoke test 5/5 zielony, 25 testów OK. |

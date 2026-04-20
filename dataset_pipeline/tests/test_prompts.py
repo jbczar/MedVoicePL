@@ -3,12 +3,13 @@
 from __future__ import annotations
 
 import pytest
-from src.scenario_generator.prompts import (
+
+from dataset_pipeline.scenario_generator.prompts import (
     FEW_SHOT_EXAMPLES,
     render_few_shot_block,
     render_user_prompt,
 )
-from src.scenario_generator.schema import MAX_TURNS, MIN_TURNS, Specialization
+from dataset_pipeline.scenario_generator.schema import MAX_TURNS, MIN_TURNS, Specialization
 
 
 @pytest.mark.parametrize("spec", list(Specialization))

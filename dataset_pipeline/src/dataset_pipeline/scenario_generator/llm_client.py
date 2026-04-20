@@ -1,8 +1,13 @@
 """LLM API client for generating medical visit scenarios.
 
 Primary implementation targets Google Gemini via the `google-genai` SDK in
-API-key mode (AI Studio). A thin `LLMClient` protocol keeps OpenAI /
-Anthropic drop-ins possible without changes to the orchestrator.
+**Vertex AI mode** (charges against GCP project / $300 free credit).
+Authentication uses Application Default Credentials — either
+`gcloud auth application-default login` or `GOOGLE_APPLICATION_CREDENTIALS`
+pointing to a service-account JSON key.
+
+A thin `LLMClient` protocol keeps OpenAI / Anthropic drop-ins possible
+without changes to the orchestrator.
 """
 
 from __future__ import annotations
@@ -39,15 +44,18 @@ class GeminiSettings:
     model_name: str
     temperature: float
     max_output_tokens: int
-    api_key: str
+    project: str
+    location: str
 
     @classmethod
     def from_env_and_config(cls, llm_config: dict[str, Any]) -> GeminiSettings:
-        api_key = os.environ.get("GOOGLE_API_KEY")
-        if not api_key:
+        project = os.environ.get("GOOGLE_CLOUD_PROJECT")
+        if not project:
             raise RuntimeError(
-                "GOOGLE_API_KEY is not set; copy .env.example to .env and fill it in"
+                "GOOGLE_CLOUD_PROJECT is not set; copy .env.example to .env and "
+                "fill it in (Vertex AI requires a GCP project)"
             )
+        location = os.environ.get("GOOGLE_CLOUD_LOCATION", "us-central1")
         model_name = os.environ.get("DATASET_LLM_MODEL") or str(llm_config["model"])
         if model_name.startswith("$"):
             raise RuntimeError(
@@ -58,7 +66,8 @@ class GeminiSettings:
             model_name=model_name,
             temperature=float(llm_config.get("temperature", 0.8)),
             max_output_tokens=int(llm_config.get("max_tokens", 4096)),
-            api_key=api_key,
+            project=project,
+            location=location,
         )
 
 
@@ -75,7 +84,11 @@ class GeminiClient:
         from google import genai
 
         self._settings = settings
-        self._client = genai.Client(api_key=settings.api_key)
+        self._client = genai.Client(
+            vertexai=True,
+            project=settings.project,
+            location=settings.location,
+        )
 
     @property
     def model_name(self) -> str:

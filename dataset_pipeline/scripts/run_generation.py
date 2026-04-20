@@ -8,7 +8,8 @@ from pathlib import Path
 import typer
 from dotenv import load_dotenv
 from rich.console import Console
-from src.pipeline import run_scenarios
+
+from dataset_pipeline.pipeline import run_scenarios
 
 app = typer.Typer(add_completion=False, help="MedVoicePL dataset pipeline CLI")
 console = Console()

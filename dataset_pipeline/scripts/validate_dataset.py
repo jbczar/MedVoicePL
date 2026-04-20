@@ -11,7 +11,8 @@ from pathlib import Path
 import typer
 from pydantic import ValidationError
 from rich.console import Console
-from src.scenario_generator.schema import ScenarioModel
+
+from dataset_pipeline.scenario_generator.schema import ScenarioModel
 
 app = typer.Typer(add_completion=False)
 console = Console()

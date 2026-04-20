@@ -7,9 +7,10 @@ from pathlib import Path
 from uuid import uuid4
 
 from pydantic import ValidationError
-from src.scenario_generator.generator import ScenarioGenerator
-from src.scenario_generator.prompts import FEW_SHOT_EXAMPLES
-from src.scenario_generator.schema import ScenarioModel, Specialization
+
+from dataset_pipeline.scenario_generator.generator import ScenarioGenerator
+from dataset_pipeline.scenario_generator.prompts import FEW_SHOT_EXAMPLES
+from dataset_pipeline.scenario_generator.schema import ScenarioModel, Specialization
 
 
 class _FakeClient:
