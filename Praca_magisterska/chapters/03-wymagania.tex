@@ -1,0 +1,44 @@
+\chapter{Wymagania}\label{ch:wymagania}
+
+% TODO: formalizacja wymagań — ok. 5--8 stron.
+
+\section{Interesariusze}\label{sec:interesariusze}
+
+% TODO: lekarze POZ, specjaliści, pacjenci, administrator placówki, inspektor
+% ochrony danych osobowych.
+
+\section{Wymagania funkcjonalne}\label{sec:wymagania-funkcjonalne}
+
+% TODO: lista numerowana F1, F2, ... z krótkim opisem każdego wymagania.
+\begin{enumerate}
+  \item[\textbf{F1}] System rejestruje przebieg wizyty lekarskiej w~formie
+        nagrania audio.
+  \item[\textbf{F2}] System transkrybuje nagranie do~tekstu z~rozróżnieniem
+        mówców (lekarz / pacjent).
+  \item[\textbf{F3}] System generuje notatkę SOAP (Subjective, Objective,
+        Assessment, Plan) na~podstawie transkrypcji.
+  \item[\textbf{F4}] System anonimizuje wszelkie dane osobowe pacjenta przed
+        wysłaniem danych do~chmury.
+  \item[\textbf{F5}] System sugeruje leki refundowane na~podstawie bazy NFZ.
+  \item[\textbf{F6}] Lekarz akceptuje lub odrzuca każdą sugestię przed
+        zapisaniem w~dokumentacji.
+\end{enumerate}
+
+\section{Wymagania niefunkcjonalne}\label{sec:wymagania-niefunkcjonalne}
+
+% TODO: wydajność, bezpieczeństwo, zgodność z~RODO, dostępność, skalowalność.
+\begin{enumerate}
+  \item[\textbf{N1}] \textbf{Bezpieczeństwo danych:} surowe audio i~niezanonimizowana
+        transkrypcja nie~mogą opuszczać infrastruktury placówki (strefa
+        zaufania lokalna).
+  \item[\textbf{N2}] \textbf{Zgodność z~RODO:} każda operacja na~danych
+        osobowych jest logowana (audytowalność).
+  \item[\textbf{N3}] \textbf{Czas odpowiedzi:} generacja notatki SOAP dla
+        15-minutowej wizyty w~czasie $\leq 3$~minut.
+  \item[\textbf{N4}] \textbf{Dokładność transkrypcji:} WER $\leq 15\%$ dla
+        próbki testowej dialogów medycznych w~języku polskim.
+\end{enumerate}
+
+\section{Przypadki użycia}\label{sec:use-cases}
+
+% TODO: diagramy UML przypadków użycia, scenariusze główny + alternatywne.

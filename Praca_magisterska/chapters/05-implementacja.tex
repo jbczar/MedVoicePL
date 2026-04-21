@@ -1,0 +1,76 @@
+\chapter{Implementacja}\label{ch:implementacja}
+
+% TODO: szczegóły implementacyjne — ok. 15--25 stron.
+% Podział rozdziału odzwierciedla strukturę monorepo (dataset_pipeline,
+% application/on_premise, application/cloud, gateway, frontend).
+
+\section{Organizacja monorepo}\label{sec:monorepo}
+
+% TODO: struktura katalogów, workspace uv, współdzielone schematy Pydantic,
+% strategia zarządzania zależnościami.
+
+\section{Pipeline datasetu syntetycznego}\label{sec:dataset-pipeline}
+
+% TODO: generacja scenariuszy przez Gemini (Vertex AI), syntezator XTTSv2,
+% postprodukcja audio, kontrakt ScenarioModel.
+
+\subsection{Generacja scenariuszy (Phase 1a)}\label{sec:scenariusze}
+
+% TODO: Gemini + response_schema=ScenarioModel, few-shot examples,
+% retry strategia (tenacity + correction hint), ThreadPoolExecutor.
+
+\subsection{Synteza mowy (Phase 1b)}\label{sec:tts}
+
+% TODO: XTTSv2, głosy referencyjne, miksowanie dialogów, augmentacja szumem.
+
+\section{Moduł on-premise}\label{sec:impl-on-premise}
+
+\subsection{Transkrypcja audio}\label{sec:stt-impl}
+
+% TODO: faster-whisper, model large-v3, diaryzacja przez pyannote.
+
+\subsection{Strukturyzacja SOAP}\label{sec:slm-impl}
+
+% TODO: wybór i kwantyzacja modelu SLM, prompt engineering dla formatu SOAP.
+
+\subsection{Anonimizacja PII}\label{sec:presidio-impl}
+
+% TODO: Presidio + custom recognizery PL (PESEL, NIP, imiona polskie),
+% trust_gate.py, audit_logger.py.
+
+\section{Moduł chmurowy}\label{sec:impl-cloud}
+
+\subsection{Analiza kliniczna LLM}\label{sec:llm-impl}
+
+% TODO: OpenAI/Anthropic/Google, strukturyzowany output, prompty kliniczne.
+
+\subsection{Retrieval-Augmented Generation}\label{sec:rag-impl}
+
+% TODO: ChromaDB, embeddingi (model dla języka polskiego), chunkowanie
+% bazy wiedzy medycznej.
+
+\subsection{Dopasowanie refundacji NFZ}\label{sec:nfz-impl}
+
+% TODO: import bazy refundacji NFZ, wyszukiwanie rozmyte, dopasowanie
+% do zaleconych leków.
+
+\section{Gateway i frontend}\label{sec:impl-gateway-frontend}
+
+% TODO: FastAPI jako gateway, endpointy REST, WebSocket dla streamingu,
+% Next.js dashboard, Server Actions, schemat autoryzacji.
+
+\section{Fragment implementacji --- przykład}\label{sec:kod-przyklad}
+
+Poniższy listing prezentuje kontrakt Pydantic używany jako granica
+przesyłania danych między modułem lokalnym a~chmurą.
+
+\begin{lstlisting}[language=Python,caption={Kontrakt AnonymizedPayload (uproszczony)},label={lst:payload}]
+from pydantic import BaseModel, Field
+
+class AnonymizedPayload(BaseModel):
+    """Jedyna struktura przekraczająca granicę zaufania."""
+    session_id: str = Field(..., description="Identyfikator sesji")
+    soap_note: str = Field(..., description="Notatka w formacie SOAP")
+    pii_detected: list[str] = Field(default_factory=list)
+    audit_hash: str = Field(..., description="Hash SHA-256 oryginału")
+\end{lstlisting}

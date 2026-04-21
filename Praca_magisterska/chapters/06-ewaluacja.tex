@@ -1,0 +1,58 @@
+\chapter{Ewaluacja}\label{ch:ewaluacja}
+
+% TODO: wyniki ewaluacji — ok. 8--15 stron.
+
+\section{Metodyka ewaluacji}\label{sec:metodyka-ewaluacji}
+
+% TODO: opis zbioru testowego, metryki, narzędzia pomiarowe.
+
+\section{Zbiór testowy (ground truth)}\label{sec:ground-truth}
+
+% TODO: opis scenariuszy testowych, sposób ich anotacji, liczba próbek
+% per specjalizacja.
+
+\section{Jakość transkrypcji (STT)}\label{sec:ewaluacja-stt}
+
+% TODO: metryki WER i CER, porównanie konfiguracji faster-whisper,
+% wpływ diaryzacji na jakość.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Przykładowe wyniki WER dla różnych konfiguracji STT
+           (dane zastępcze --- do uzupełnienia).}
+  \label{tab:wer}
+  \begin{tabular}{lrrr}
+    \toprule
+    Konfiguracja & WER [\%] & CER [\%] & RTF \\
+    \midrule
+    whisper-small       & --- & --- & --- \\
+    whisper-medium      & --- & --- & --- \\
+    whisper-large-v3    & --- & --- & --- \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\section{Jakość strukturyzacji SOAP}\label{sec:ewaluacja-slm}
+
+% TODO: ewaluacja eksperta klinicznego, metryki spójności, kompletności,
+% poprawności medycznej.
+
+\section{Skuteczność anonimizacji}\label{sec:ewaluacja-anonimizacja}
+
+% TODO: precyzja/czułość rozpoznawania PII, współczynnik wycieku danych,
+% analiza błędów.
+
+\section{Trafność sugestii RAG i NFZ}\label{sec:ewaluacja-rag}
+
+% TODO: metryki Recall@k, Precision@k, NDCG; akceptowalność sugestii
+% przez lekarzy w~scenariuszach testowych.
+
+\section{Wydajność systemu end-to-end}\label{sec:ewaluacja-wydajnosc}
+
+% TODO: czas odpowiedzi per etap, wykorzystanie zasobów GPU/CPU,
+% skalowanie przy większej liczbie równoległych wizyt.
+
+\section{Dyskusja wyników}\label{sec:dyskusja}
+
+% TODO: interpretacja wyników, porównanie z~hipotezami, identyfikacja
+% ograniczeń.

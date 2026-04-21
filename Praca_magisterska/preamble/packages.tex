@@ -1,0 +1,87 @@
+% Pakiety LaTeX — kolejność ma znaczenie.
+% Kompilacja: XeLaTeX + Biber (babel, polyglossia i fontspec wymagają silnika Unicode).
+
+% --- Język ---------------------------------------------------------------
+\usepackage[polish]{babel}
+\usepackage{csquotes}
+
+% --- Czcionki (fontspec wymaga XeLaTeX lub LuaLaTeX) ---------------------
+\usepackage{fontspec}
+\defaultfontfeatures{Ligatures=TeX}
+
+% --- Geometria strony (odpowiednik for-printing z Typst) -----------------
+\usepackage[
+  a4paper,
+  top=1in,
+  bottom=1.25in,
+  inner=2.25in,
+  outer=1.25in,
+  headheight=14pt
+]{geometry}
+
+% --- Interlinia i akapity ------------------------------------------------
+\usepackage{setspace}
+\onehalfspacing
+\setlength{\parindent}{1em}
+\setlength{\parskip}{0.2\baselineskip plus 0.1\baselineskip}
+
+% --- Grafika, kolory -----------------------------------------------------
+\usepackage{graphicx}
+\usepackage[dvipsnames,table]{xcolor}
+\graphicspath{{contents/assets/images/}}
+
+% --- Tabele --------------------------------------------------------------
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{longtable}
+
+% --- Matematyka ----------------------------------------------------------
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+% --- Podpisy rysunków / tabel -------------------------------------------
+\usepackage{caption}
+\usepackage{subcaption}
+\captionsetup{font=small,labelfont=bf}
+
+% --- Listingi kodu (zamiennik codly) -------------------------------------
+\usepackage{listings}
+\definecolor{codebg}{HTML}{D2EBEB}
+\definecolor{codeNumGray}{gray}{0.55}
+\definecolor{codeKeyword}{HTML}{2E86AB}
+\definecolor{codeComment}{HTML}{6A8759}
+\definecolor{codeString}{HTML}{A9883E}
+
+% --- Nagłówki i stopki ---------------------------------------------------
+\usepackage{fancyhdr}
+\usepackage{emptypage}
+
+% --- Stylizacja rozdziałów / sekcji --------------------------------------
+\usepackage{titlesec}
+
+% --- Bibliografia --------------------------------------------------------
+\usepackage[
+  backend=biber,
+  style=numeric,
+  sorting=none,
+  maxbibnames=99,
+  giveninits=true,
+  urldate=long
+]{biblatex}
+\addbibresource{bibliography/references.bib}
+
+% --- Wsparcie dla pionowych odstępów -------------------------------------
+\usepackage{needspace}
+
+% --- Odnośniki (zawsze na końcu preambuły, przed cleveref jeśli używany) -
+\usepackage[
+  hidelinks,
+  unicode,
+  bookmarksnumbered,
+  breaklinks
+]{hyperref}
+
+% --- Dodatkowe udogodnienia ---------------------------------------------
+\usepackage{microtype}
+\usepackage{enumitem}
+\setlist{itemsep=0.2em,topsep=0.3em}

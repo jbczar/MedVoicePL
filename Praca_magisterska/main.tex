@@ -1,0 +1,45 @@
+% !TEX program = xelatex
+% !BIB program = biber
+% !TEX encoding = UTF-8 Unicode
+
+\documentclass[11pt,a4paper,twoside,openright]{book}
+
+\input{preamble/packages}
+\input{preamble/pjatk-style}
+\input{thesis-config}
+
+\begin{document}
+
+\frontmatter%
+\pagenumbering{roman}
+
+\input{preamble/titlepage}
+\input{preamble/abstract}
+
+\tableofcontents
+\cleardoublepage
+
+\listoffigures
+\cleardoublepage
+
+\listoftables
+\cleardoublepage
+
+\lstlistoflistings
+\cleardoublepage
+
+\mainmatter%
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+\input{chapters/01-wstep}
+\input{chapters/02-stan-wiedzy}
+\input{chapters/03-wymagania}
+\input{chapters/04-architektura}
+\input{chapters/05-implementacja}
+\input{chapters/06-ewaluacja}
+\input{chapters/07-wnioski}
+
+\printbibliography[heading=bibintoc,title={Bibliografia}]
+
+\end{document}

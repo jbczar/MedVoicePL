@@ -1,0 +1,44 @@
+\chapter{Architektura systemu}\label{ch:architektura}
+
+% TODO: architektura wysokiego poziomu — ok. 10--15 stron.
+
+\section{Przegląd architektury}\label{sec:architektura-przeglad}
+
+% TODO: diagram blokowy, podział na trzy filary: dataset_pipeline, application,
+% research_and_testing.
+
+\section{Granica zaufania (trust boundary)}\label{sec:trust-boundary}
+
+% TODO: opis zasad bezpieczeństwa:
+% (1) surowe audio nigdy nie opuszcza on-premise,
+% (2) trust_gate.py waliduje każdy payload wychodzący,
+% (3) kontrakt AnonymizedPayload jako jedyny punkt przecięcia granicy.
+
+\section{Moduł on-premise}\label{sec:on-premise}
+
+% TODO: diagram komponentów on-premise:
+% STT (faster-whisper) → SLM (lokalne, kwantyzowane) → Anonimizacja (Presidio).
+
+\section{Moduł chmurowy}\label{sec:cloud}
+
+% TODO: diagram komponentów cloud:
+% LLM chmurowy → RAG (ChromaDB/Qdrant) → wyszukiwanie NFZ.
+
+\section{Gateway}\label{sec:gateway}
+
+% TODO: API Gateway jako orkiestrator on-premise↔cloud,
+% uwierzytelnianie, rate limiting, monitoring.
+
+\section{Frontend (pulpit lekarza)}\label{sec:frontend}
+
+% TODO: Next.js + TypeScript, nagrywanie audio w~przeglądarce,
+% interfejs akceptacji sugestii.
+
+\section{Przepływ danych}\label{sec:przeplyw-danych}
+
+% TODO: sekwencja end-to-end od nagrania do zapisu notatki w~dokumentacji.
+
+\section{Wybór stosu technologicznego}\label{sec:stos}
+
+% TODO: uzasadnienie wyboru: LangGraph vs LangChain, faster-whisper vs
+% whisper.cpp, Presidio vs regex + NER, ChromaDB vs Qdrant.
