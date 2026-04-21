@@ -4,6 +4,7 @@ version = "0.1.0"
 description = "Synthetic Polish medical visit dataset generation pipeline."
 requires-python = ">=3.11"
 dependencies = [
+    # Phase 1a — scenario generation
     "google-genai>=0.3",
     "pydantic>=2.6",
     "pyyaml>=6.0",
@@ -11,6 +12,14 @@ dependencies = [
     "tenacity>=8.2",
     "typer>=0.12",
     "rich>=13.7",
+    # Phase 1b — TTS + audio postprocessing
+    "coqui-tts>=0.27",      # community XTTSv2 fork (original Coqui is archived)
+    "torch>=2.2",           # coqui-tts runtime + resampling
+    "torchaudio>=2.2",      # resampling kernels
+    "soundfile>=0.12",      # WAV I/O without ffmpeg dep
+    "numpy>=1.26",
+    "requests>=2.31",       # reference-voice fetch script
+    "tqdm>=4.66",           # progress for downloads
 ]
 
 [build-system]

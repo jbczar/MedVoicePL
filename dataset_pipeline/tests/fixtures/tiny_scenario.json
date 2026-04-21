@@ -1,0 +1,22 @@
+{
+  "id": "11111111-2222-3333-4444-555555555555",
+  "specialization": "kardiologia",
+  "patient_age": 54,
+  "patient_sex": "F",
+  "patient_full_name": "Janina Kowalska",
+  "patient_pesel": "71020112345",
+  "chief_complaint": "bóle w klatce piersiowej",
+  "expected_diagnosis": "dławica piersiowa stabilna",
+  "icd10_code": "I20.8",
+  "turns": [
+    { "speaker": "doctor", "text": "Dzień dobry, proszę usiąść. Co sprowadza panią do mnie?" },
+    { "speaker": "patient", "text": "Panie doktorze, od tygodnia mam bóle w klatce piersiowej przy wchodzeniu po schodach." },
+    { "speaker": "doctor", "text": "Proszę zrobić EKG spoczynkowe i wrócić z wynikiem w przyszłym tygodniu." },
+    { "speaker": "patient", "text": "Dobrze, dziękuję. Czy mogę brać aspirynę?" },
+    { "speaker": "doctor", "text": "Tak, proszę brać 75 miligramów na dobę, rano po śniadaniu." },
+    { "speaker": "patient", "text": "Rozumiem, dziękuję bardzo panie doktorze." }
+  ],
+  "generated_at": "2026-04-21T10:00:00+02:00",
+  "model": "fixture-not-a-real-model",
+  "seed": null
+}
