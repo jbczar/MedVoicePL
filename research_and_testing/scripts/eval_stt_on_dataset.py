@@ -9,7 +9,7 @@ Two backends, selected via `--backend`:
 
 * **faster-whisper** (default) — ctranslate2 runtime. Runs on CPU (int8) on
   Apple Silicon; CUDA / int8_float16 on NVIDIA. Portable baseline.
-* **mlx** — mlx-whisper on Apple Silicon, Metal GPU. Typically 5–10× faster
+* **mlx** — mlx-whisper on Apple Silicon, Metal GPU. Typically 5-10x faster
   than faster-whisper CPU int8 on an M-series chip, same `large-v3` quality.
 
 Output:
