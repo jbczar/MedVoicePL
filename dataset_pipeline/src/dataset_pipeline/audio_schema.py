@@ -49,6 +49,19 @@ class ScenarioAudioBundle(BaseModel):
     tts_model: str
     tts_device: str
 
+    # ------------------------------------------------------------------
+    # Phase 1b.1 — noisy variant (optional). Null on old Phase 1b bundles
+    # and on runs with `--clean-only`.
+    # ------------------------------------------------------------------
+    dialogue_noisy_path: str | None = None
+    dialogue_noisy_sha256: str | None = Field(
+        default=None, pattern=r"^[a-f0-9]{64}$"
+    )
+    dialogue_noisy_duration_s: float | None = Field(default=None, ge=0.0)
+    noise_snr_db: float | None = None
+    noise_clip: str | None = None
+    reverb_room: str | None = None
+
 
 def bundle_from_dir(
     bundle_dir: Path,

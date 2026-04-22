@@ -14,6 +14,8 @@ import shutil
 from pathlib import Path
 
 import numpy as np
+import pytest
+import soundfile as sf
 
 from dataset_pipeline.audio_schema import ScenarioAudioBundle
 from dataset_pipeline.pipeline import run_audio
@@ -74,8 +76,11 @@ class _FakeSynthesizer:
         self._duration_s = duration_s
         self.calls: list[tuple[str, str]] = []
 
-    def synthesize(self, text: str, profile: VoiceProfile) -> np.ndarray:
+    def synthesize(
+        self, text: str, profile: VoiceProfile, *, seed: int | None = None
+    ) -> np.ndarray:
         self.calls.append((text, profile.name))
+        del seed  # fake is already deterministic; accept and ignore.
         n = int(self._duration_s * self.sample_rate)
         # Tiny ramp so the signal is non-trivial but bounded [-0.01, 0.01].
         return (np.linspace(-0.01, 0.01, n, dtype=np.float32))
@@ -205,6 +210,110 @@ def test_run_audio_respects_limit(tmp_path: Path) -> None:
     assert report.success_count == 1
     bundle_dirs = sorted(p for p in audio_dir.iterdir() if p.is_dir())
     assert len(bundle_dirs) == 1
+
+
+NOISY_POSTPROCESS_YAML = """\
+crossfade:
+  duration_ms: 200
+  pause_between_turns_ms:
+    min: 300
+    max: 1500
+
+augment:
+  enabled: true
+  pitch_semitones: {min: -0.5, max: 0.5}
+  tempo_factor: {min: 0.98, max: 1.02}
+
+reverb:
+  enabled: true
+  room_sizes:
+    - {name: small, size: 0.2, weight: 1.0}
+  damping: 0.5
+  wet_level: 0.2
+  dry_level: 0.8
+
+noise:
+  enabled: true
+  library_path: noise_library/
+  snr_buckets:
+    - {min_db: 15, max_db: 15, weight: 1.0}
+
+output:
+  sample_rate: 16000
+  format: "wav"
+  normalize: true
+"""
+
+
+def _write_noise_library(library_dir: Path) -> None:
+    """Drop a couple of synthetic white-noise clips for the injector."""
+    library_dir.mkdir(parents=True, exist_ok=True)
+    rng = np.random.default_rng(0)
+    for i in range(2):
+        data = (rng.standard_normal(22050 * 2) * 0.2).astype(np.float32)
+        sf.write(str(library_dir / f"noise_{i:02d}.wav"), data, 22050, subtype="PCM_16")
+
+
+def test_run_audio_noisy_variant_end_to_end(tmp_path: Path) -> None:
+    scenarios_dir, audio_dir, tts_cfg, _post_cfg = _build_env(tmp_path)
+    # Override postprocess config with 1b.1-enabled variant.
+    post_cfg = tts_cfg.parent / "audio_postprocess.yaml"
+    post_cfg.write_text(NOISY_POSTPROCESS_YAML, encoding="utf-8")
+    # Noise library sits next to the postprocess config (same resolution
+    # logic as in production).
+    _write_noise_library(post_cfg.parent / "noise_library")
+
+    report = run_audio(
+        scenarios_dir=scenarios_dir,
+        audio_out_dir=audio_dir,
+        tts_config_path=tts_cfg,
+        postprocess_config_path=post_cfg,
+        synthesizer=_FakeSynthesizer(duration_s=0.3),
+    )
+    assert report.success_count == 1
+    bundle = report.bundles[0]
+
+    # Clean + noisy both on disk.
+    bundle_dir = audio_dir / "11111111"
+    assert (bundle_dir / "dialogue.wav").exists()
+    assert (bundle_dir / "dialogue_noisy.wav").exists()
+
+    # Bundle metadata populated.
+    assert bundle.dialogue_noisy_path == "audio/11111111/dialogue_noisy.wav"
+    assert bundle.dialogue_noisy_sha256 is not None
+    assert bundle.dialogue_noisy_duration_s is not None
+    assert bundle.noise_snr_db == pytest.approx(15.0)
+    assert bundle.noise_clip is not None and bundle.noise_clip.startswith("noise_")
+    assert bundle.reverb_room == "small"
+
+    # Clean mix SHA still stable w.r.t. clean-only runs (independent RNG).
+    sidecar = ScenarioAudioBundle.model_validate_json(
+        (bundle_dir / "bundle.json").read_text(encoding="utf-8")
+    )
+    assert sidecar.dialogue_sha256 == bundle.dialogue_sha256
+
+
+def test_run_audio_clean_only_skips_noisy(tmp_path: Path) -> None:
+    scenarios_dir, audio_dir, tts_cfg, _post_cfg = _build_env(tmp_path)
+    post_cfg = tts_cfg.parent / "audio_postprocess.yaml"
+    post_cfg.write_text(NOISY_POSTPROCESS_YAML, encoding="utf-8")
+    # Intentionally skip noise library — clean_only must not touch it.
+
+    report = run_audio(
+        scenarios_dir=scenarios_dir,
+        audio_out_dir=audio_dir,
+        tts_config_path=tts_cfg,
+        postprocess_config_path=post_cfg,
+        synthesizer=_FakeSynthesizer(duration_s=0.3),
+        clean_only=True,
+    )
+    assert report.success_count == 1
+    bundle_dir = audio_dir / "11111111"
+    assert (bundle_dir / "dialogue.wav").exists()
+    assert not (bundle_dir / "dialogue_noisy.wav").exists()
+    bundle = report.bundles[0]
+    assert bundle.dialogue_noisy_path is None
+    assert bundle.noise_snr_db is None
 
 
 def test_run_audio_scenario_filter(tmp_path: Path) -> None:

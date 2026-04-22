@@ -67,7 +67,20 @@ application/on_premise/models/*.gguf
 dataset_pipeline/output/scenarios/
 dataset_pipeline/output/raw_audio/
 dataset_pipeline/output/mixed_audio/
+dataset_pipeline/output/audio/
 dataset_pipeline/output/manifest.json
+
+# Audio binaries — reference voices (from Common Voice), noise library
+# (from Freesound), and any stray WAV/MP3/OGG. README.md in those dirs is
+# whitelisted below so provenance metadata still ships.
+dataset_pipeline/reference_voices/*.wav
+dataset_pipeline/noise_library/*.wav
+!dataset_pipeline/reference_voices/README.md
+!dataset_pipeline/noise_library/README.md
+*.wav
+*.mp3
+*.ogg
+*.flac
 
 # ------------------------------------------
 # Research — Experiment Results

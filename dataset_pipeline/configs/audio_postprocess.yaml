@@ -1,27 +1,57 @@
 # Audio post-processing parameters
-noise:
-  enabled: true
-  types:
-    - clinic_ambient
-    - corridor
-    - keyboard
-  snr_db:
-    min: 15
-    max: 30
 
+# Dialogue mixing (Phase 1b) — applied to per-turn WAVs to produce dialogue.wav
 crossfade:
   duration_ms: 200
   pause_between_turns_ms:
     min: 300
     max: 1500
 
-augmentation:
-  tempo_range: [0.9, 1.1]
-  pitch_shift_semitones: [-1, 1]
-  reverb:
-    enabled: false
-    room_size: 0.3
+# ---------------------------------------------------------------------------
+# Phase 1b.1 — noise injection + augmentations
+# ---------------------------------------------------------------------------
+# All stages below are applied to the CLEAN mix to produce dialogue_noisy.wav.
+# The clean dialogue.wav is preserved untouched as ground truth.
 
+# Per-turn mild augmentation (applied BEFORE mixing, so natural speaker
+# variation carries across the crossfade). Amounts are intentionally small —
+# we want variation, not disguise.
+augment:
+  enabled: true
+  pitch_semitones:
+    min: -1.0
+    max: 1.0
+  tempo_factor:
+    min: 0.95
+    max: 1.05
+
+# Reverb applied to the MIXED dialogue (once, not per turn) so the tail
+# crosses turn boundaries naturally. Room size is sampled from the buckets
+# below, seeded by scenario id.
+reverb:
+  enabled: true
+  room_sizes:
+    - { name: small,  size: 0.15, weight: 0.4 }
+    - { name: medium, size: 0.35, weight: 0.4 }
+    - { name: large,  size: 0.55, weight: 0.2 }
+  damping: 0.5        # pedalboard default; higher = faster HF decay
+  wet_level: 0.25     # mix ratio (0 = dry, 1 = all reverb)
+  dry_level: 0.75
+
+# Background noise mixed in AFTER reverb. Library lives in
+# dataset_pipeline/noise_library/ — populated by scripts/fetch_noise_library.py.
+# Clips are looped/trimmed to match speech duration, scaled to the chosen SNR.
+noise:
+  enabled: true
+  library_path: ../noise_library/
+  snr_buckets:
+    - { min_db: 20, max_db: 25, weight: 0.4 }   # clean-ish clinic
+    - { min_db: 15, max_db: 20, weight: 0.4 }   # typical clinic
+    - { min_db: 10, max_db: 15, weight: 0.2 }   # busy clinic / stress test
+
+# ---------------------------------------------------------------------------
+# Output (applied to BOTH clean and noisy variants)
+# ---------------------------------------------------------------------------
 output:
   sample_rate: 16000
   format: "wav"

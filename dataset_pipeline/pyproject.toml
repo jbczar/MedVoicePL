@@ -14,12 +14,16 @@ dependencies = [
     "rich>=13.7",
     # Phase 1b — TTS + audio postprocessing
     "coqui-tts>=0.27",      # community XTTSv2 fork (original Coqui is archived)
+    "transformers>=4.40,<5.1",  # coqui-tts uses isin_mps_friendly removed in 5.1+
     "torch>=2.2",           # coqui-tts runtime + resampling
     "torchaudio>=2.2",      # resampling kernels
+    "torchcodec>=0.11",     # torchaudio MP3 backend
     "soundfile>=0.12",      # WAV I/O without ffmpeg dep
     "numpy>=1.26",
     "requests>=2.31",       # reference-voice fetch script
     "tqdm>=4.66",           # progress for downloads
+    # Phase 1b.1 — noise injection + augmentations
+    "pedalboard>=0.9",      # Spotify's audio FX (reverb, pitch shift, time stretch)
 ]
 
 [build-system]

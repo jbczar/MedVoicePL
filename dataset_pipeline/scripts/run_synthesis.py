@@ -55,6 +55,11 @@ def synthesize(
         "-n",
         help="Stop after this many successful bundles. Use 1 for a smoke test.",
     ),
+    clean_only: bool = typer.Option(
+        False,
+        "--clean-only",
+        help="Skip Phase 1b.1 stages (augment/reverb/noise); only emit dialogue.wav.",
+    ),
     verbose: bool = typer.Option(False, "--verbose", "-v"),
 ) -> None:
     """Synthesize per-turn WAVs + mixed dialogue for each scenario."""
@@ -85,6 +90,7 @@ def synthesize(
             postprocess_config_path=postprocess_config,
             scenario_filter=list(scenario_id) if scenario_id else None,
             limit=limit,
+            clean_only=clean_only,
         )
         progress.update(task, completed=report.success_count)
 

@@ -49,7 +49,9 @@ class Synthesizer(Protocol):
     @property
     def device(self) -> str: ...
 
-    def synthesize(self, text: str, profile: VoiceProfile) -> np.ndarray: ...
+    def synthesize(
+        self, text: str, profile: VoiceProfile, *, seed: int | None = None
+    ) -> np.ndarray: ...
 
 
 def _clean_text_for_tts(text: str) -> str:
@@ -97,6 +99,9 @@ class XTTSSynthesizer:
         model_cache: Path | None = None,
         model_name: str = XTTS_V2_MODEL_NAME,
         sample_rate: int = DEFAULT_SAMPLE_RATE,
+        temperature: float = 0.65,
+        sound_norm_refs: bool = True,
+        split_sentences: bool = True,
     ) -> None:
         self._explicit_device = device or os.environ.get("TTS_DEVICE", "auto")
         self._model_cache = model_cache or Path(
@@ -106,6 +111,21 @@ class XTTSSynthesizer:
         )
         self._model_name = model_name
         self._sample_rate = sample_rate
+        # Sampling / conditioning knobs for XTTSv2. Defaults are tuned to
+        # reduce whisper-y takes and tone drift that users hear on long Polish
+        # turns with un-normalized reference clips:
+        #   - `sound_norm_refs=True`: auto-normalize the speaker_wav before
+        #     conditioning so quiet reference clips don't push the decoder
+        #     toward low-energy / whispered output.
+        #   - `temperature=0.65`: slightly below the 0.75 default — keeps
+        #     prosody stable across sentences without sounding robotic.
+        #   - `split_sentences=True`: synthesize sentence-by-sentence so
+        #     prosody doesn't decay on long runs. Fed into `tts.tts(...)` as
+        #     `split_sentences` (new arg) with a fallback to the legacy
+        #     `enable_text_splitting` name handled at call time.
+        self._temperature = temperature
+        self._sound_norm_refs = sound_norm_refs
+        self._split_sentences = split_sentences
         self._tts: Any | None = None
         self._resolved_device: str | None = None
 
@@ -125,10 +145,21 @@ class XTTSSynthesizer:
             self._resolved_device = _resolve_device(self._explicit_device)
         return self._resolved_device
 
-    def synthesize(self, text: str, profile: VoiceProfile) -> np.ndarray:
+    def synthesize(
+        self, text: str, profile: VoiceProfile, *, seed: int | None = None
+    ) -> np.ndarray:
         """Synthesize a single turn of Polish speech.
 
-        Returns a mono float32 array at `self.sample_rate`.
+        Returns a mono float32 array at `self.sample_rate`. When `seed` is
+        provided, torch's global RNG is seeded before sampling so the output
+        is byte-reproducible for a given (text, profile, seed). The pipeline
+        derives per-turn seeds from `sha256(scenario.id) + turn_index` so
+        re-running synthesis on the same scenario produces identical audio.
+
+        Note: determinism holds on a single device / torch build. Different
+        hardware (MPS vs. CPU) or a different torch version will produce
+        different samples even with the same seed — that's a torch limitation,
+        not ours.
         """
         cleaned = _clean_text_for_tts(text)
         if not cleaned:
@@ -140,18 +171,43 @@ class XTTSSynthesizer:
             )
 
         tts = self._ensure_loaded()
+        if seed is not None:
+            import random as _random
+
+            import torch
+
+            # XTTSv2 samples from three different RNGs depending on the
+            # sub-module: torch (GPT decoder + diffusion), numpy (some
+            # normalization helpers inside coqui-tts), and Python `random`
+            # (rare, but used in text-splitting heuristics). Seed all three
+            # right before sampling so each turn has a fully deterministic
+            # starting state.
+            torch.manual_seed(seed)
+            if torch.cuda.is_available():
+                torch.cuda.manual_seed_all(seed)
+            np.random.seed(seed & 0xFFFFFFFF)
+            _random.seed(seed)
         log.debug(
             "xtts synthesize: profile=%s device=%s text=%r",
             profile.name,
             self.device,
             cleaned[:60],
         )
-        audio = tts.tts(
-            text=cleaned,
-            speaker_wav=str(profile.reference_audio),
-            language=profile.language,
-            speed=profile.speed,
-        )
+        kwargs: dict[str, Any] = {
+            "text": cleaned,
+            "speaker_wav": str(profile.reference_audio),
+            "language": profile.language,
+            "speed": profile.speed,
+            "temperature": self._temperature,
+            "sound_norm_refs": self._sound_norm_refs,
+        }
+        # coqui-tts renamed the sentence-splitting kwarg between versions.
+        # Try the new name first, fall back to the legacy one so this works
+        # across the 0.22-0.27 range the fork has shipped under.
+        try:
+            audio = tts.tts(split_sentences=self._split_sentences, **kwargs)
+        except TypeError:
+            audio = tts.tts(enable_text_splitting=self._split_sentences, **kwargs)
         return np.asarray(audio, dtype=np.float32)
 
     # -- Internals --------------------------------------------------------
