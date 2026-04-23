@@ -1,0 +1,22 @@
+{
+  "generated_at": "2026-04-23T20:57:48.785081+02:00",
+  "backend": "on-premise",
+  "model": "mlx-whisper:mlx-community/whisper-large-v3-mlx",
+  "device": "mps",
+  "compute_type": null,
+  "diarization_model": "pyannote/speaker-diarization-3.1",
+  "results": [
+    {
+      "scenario_id": "a9b1c2d3-e4f5-6789-a0b1-c2d3e4f5a6b7",
+      "clean_wer": 0.06642066420664207,
+      "clean_cer": 0.05214368482039398,
+      "noisy_wer": 0.0959409594095941,
+      "noisy_cer": 0.09443800695249131,
+      "delta_wer": 0.029520295202952032,
+      "clean_der": 0.36196290280692295,
+      "noisy_der": 0.4102551827300117,
+      "noise_snr_db": 19.7818784922035,
+      "reverb_room": "small"
+    }
+  ]
+}

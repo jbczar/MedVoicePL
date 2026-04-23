@@ -18,10 +18,12 @@ Repozytorium jest podzielone na trzy niezależne filary:
 ### 2. `application/` — System CDSS
 Podział na cztery moduły:
 - **`on_premise/`** — Strefa zaufania wewnętrzna. Surowe audio NIGDY nie opuszcza tego modułu.
-  - STT: faster-whisper (transkrypcja + diaryzacja)
-  - SLM: lokalny model do strukturyzacji SOAP
-  - Anonimizacja: Microsoft Presidio + custom PL recognizery
-  - `trust_gate.py` wymusza programistycznie granicę zaufania
+  - STT: MLX Whisper (primary, Apple Silicon) / faster-whisper (portable fallback)
+  - Diaryzacja: pyannote.audio 3.1 (2 speakers: doctor + patient)
+  - `Transcript` contract (un-anonimizowany) żyje w `on_premise.stt.schema` i nie wycieka do `shared/`
+  - SLM: lokalny model do strukturyzacji SOAP (Phase 2b)
+  - Anonimizacja: Microsoft Presidio + custom PL recognizery (Phase 2c)
+  - `trust_gate.py` wymusza programistycznie granicę zaufania (Phase 2c)
 - **`cloud/`** — Operuje wyłącznie na danych zanonimizowanych.
   - LLM: analiza kliniczna przez chmurowe modele
   - RAG: wyszukiwanie semantyczne w bazie wiedzy
@@ -43,7 +45,8 @@ Podział na cztery moduły:
 | Orkiestracja agentów | LangGraph |
 | Backend API | FastAPI + uvicorn |
 | Frontend | Next.js (TypeScript) |
-| STT | faster-whisper |
+| STT | MLX Whisper (Apple Silicon) / faster-whisper (portable) |
+| Diaryzacja | pyannote.audio 3.1 |
 | SLM (lokalne) | Transformers (quantized) |
 | Anonimizacja | Microsoft Presidio |
 | LLM (chmura) | OpenAI / Anthropic / Google (`google-genai` używane też przez dataset_pipeline) |
@@ -83,7 +86,9 @@ Podział na cztery moduły:
 | Phase 1a | `dataset_pipeline`: generacja scenariuszy (JSON) przez Gemini | ✅ ukończone (2026-04-20) — 8 scenariuszy w `output/scenarios/` (1-2 per specjalizacja × 5) |
 | Phase 1b | `dataset_pipeline`: XTTSv2 + postprocessing audio (clean) | ✅ ukończone (2026-04-22) — smoke test OK (13 turns, 185.5 s), determinizm SHA zweryfikowany |
 | Phase 1b.1 | `dataset_pipeline`: noise injection + augmentacje (tempo/pitch/reverb) + WER eval loop | ✅ ukończone (2026-04-22) — 11 klipów Freesound, clean/noisy renderuje się bez błędów, pierwszy WER 9.1%→11.2% przy 15 dB SNR |
-| Phase 2 | `application/on_premise`: STT + SLM + anonimizacja | ⏳ kolejne |
+| Phase 2a | `application/on_premise`: STT (MLX/faster-whisper) + diaryzacja (pyannote) + `Transcript` contract + DER eval | 🔄 kod gotowy (2026-04-23) — 126 testów zielonych, ruff+mypy czyste, czeka na HF token dla pyannote i pierwszy smoke |
+| Phase 2b | `application/on_premise`: SLM engine + SOAP extraction + prompts | ⏳ kolejne |
+| Phase 2c | `application/on_premise`: Presidio + PL recognizers + `trust_gate` + audit logger + FastAPI | ⏳ kolejne |
 | Phase 3 | `application/cloud` + `gateway` + `frontend` | ⏳ kolejne |
 | Phase 4 | `research_and_testing`: ewaluacja E2E | ⏳ kolejne |
 
@@ -243,6 +248,63 @@ uv run python dataset_pipeline/scripts/run_synthesis.py --limit 1
 uv run python research_and_testing/scripts/eval_stt_on_dataset.py --limit 1
 ```
 
+### Phase 2a — decyzje projektowe
+
+- **Podział Phase 2 na 2a/2b/2c**: STT+diaryzacja (2a) to fundament, którego konsumują SLM (2b) i anonimizacja+API (2c). Rozłożenie pozwala (1) osiągnąć stabilny `Transcript` kontrakt ZANIM jakikolwiek kod z 2b/2c zacznie go importować, (2) trzymać każdą fazę w przedziale 2-3 dni pracy + weryfikowalnego smoke'a. W 2a SLM/Presidio/trust_gate zostają stubami.
+- **STT backend — dual**: `MLX Whisper` primary na Apple Silicon (~5-10x szybciej niż ctranslate2 CPU int8, już sprawdzone w Phase 1b.1 eval), `faster-whisper` fallback dla CUDA / portable / CI. Za `Transcriber` Protocol identycznego kształtu w obu ścieżkach; Protocol żyje w `on_premise.stt.whisper_engine` i jest importowany przez `research_and_testing/scripts/eval_stt_on_dataset.py` — benchmarkujemy dokładnie ten sam kod, który deployujemy.
+- **Diaryzacja**: `pyannote.audio 3.1` (`pyannote/speaker-diarization-3.1`). Gated model na HF — wymaga `HUGGINGFACE_TOKEN` env + jednorazowego license accept na stronie modelu. `num_speakers=2` hardcoded (doctor + patient, bez triage nurse'a / meetings w naszym domenie). Token-check before pyannote import, żeby error komunikat, który user musi zobaczyć, wyświetlał się pierwszy (i żeby testy jednostkowe nie wymagały pyannote.audio).
+- **Speaker role mapping**: pyannote zwraca opaque `SPEAKER_00`/`SPEAKER_01`. Heurystyka: **speaker, który zaczyna pierwszy → `doctor`**; drugi → `patient`. Klinicznie poprawne dla naszego domeny (wizyta otwiera się powitaniem lekarza). `role_override={"SPEAKER_00": "patient"}` wystawiony na poziomie funkcji `transcribe_and_diarize()` jako escape hatch.
+- **Merge strategy Whisper+pyannote**: word-level Whisper timestamps (`word_timestamps=True`) bucketowane do segmentów pyannote po **midpoincie słowa** (`(start+end)/2 ∈ [seg.start, seg.end)`). Gdy Whisper hałasuje a pyannote nie wykrywa mowy → słowo ignorowane. Gdy pyannote mówi "speaker" a Whisper nie produkuje słów → segment droppowany (pyannote czasem łapie wdechy/kaszel jako mowę).
+- **Transcript contract**: `on_premise.stt.schema.Transcript` (Pydantic v2, `extra="forbid"`, SHA anchor audio). Żyje **w obrębie** `on_premise` i **nie jest re-exportowany** z `shared/schemas/`. `tests/test_trust_boundary_imports.py` to preview-guard (`pkgutil.iter_modules` po `shared.schemas`, fail jeśli wycieknie `Transcript`/`TranscriptSegment`/`TranscriptionMetadata`/`WordTiming`) — prawdziwy runtime gate dopisujemy w 2c.
+- **Ewaluacja DER**: pure-Python `der_calculator.py` (dep-free, tak samo jak `wer_calculator.py`), reference-timeline rekonstruowana z `ScenarioAudioBundle.turns` (pause między turami backed-out z `dialogue_duration_s - sum(turn_durations) + (n-1)*crossfade`). Eval script rozszerzony o `--backend on-premise` → WER (via `transcript.text`) + DER w jednym przebiegu.
+- **Trust posture w 2a**: brak HTTP/API endpointu. `run_transcription.py` CLI zapisuje do `application/on_premise/output/transcripts/<sid[:8]>/transcript.json` — artefakt *lokalny*, gitignorowany. Gateway integration czeka do Phase 2c gdy istnieje `AnonymizedPayload` do gate'owania.
+- **Testy bez downloadów**: `Transcriber`+`Diarizer` Protocol + Fake pattern z Phase 1b. Żaden test nie pobiera wag Whisper/pyannote; `build_transcriber` sprawdzany przez dispatch (assert klasa, nie wywołanie `.transcribe`).
+
+### Phase 2a — kluczowe pliki
+
+| Plik | Rola |
+|---|---|
+| `application/on_premise/pyproject.toml` | Dodane: `faster-whisper>=1.0`, `mlx-whisper>=0.4`, `pyannote.audio>=3.1`, `torch>=2.2`, `torchaudio>=2.2`, `numpy`, `soundfile`, `pydantic>=2.6`, `pyyaml`, `typer`, `rich`. Extra `[apple] = ["mlx-whisper>=0.4"]` dla Linux deploys. |
+| `.env.example` | Dodane: `WHISPER_BACKEND` (mlx), `WHISPER_MLX_REPO`, `HUGGINGFACE_TOKEN`, `PYANNOTE_DEVICE`. Zmieniony default `WHISPER_COMPUTE_TYPE=int8` (fp16 crashuje na CPU). |
+| `application/on_premise/src/on_premise/stt/schema.py` | **NEW** — `WordTiming`, `TranscriptSegment`, `TranscriptionMetadata`, `Transcript` (Pydantic v2, `extra="forbid"`, SHA anchor). Docstring explicit trust-boundary notice. |
+| `application/on_premise/src/on_premise/stt/whisper_engine.py` | **NEW** — `Transcriber` Protocol, `RawWord`+`RawTranscription` dataclasses, `MLXWhisperTranscriber` i `FasterWhisperTranscriber` (oba zwracają word timings), `build_transcriber(config, env)` factory, `load_whisper_config` (ENV template expansion). |
+| `application/on_premise/src/on_premise/stt/diarization.py` | **NEW** — `Diarizer` Protocol, `RawDiarizationSegment`, `PyannoteDiarizer` (token-check przed pyannote import, `num_speakers=2`, `_resolve_device`), `build_diarizer(config, env)`. |
+| `application/on_premise/src/on_premise/stt/vad.py` | **NEW** — 15-LOC `detect_silence_segments` (RMS-threshold numpy, mono only) dla CLI `--trim-silence` flag. |
+| `application/on_premise/src/on_premise/stt/pipeline.py` | **NEW** — `transcribe_and_diarize(wav_path, *, transcriber, diarizer, scenario_id, role_override)`. Merge po midpoincie słowa, role mapping (first-speaker=doctor), drop empty segs, SHA anchor audio. |
+| `application/on_premise/scripts/run_transcription.py` | **NEW** — Typer CLI: `--audio-dir`, `--transcripts-dir`, `--variant {clean,noisy,both}`, `--scenario-id`, `--backend`, `--limit`, `--verbose`, `--trim-silence`. Pisze `<sid[:8]>/transcript.json`(+`transcript_noisy.json`). |
+| `application/on_premise/scripts/check_stt_models.py` | **NEW** — preflight: mlx-whisper import, faster-whisper import, HF token presence, pyannote license accepted (actually loads). Red/green table, exit non-zero on missing. |
+| `application/on_premise/tests/test_{schema,whisper_engine,diarization,pipeline,vad,trust_boundary_imports}.py` | **NEW** — 25 testów (6 + 5 + 3 + 5 + 5 + 1). Zero model downloads: Protocol + Fake pattern. |
+| `research_and_testing/evaluation/stt_eval/der_calculator.py` | **NEW** — pure-Python DER: `diarization_error_rate(reference, hypothesis, *, label_mapping)` via union-of-endpoints time-slicing + bisect. `reference_from_turn_durations` helper. Zero deps (no `pyannote.metrics`). |
+| `research_and_testing/tests/test_der_calculator.py` | **NEW** — 8 testów (identity, pure confusion, pure miss, pure FA, partial overlap, label mapping, turn-duration reference builder, length mismatch). |
+| `research_and_testing/scripts/eval_stt_on_dataset.py` | Refactor: importuje `FasterWhisperTranscriber`/`MLXWhisperTranscriber` z `on_premise.stt.whisper_engine`. Nowy `--backend on-premise` → pełna pipeline + DER. `_Runner` abstrakcja unifikuje bare + on-premise przebieg. Tabela + JSON rozszerzone o DER. |
+| `.gitignore` | Dodane `application/on_premise/output/` (un-anonimizowane transkrypty nie idą do gita). |
+
+### Phase 2a — uruchomienie
+
+```bash
+# 1. Sync (dociąga pyannote.audio, mlx-whisper, faster-whisper)
+uv sync --all-packages
+
+# 2. HF token + license accept dla pyannote (jednorazowo)
+#    https://huggingface.co/pyannote/speaker-diarization-3.1 -> Agree to license
+#    W .env: HUGGINGFACE_TOKEN=<read-token>, WHISPER_BACKEND=mlx
+
+# 3. Preflight — diagnozuje brakujące komponenty z linkiem do fixa
+uv run python application/on_premise/scripts/check_stt_models.py
+
+# 4. Smoke — 1 scenariusz, clean only (~25-40 s na M5: MLX ~15 s + pyannote ~10 s)
+uv run python application/on_premise/scripts/run_transcription.py --limit 1 --variant clean
+# Output: application/on_premise/output/transcripts/<sid[:8]>/transcript.json
+
+# 5. Eval WER+DER przez Phase 2a pipeline (1 scenariusz, clean+noisy)
+uv run python research_and_testing/scripts/eval_stt_on_dataset.py --backend on-premise --limit 1
+
+# 6. Regression test — bare MLX backend musi dać tę samą WER co przed refactorem
+uv run python research_and_testing/scripts/eval_stt_on_dataset.py --backend mlx --limit 1
+```
+
+Output CLI: `<transcripts-dir>/<sid[:8]>/transcript.json` (+ `transcript_noisy.json` przy `--variant both`). Output eval: `research_and_testing/results/stt_eval_<timestamp>.json` z blokiem `der` dla `--backend on-premise`.
+
 ## Komendy deweloperskie
 
 ```bash
@@ -269,3 +331,4 @@ make eval             # Uruchomienie benchmarków ewaluacyjnych
 | 2026-04-22 | **MLX Whisper jako drugi backend WER eval.** `eval_stt_on_dataset.py` refaktor: `Transcriber` Protocol + `_FasterWhisperTranscriber` / `_MLXWhisperTranscriber`, `--backend {faster-whisper,mlx}` (default `faster-whisper` dla portability). MLX wykorzystuje 10-rdzeniowy GPU M5 przez Metal (`mlx-community/whisper-large-v3-mlx`) — ~5–10× szybciej niż ctranslate2 CPU int8, ta sama jakość `large-v3`. `--backend mlx` jest odtąd preferowaną ścieżką na Apple Silicon. JSON output dostaje pole `backend`. Install: `uv pip install mlx-whisper`. |
 | 2026-04-22 | **Phase 1 audit + domknięcie.** Weryfikacja przed startem Phase 2: wszystkie 8 bundli (scenariusze + audio clean/noisy) spójne z manifestem po re-exporcie (`manifest.json`: scenarios=8, audio=8). Skorygowano status Phase 1a z "19 scenariuszy" na faktyczne 8 (1-2 per specjalizacja × 5) — wcześniejsza liczba była z pierwszego planu, nie z disku. Fix ruff RUF002 w `eval_stt_on_dataset.py` (ambiguous `–`/`×` w docstringu zostawionym przez MLX refactor). Pełen eval WER na 8 scenariuszach na MLX: mean clean 9.73%, mean noisy 14.08%, delta +4.35pp — rozpiętość 3.1%–21.1% clean, 3.4%–40.9% noisy. Baseline zapisany w `results/stt_eval_20260422_140634.json`. Faza 1 zamknięta, gotowe do Phase 2. |
 | 2026-04-22 | **Phase 1b ukończona — smoke test + determinizm OK.** (1) Common Voice fetcher przepisany na Mozilla Data Collective API (oryginalny publiczny endpoint zwracał 401 bez sesji) — Bearer auth via `MEDVOICEPL_VOICES_API_KEY`, dataset CV Scripted Speech 25.0 — PL. (2) Filtr długości zdania 130–260 znaków (≈ 10–20 s) zamiast 6–10 s — dłuższe refy wyraźnie stabilizują prozodię XTTSv2; relaxation ladder 90/60 znaków gdy filtr za ciasny (zwłaszcza `female_feminine`). (3) Fix szeptania/dryfu tonu: `temperature=0.65`, `sound_norm_refs=True`, `split_sentences=True` wire'owane do `tts.tts()` (z `TypeError` fallback na legacy `enable_text_splitting`). (4) Per-turn RNG seeding: `torch.manual_seed` + `np.random.seed` + `random.seed` — wszystkie trzy potrzebne, coqui-tts sampluje z trzech niezależnych RNG. Seed per-turn = `sha256(scenario.id)[:4] XOR (turn_index * 0x9E3779B1)`. Weryfikacja: dwa kolejne reruny endo-acromegaly-01 na MPS → byte-identyczny `dialogue.wav` (SHA `295633c5…`). Smoke test: 13 turns, 185.5 s audio w 2:28 wall-clock (RTF ~0.5). Manifest ma bloki `scenarios` (8) + `audio` (1) z pełnymi SHA. 57 testów zielonych (bez zmian — `_FakeSynthesizer` ignoruje `seed`). |
+| 2026-04-23 | **Phase 2a — kod gotowy (czeka na HF token pyannote + pierwszy smoke).** Nowy pakiet `application/on_premise/src/on_premise/stt/` z 5 modułami: `schema.py` (`Transcript`/`TranscriptSegment`/`TranscriptionMetadata`/`WordTiming` — Pydantic v2, `extra="forbid"`, SHA anchor; docstring explicit trust-boundary notice), `whisper_engine.py` (`Transcriber` Protocol + `RawWord`/`RawTranscription`, `MLXWhisperTranscriber` i `FasterWhisperTranscriber` z word timestamps, `build_transcriber(config, env)` factory), `diarization.py` (`Diarizer` Protocol + `RawDiarizationSegment`, `PyannoteDiarizer` z token-check PRZED pyannote import — żeby error message surfaceował pierwszy i testy nie potrzebowały `pyannote.audio`, `num_speakers=2` hardcoded), `vad.py` (15-LOC RMS-threshold `detect_silence_segments` dla `--trim-silence` CLI flag), `pipeline.py` (`transcribe_and_diarize()` — merge po midpoincie słowa, role mapping first-speaker=doctor, drop empty segs). Dwa CLI: `run_transcription.py` (Typer, `--variant {clean,noisy,both}`, pisze do `application/on_premise/output/transcripts/<sid[:8]>/transcript.json`, gitignorowane) + `check_stt_models.py` preflight (mlx/faster-whisper/pyannote, red/green table, exit non-zero). Nowy `research_and_testing/evaluation/stt_eval/der_calculator.py` — pure-Python DER (union-of-endpoints time-slicing + bisect, no `pyannote.metrics` dep) + `reference_from_turn_durations` helper który odtwarza reference timeline z `ScenarioAudioBundle.turns`. `eval_stt_on_dataset.py` refactor: importuje `FasterWhisperTranscriber`/`MLXWhisperTranscriber` z `on_premise.stt.whisper_engine` (eval i deploy używają TEGO SAMEGO kodu), nowy `--backend on-premise` → pełna pipeline + WER + DER w jednym przebiegu. **Testy**: 25 nowych w `application/on_premise/tests/` (schema, whisper_engine, diarization, pipeline, vad, trust_boundary_imports) + 8 w `research_and_testing/tests/test_der_calculator.py`. `test_trust_boundary_imports.py` to preview-guard (`pkgutil.iter_modules` po `shared.schemas`, fail jeśli wycieknie któryś z 4 zakazanych symboli) — runtime gate dopisujemy w 2c. 126 testów zielonych (57 z 1b + 42 z 1b.1 + 27 nowych z 2a — zero model downloads, Protocol+Fake pattern z 1b). ruff + mypy czyste. `.env.example` dostaje `WHISPER_BACKEND`/`WHISPER_MLX_REPO`/`HUGGINGFACE_TOKEN`/`PYANNOTE_DEVICE` (i zmiana `WHISPER_COMPUTE_TYPE` default float16→int8, fp16 crashuje na CPU). `.gitignore` rozszerzone o `application/on_premise/output/` — un-anonimizowane transkrypty nie idą do gita. Czeka na: HF license accept + token, `check_stt_models.py` green, smoke na 1 scenariuszu, pełen eval z DER na 8 bundlach. |

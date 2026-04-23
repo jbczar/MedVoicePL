@@ -1,44 +1,117 @@
 \chapter{Wymagania}\label{ch:wymagania}
 
-% TODO: formalizacja wymagań — ok. 5--8 stron.
+% ═══════════════════════════════════════════════════════════════════════════════
+% Cel rozdziału: 5–8 stron. Formalizacja wymagań systemu.
+% Interesariusze → wymagania funkcjonalne → niefunkcjonalne → use cases.
+% ═══════════════════════════════════════════════════════════════════════════════
 
 \section{Interesariusze}\label{sec:interesariusze}
 
-% TODO: lekarze POZ, specjaliści, pacjenci, administrator placówki, inspektor
-% ochrony danych osobowych.
+% TREŚĆ DO NAPISANIA:
+%
+% Tabela interesariuszy z opisem roli i potrzeb:
+%
+% 1. Lekarz POZ / specjalista — główny użytkownik. Potrzeba: szybka,
+%    poprawna dokumentacja; sugestie leków refundowanych.
+% 2. Pacjent — podmiot danych. Potrzeba: ochrona prywatności (RODO).
+% 3. Administrator placówki medycznej — zarządza infrastrukturą.
+%    Potrzeba: prostota wdrożenia, audytowalność.
+% 4. Inspektor Ochrony Danych (IOD) — nadzór nad RODO.
+%    Potrzeba: logi audytowe, brak wycieku PII, DPIA.
+% 5. NFZ — pośredni interesariusz. Wymaganie: zgodność kodowania
+%    procedur i leków refundowanych.
 
 \section{Wymagania funkcjonalne}\label{sec:wymagania-funkcjonalne}
 
-% TODO: lista numerowana F1, F2, ... z krótkim opisem każdego wymagania.
-\begin{enumerate}
-  \item[\textbf{F1}] System rejestruje przebieg wizyty lekarskiej w~formie
+% TREŚĆ DO NAPISANIA — rozwinąć każde wymaganie w 2–3 zdania:
+\begin{enumerate}[label=\textbf{F\arabic*}]
+  \item System rejestruje przebieg wizyty lekarskiej w~formie
         nagrania audio.
-  \item[\textbf{F2}] System transkrybuje nagranie do~tekstu z~rozróżnieniem
+        % Rozwinięcie: nagrywanie w przeglądarce (Web Audio API / MediaRecorder),
+        % format WAV 16kHz mono, buforowanie lokalne przed wysłaniem do on-premise.
+  \item System transkrybuje nagranie do~tekstu z~rozróżnieniem
         mówców (lekarz / pacjent).
-  \item[\textbf{F3}] System generuje notatkę SOAP (Subjective, Objective,
+        % Rozwinięcie: faster-whisper large-v3 + pyannote diaryzacja,
+        % output: lista segmentów z etykietą mówcy i timestampem.
+  \item System generuje notatkę SOAP (Subjective, Objective,
         Assessment, Plan) na~podstawie transkrypcji.
-  \item[\textbf{F4}] System anonimizuje wszelkie dane osobowe pacjenta przed
+        % Rozwinięcie: lokalny SLM z prompt engineeringiem,
+        % output: strukturalny JSON/Pydantic z sekcjami S/O/A/P.
+  \item System anonimizuje wszelkie dane osobowe pacjenta przed
         wysłaniem danych do~chmury.
-  \item[\textbf{F5}] System sugeruje leki refundowane na~podstawie bazy NFZ.
-  \item[\textbf{F6}] Lekarz akceptuje lub odrzuca każdą sugestię przed
+        % Rozwinięcie: Presidio + custom PL recognizery (PESEL, NIP, imiona),
+        % trust_gate.py waliduje payload, audit_logger.py loguje operacje.
+  \item System sugeruje leki refundowane na~podstawie bazy NFZ.
+        % Rozwinięcie: RAG przeszukuje bazę ChPL + listę refundacyjną,
+        % dopasowanie rozmyte nazw leków, wynik: lista z ceną, kategorią
+        % refundacji, odpłatnością pacjenta.
+  \item Lekarz akceptuje lub odrzuca każdą sugestię przed
         zapisaniem w~dokumentacji.
+        % Rozwinięcie: dashboard z listą sugestii, przycisk akceptuj/odrzuć,
+        % możliwość edycji notatki SOAP przed zatwierdzeniem.
 \end{enumerate}
+
+% DODATKOWE WYMAGANIA DO ROZWAŻENIA:
+%   F7. System prezentuje podsumowanie wizyty na pulpicie lekarza.
+%   F8. System umożliwia eksport notatki do formatu HL7 FHIR / PDF.
+%   F9. System loguje każdą operację na danych pacjenta (audit trail).
 
 \section{Wymagania niefunkcjonalne}\label{sec:wymagania-niefunkcjonalne}
 
-% TODO: wydajność, bezpieczeństwo, zgodność z~RODO, dostępność, skalowalność.
-\begin{enumerate}
-  \item[\textbf{N1}] \textbf{Bezpieczeństwo danych:} surowe audio i~niezanonimizowana
+% TREŚĆ DO NAPISANIA — rozwinąć, dodać brakujące:
+\begin{enumerate}[label=\textbf{N\arabic*}]
+  \item \textbf{Bezpieczeństwo danych:} surowe audio i~niezanonimizowana
         transkrypcja nie~mogą opuszczać infrastruktury placówki (strefa
         zaufania lokalna).
-  \item[\textbf{N2}] \textbf{Zgodność z~RODO:} każda operacja na~danych
+        % Rozwinięcie: izolacja sieciowa Docker (internal: true),
+        % trust_gate.py z regex walidacją (PESEL, NIP, telefon).
+  \item \textbf{Zgodność z~RODO:} każda operacja na~danych
         osobowych jest logowana (audytowalność).
-  \item[\textbf{N3}] \textbf{Czas odpowiedzi:} generacja notatki SOAP dla
+        % Rozwinięcie: audit_logger.py z structlog, retencja logów
+        % zgodna z polityką placówki, szyfrowanie at-rest opcjonalne.
+  \item \textbf{Czas odpowiedzi:} generacja notatki SOAP dla
         15-minutowej wizyty w~czasie $\leq 3$~minut.
-  \item[\textbf{N4}] \textbf{Dokładność transkrypcji:} WER $\leq 15\%$ dla
+        % Rozwinięcie: budżet per etap: STT ~60s, SLM ~30s,
+        % anonimizacja ~5s, cloud LLM ~30s, RAG ~15s.
+  \item \textbf{Dokładność transkrypcji:} WER $\leq 15\%$ dla
         próbki testowej dialogów medycznych w~języku polskim.
+        % Rozwinięcie: baseline z Phase 1b.1: clean 9.7\%, noisy 14.1\%.
+        % Target: poprawa WER po fine-tuningu na syntetycznym datasecie.
 \end{enumerate}
+
+% DODATKOWE WYMAGANIA NIEFUNKCJONALNE:
+%   N5. Skalowalność: system obsługuje co najmniej 10 równoległych wizyt.
+%   N6. Dostępność: frontend responsywny (desktop + tablet), a11y WCAG 2.1 AA.
+%   N7. Przenośność: działa na CUDA (Linux) i MPS (macOS Apple Silicon).
+%   N8. Testowalność: >80\% code coverage w modułach krytycznych
+%       (anonimizacja, trust gate).
 
 \section{Przypadki użycia}\label{sec:use-cases}
 
-% TODO: diagramy UML przypadków użycia, scenariusze główny + alternatywne.
+% TREŚĆ DO NAPISANIA:
+%
+% 1. Diagram UML przypadków użycia (TikZ lub includegraphics):
+%    - Aktorzy: Lekarz, System (on-premise), System (cloud), IOD.
+%    - Przypadki: Nagrywanie wizyty, Transkrypcja, Generacja SOAP,
+%      Anonimizacja, Analiza kliniczna, Sugestie leków, Akceptacja,
+%      Przeglądanie logów audytowych.
+%
+% 2. Scenariusz główny UC1: „Wizyta lekarska od nagrania do notatki":
+%    - Krok 1: Lekarz otwiera dashboard, klika „Nowa wizyta".
+%    - Krok 2: System nagrywa audio (MediaRecorder w przeglądarce).
+%    - Krok 3: Lekarz kończy wizytę, audio wysyłane do on-premise.
+%    - Krok 4: STT + diaryzacja → transkrypcja.
+%    - Krok 5: SLM → notatka SOAP.
+%    - Krok 6: Presidio → anonimizacja, trust gate → walidacja.
+%    - Krok 7: AnonymizedPayload → cloud.
+%    - Krok 8: LLM analiza + RAG → sugestie leków NFZ.
+%    - Krok 9: Dashboard wyświetla SOAP + sugestie.
+%    - Krok 10: Lekarz akceptuje/odrzuca/edytuje.
+%
+% 3. Scenariusze alternatywne:
+%    - UC1-A1: Trust gate odrzuca payload (wykryty PII leak).
+%    - UC1-A2: STT zwraca niską pewność → alert do lekarza.
+%    - UC1-A3: Brak połączenia z chmurą → system działa w trybie offline
+%      (tylko on-premise: SOAP bez sugestii NFZ).
+%
+% 4. Opcjonalnie: diagram sekwencji UML dla UC1 (Mermaid/TikZ).

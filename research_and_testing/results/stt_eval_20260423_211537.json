@@ -1,0 +1,106 @@
+{
+  "generated_at": "2026-04-23T21:15:37.977394+02:00",
+  "backend": "on-premise",
+  "model": "mlx-whisper:mlx-community/whisper-large-v3-mlx",
+  "device": "mps",
+  "compute_type": null,
+  "diarization_model": "pyannote/speaker-diarization-3.1",
+  "results": [
+    {
+      "scenario_id": "a9b1c2d3-e4f5-6789-a0b1-c2d3e4f5a6b7",
+      "clean_wer": 0.08118081180811808,
+      "clean_cer": 0.05272305909617613,
+      "noisy_wer": 0.0959409594095941,
+      "noisy_cer": 0.09443800695249131,
+      "delta_wer": 0.014760147601476023,
+      "clean_der": 0.36207333630649796,
+      "noisy_der": 0.4102551827300117,
+      "noise_snr_db": 19.7818784922035,
+      "reverb_room": "small"
+    },
+    {
+      "scenario_id": "a9d8f7e6-c5b4-4e3d-8a2b-1f09c7d6b5a4",
+      "clean_wer": 0.047619047619047616,
+      "clean_cer": 0.02768729641693811,
+      "noisy_wer": 0.17346938775510204,
+      "noisy_cer": 0.15309446254071662,
+      "delta_wer": 0.12585034013605442,
+      "clean_der": 0.2893480030389178,
+      "noisy_der": 0.34542637472464355,
+      "noise_snr_db": 15.321581327728488,
+      "reverb_room": "medium"
+    },
+    {
+      "scenario_id": "b3f0c1a9-7e5d-4a1b-9f2c-6d8e0a3b4c5d",
+      "clean_wer": 0.0472972972972973,
+      "clean_cer": 0.032061912658927584,
+      "noisy_wer": 0.06418918918918919,
+      "noisy_cer": 0.04145936981757877,
+      "delta_wer": 0.016891891891891886,
+      "clean_der": 0.3366370199705465,
+      "noisy_der": 0.7677325306456669,
+      "noise_snr_db": 12.516365630653693,
+      "reverb_room": "small"
+    },
+    {
+      "scenario_id": "endo-acromegaly-01",
+      "clean_wer": 0.07368421052631578,
+      "clean_cer": 0.046754675467546754,
+      "noisy_wer": 0.11929824561403508,
+      "noisy_cer": 0.06985698569856985,
+      "delta_wer": 0.0456140350877193,
+      "clean_der": 0.26326243469122523,
+      "noisy_der": 0.28197746014628133,
+      "noise_snr_db": 15.231977237476837,
+      "reverb_room": "small"
+    },
+    {
+      "scenario_id": "endo-graves-001",
+      "clean_wer": 0.07348242811501597,
+      "clean_cer": 0.040123456790123455,
+      "noisy_wer": 0.4185303514376997,
+      "noisy_cer": 0.13271604938271606,
+      "delta_wer": 0.3450479233226837,
+      "clean_der": 0.3474764527534029,
+      "noisy_der": 0.34605172235250736,
+      "noise_snr_db": 22.568037787555415,
+      "reverb_room": "medium"
+    },
+    {
+      "scenario_id": "kardio-migotanie-01",
+      "clean_wer": 0.024489795918367346,
+      "clean_cer": 0.011243386243386243,
+      "noisy_wer": 0.044897959183673466,
+      "noisy_cer": 0.021164021164021163,
+      "delta_wer": 0.02040816326530612,
+      "clean_der": 0.3616647001953122,
+      "noisy_der": 0.779866167679039,
+      "noise_snr_db": 18.20830220045696,
+      "reverb_room": "medium"
+    },
+    {
+      "scenario_id": "neuro-cts-001",
+      "clean_wer": 0.726890756302521,
+      "clean_cer": 0.48830811554332876,
+      "noisy_wer": 0.06722689075630252,
+      "noisy_cer": 0.039889958734525444,
+      "delta_wer": -0.6596638655462185,
+      "clean_der": 0.3857871683868374,
+      "noisy_der": 0.296407414998573,
+      "noise_snr_db": 22.440294338223442,
+      "reverb_room": "small"
+    },
+    {
+      "scenario_id": "synth-mr-gerd-01",
+      "clean_wer": 0.10869565217391304,
+      "clean_cer": 0.09336465061655902,
+      "noisy_wer": 0.04710144927536232,
+      "noisy_cer": 0.022313564298297124,
+      "delta_wer": -0.06159420289855072,
+      "clean_der": 0.3029560778633625,
+      "noisy_der": 0.27246519781863066,
+      "noise_snr_db": 17.637995111190016,
+      "reverb_room": "medium"
+    }
+  ]
+}

@@ -8,7 +8,6 @@
 
 \vspace{0.5cm}
 
-% TODO: uzupełnić streszczenie (zalecane 400--1500 znaków ze spacjami).
 \noindent
 Praca przedstawia projekt \emph{MedVoicePL} --- multimodalnego, wieloagentowego
 systemu hybrydowego do wspomagania decyzji klinicznych (\emph{Clinical Decision
@@ -34,5 +33,42 @@ CDSS $\cdot$ NLP $\cdot$ rozpoznawanie mowy (STT) $\cdot$ anonimizacja danych
 osobowych $\cdot$ Retrieval-Augmented Generation (RAG) $\cdot$
 \code{faster-whisper} $\cdot$ Microsoft Presidio $\cdot$ RODO $\cdot$
 refundacja NFZ $\cdot$ LangGraph
+
+\cleardoublepage
+
+% --- Abstract (English) ---------------------------------------------------
+\thispagestyle{plain}
+
+\begin{center}
+{\Large\bfseries Abstract\par}
+\end{center}
+
+\vspace{0.5cm}
+
+\noindent
+This thesis presents \emph{MedVoicePL}~--- a~multimodal, multi-agent hybrid
+Clinical Decision Support System (CDSS). The system automates the creation
+of~medical notes in~the SOAP format from recordings of~medical consultations,
+anonymizes patient personal data in~compliance with GDPR, and suggests drugs
+available under the Polish National Health Fund (NFZ) reimbursement scheme.
+The architecture separates a~local trust zone (on-premise: transcription,
+structuring, anonymization) from a~cloud zone (clinical analysis, knowledge
+base retrieval), ensuring that raw patient data never leaves the facility's
+infrastructure.  The final clinical decision always remains with the
+physician; the system serves solely as~an~assistant.
+
+\vspace{1.5cm}
+
+\begin{center}
+{\Large\bfseries Keywords\par}
+\end{center}
+
+\vspace{0.5cm}
+
+\noindent
+CDSS $\cdot$ NLP $\cdot$ speech recognition (STT) $\cdot$ personal data
+anonymization $\cdot$ Retrieval-Augmented Generation (RAG) $\cdot$
+\code{faster-whisper} $\cdot$ Microsoft Presidio $\cdot$ GDPR $\cdot$
+NFZ reimbursement $\cdot$ LangGraph
 
 \cleardoublepage

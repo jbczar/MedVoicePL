@@ -1,37 +1,123 @@
 \chapter{Stan wiedzy}\label{ch:stan-wiedzy}
 
-% TODO: przegląd literatury i rozwiązań — ok. 8--15 stron.
+% ═══════════════════════════════════════════════════════════════════════════════
+% Cel rozdziału: 8–15 stron. Przegląd literatury i rozwiązań.
+% Struktura sekcji: stan aktualny → ograniczenia → luka badawcza.
+% ═══════════════════════════════════════════════════════════════════════════════
 
 \section{Rozpoznawanie mowy (Speech-to-Text)}\label{sec:stt}
 
-% TODO: modele Whisper, faster-whisper, wav2vec2, diaryzacja mówców,
-% wyzwania języka polskiego w~STT, aktualne benchmarki WER/CER.
+% TREŚĆ DO NAPISANIA:
+%
+% 1. Architektura modeli STT:
+%    - Ewolucja: HMM → DNN-HMM → end-to-end (CTC, Attention).
+%    - Whisper (Radford 2023): encoder-decoder, 680k h danych, wielojęzyczność.
+%    - Warianty: openai/whisper, faster-whisper (CTranslate2), mlx-whisper.
+%
+% 2. STT dla języka polskiego:
+%    - Wyzwania: fleksja, grupy spółgłoskowe, terminologia medyczna.
+%    - Benchmarki: Common Voice PL. Brak datasetu dialogów medycznych PL.
+%    - Whisper large-v3 WER na polskim.
+%
+% 3. Diaryzacja mówców:
+%    - pyannote.audio: VAD + embedding + clustering.
+%    - Dialog 2-osobowy w gabinecie — specyfika kliniczna.
+%
+% 4. Metryki: WER, CER, RTF. Normalizacja tekstu.
+%
+% CYTOWAĆ: Radford2023whisper, faster-whisper, bredin2023pyannote
 
 \section{Małe modele językowe (Small Language Models)}\label{sec:slm}
 
-% TODO: lokalne SLM-y (Phi, Llama, Bielik), kwantyzacja,
-% zastosowania w~strukturyzacji tekstu medycznego, format SOAP.
+% TREŚĆ DO NAPISANIA:
+%
+% 1. Definicja SLM (<13B params), motywacja: prywatność + niska latencja.
+%
+% 2. Przegląd SLM: Phi-3/4, Llama 3.x (8B), Bielik (PL), Gemma.
+%
+% 3. Kwantyzacja: GGUF, GPTQ, AWQ. Runtime: Ollama, vLLM, llama.cpp, MLX.
+%    Wpływ kwantyzacji na jakość w zadaniach medycznych.
+%
+% 4. Zastosowania w medycynie: strukturyzacja SOAP, ekstrakcja encji.
+%
+% 5. Format SOAP: S/O/A/P. Specyfika PL: kody ICD-10, procedury ICD-9-CM.
+%
+% CYTOWAĆ: microsoft2024phi3, meta2024llama3, bielik2024, weed1968soap
 
 \section{Anonimizacja danych osobowych}\label{sec:anonimizacja}
 
-% TODO: Microsoft Presidio, rozpoznawacze PII dla języka polskiego,
-% PESEL/NIP/adres, wyzwania domeny medycznej.
+% TREŚĆ DO NAPISANIA:
+%
+% 1. Kontekst prawny: RODO art. 9, 25, 35. Ustawa o prawach pacjenta.
+%
+% 2. Kategorie PII w kontekście PL: PESEL, NIP, REGON, tel. (+48),
+%    kody pocztowe, numery dowodu, numery recept.
+%
+% 3. Microsoft Presidio: Analyzer + Anonymizer, custom recognizery,
+%    strategie: replace, redact, hash, mask.
+%
+% 4. Wyzwania PL: leki vs. nazwy własne, deklinacja imion, fałszywe alarmy.
+%
+% 5. Alternatywy: spaCy NER, flair, transformer NER. Dlaczego Presidio.
+%
+% CYTOWAĆ: presidio-docs, gdpr2016, dernoncourt2017
 
 \section{Retrieval-Augmented Generation}\label{sec:rag}
 
-% TODO: RAG, embeddingi dla języka polskiego, bazy wektorowe (ChromaDB, Qdrant),
-% hybrydowe wyszukiwanie dense + sparse.
+% TREŚĆ DO NAPISANIA:
+%
+% 1. Architektura RAG (Lewis 2020): query → embed → retrieve → generate.
+%
+% 2. Embeddingi PL: mE5, BGE-M3, Herbert, SpeakLeash embeddings.
+%
+% 3. Bazy wektorowe: ChromaDB vs Qdrant vs Milvus. Dlaczego ChromaDB w MVP.
+%
+% 4. Hybrydowe wyszukiwanie: dense + BM25, reranking, RRF.
+%
+% 5. RAG w medycynie: baza leków NFZ, ChPL, wytyczne. Chunkowanie. Grounding.
+%
+% CYTOWAĆ: lewis2020rag, chromadb, karpukhin2020dpr
 
 \section{Systemy wspomagania decyzji klinicznych}\label{sec:cdss-stan}
 
-% TODO: istniejące rozwiązania CDSS, Epic, Nuance DAX, Abridge, Suki,
-% brak rozwiązań dla języka polskiego i~kontekstu refundacji NFZ.
+% TREŚĆ DO NAPISANIA:
+%
+% 1. Klasyfikacja CDSS: knowledge-based, rule-based, ML-based, hybrid.
+%
+% 2. Rozwiązania komercyjne: Nuance DAX, Abridge, Suki, Nabla, DeepScribe.
+%    Wszystkie anglojęzyczne. Brak wsparcia PL/NFZ.
+%
+% 3. Open-source i akademickie: ClinicalBERT, BioGPT, community STT+LLM.
+%
+% 4. Sytuacja w Polsce: brak CDSS PL, systemy HIS bez AI, bariery
+%    (język, regulacje, brak datasetów).
+%
+% CYTOWAĆ: sutton2020cdss, nuancedax2024, abridge2024
 
 \section{Architektury wieloagentowe}\label{sec:multi-agent}
 
-% TODO: LangGraph, LangChain, orkiestracja agentów, wzorce projektowe.
+% TREŚĆ DO NAPISANIA:
+%
+% 1. Paradygmat agentowy: percepcja → reasoning → działanie.
+%    ReAct, Chain-of-Thought, Tool-Use.
+%
+% 2. Frameworki: LangGraph (graf stanów), LangChain, CrewAI, AutoGen.
+%    Dlaczego LangGraph pasuje do pipeline'u CDSS.
+%
+% 3. Wzorce: Orchestrator, Pipeline, Supervisor.
+%
+% 4. Trust boundary w multi-agent: podział na strefy, Pydantic jako kontrakt,
+%    izolacja sieciowa Docker.
+%
+% CYTOWAĆ: langgraph2024, yao2023react, xi2023agents
 
 \section{Podsumowanie}\label{sec:stan-wiedzy-podsumowanie}
 
-% TODO: zidentyfikowana luka — brak zintegrowanego rozwiązania CDSS dla PL
-% z~natywnym wsparciem NFZ i~RODO.
+% TREŚĆ DO NAPISANIA — synteza luk:
+%
+% 1. BRAK zintegrowanego CDSS dla języka polskiego.
+% 2. BRAK polskiego datasetu dialogów medycznych.
+% 3. BRAK integracji z polskim systemem refundacji NFZ.
+% 4. BRAK architektury hybrydowej on-premise/cloud z trust boundary.
+%
+% Tabela porównawcza: cecha × (DAX, Abridge, Suki, MedVoicePL).

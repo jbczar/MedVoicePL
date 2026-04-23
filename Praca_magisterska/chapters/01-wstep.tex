@@ -1,23 +1,92 @@
 \chapter{Wstęp}\label{ch:wstep}
 
-% TODO: rozwinąć wstęp — ok. 3--5 stron.
+% ═══════════════════════════════════════════════════════════════════════════════
+% Cel rozdziału: 3–5 stron.  Wprowadzić czytelnika w domenę, sformułować
+% problem, zdefiniować cele i zakres, dać mapę rozdziałów.
+% ═══════════════════════════════════════════════════════════════════════════════
 
 \section{Motywacja}\label{sec:motywacja}
 
-% TODO: dlaczego projekt jest potrzebny, kontekst dokumentacji medycznej w~Polsce,
-% obciążenie lekarzy pracą biurową, wymogi RODO.
+% TREŚĆ DO NAPISANIA — punkty do rozwinięcia w akapity:
+%
+% 1. Obciążenie administracyjne lekarzy w Polsce:
+%    - Raport NIK / ZUS / Naczelna Izba Lekarska: lekarze POZ spędzają
+%      ~40–50\% czasu pracy na dokumentacji, a nie na pacjencie.
+%    - Wypalenie zawodowe lekarzy w Polsce (statystyki, ankiety).
+%    - Problem szczególnie dotkliwy w POZ, gdzie wizyty trwają 10–20 minut,
+%      a dokumentacja wymaga pełnych wpisów SOAP.
+%
+% 2. Wymogi regulacyjne w Polsce:
+%    - Rozporządzenie MZ w sprawie rodzajów i zakresu dokumentacji medycznej
+%      (Dz.U. 2020 poz. 666) — obowiązek prowadzenia dokumentacji.
+%    - RODO (GDPR) — art. 9 (dane wrażliwe), art. 25 (privacy by design).
+%    - Wymagania Narodowego Funduszu Zdrowia dotyczące kodowania procedur
+%      i leków refundowanych.
+%
+% 3. Luka na rynku polskim:
+%    - Istniejące rozwiązania (Nuance DAX, Abridge, Suki) — wyłącznie
+%      anglojęzyczne, brak wsparcia dla polskiego systemu ochrony zdrowia.
+%    - Brak zintegrowanego systemu CDSS dla języka polskiego z natywnym
+%      wsparciem NFZ.
+%    - Potencjał AI (STT, LLM, RAG) do odciążenia lekarzy.
+%
+% 4. Dlaczego teraz?
+%    - Dojrzałość modeli STT dla języka polskiego (Whisper large-v3, WER <10\%).
+%    - Dostępność lokalnych SLM (Phi, Llama, Bielik) z kwantyzacją na GPU
+%      konsumenckie.
+%    - Microsoft Presidio jako framework anonimizacji z możliwością
+%      rozszerzenia o polskie recognizery (PESEL, NIP, imiona).
 
 \section{Cel pracy}\label{sec:cel-pracy}
 
-% TODO: jednozdaniowe sformułowanie celu + cele szczegółowe (lista numerowana).
+% TREŚĆ DO NAPISANIA — sformułowanie celu głównego + lista celów szczegółowych:
+%
+% CEL GŁÓWNY (1 zdanie):
+%   Zaprojektowanie, implementacja i ewaluacja multimodalnego, wieloagentowego
+%   systemu hybrydowego (CDSS), który automatyzuje tworzenie notatek SOAP
+%   z nagrań wizyt lekarskich w języku polskim, z zachowaniem prywatności
+%   danych (RODO) i integracją z bazą refundacji NFZ.
+%
+% CELE SZCZEGÓŁOWE (lista numerowana C1–C6):
+%   C1. Opracowanie pipeline'u generacji syntetycznego datasetu dialogów
+%       medycznych (scenariusze LLM + synteza mowy XTTSv2).
+%   C2. Implementacja modułu transkrypcji (STT) z diaryzacją mówców
+%       dla języka polskiego i ewaluacja jakości (WER/CER).
+%   C3. Implementacja modułu strukturyzacji transkrypcji do formatu SOAP
+%       przy użyciu lokalnego SLM.
+%   C4. Implementacja modułu anonimizacji danych osobowych (Microsoft
+%       Presidio + custom PL recognizery) z programistycznie wymuszaną
+%       granicą zaufania (trust gate).
+%   C5. Implementacja modułu chmurowego: analiza kliniczna LLM, RAG
+%       i dopasowanie refundacji NFZ.
+%   C6. Ewaluacja systemu end-to-end: jakość STT, poprawność SOAP,
+%       skuteczność anonimizacji, trafność sugestii RAG.
 
 \section{Zakres pracy}\label{sec:zakres}
 
-% TODO: co praca obejmuje, a czego nie obejmuje.
+% TREŚĆ DO NAPISANIA — co praca obejmuje vs. czego nie:
+%
+% OBEJMUJE:
+%   - Projekt architektury wieloagentowej z podziałem on-premise/cloud.
+%   - Implementacja prototypu (MVP) obejmującego pięć specjalizacji
+%     medycznych: kardiologia, endokrynologia, neurologia, psychiatria,
+%     ortopedia.
+%   - Generacja syntetycznego datasetu (8 scenariuszy) jako ground truth.
+%   - Ewaluacja na zbiorze syntetycznym z metrykami WER, CER, jakość SOAP
+%     (ekspert kliniczny), precyzja/czułość anonimizacji, Recall@k RAG.
+%   - Pulpit lekarza (frontend) jako interfejs akceptacji sugestii.
+%
+% NIE OBEJMUJE:
+%   - Walidacja na prawdziwych danych klinicznych (wymaga zgody komisji
+%     bioetycznej / IRB — poza zakresem czasowym pracy).
+%   - Integracja z systemami HIS/EHR (np. mMedica, Asseco, Kamsoft).
+%   - Certyfikacja jako wyrób medyczny (MDR).
+%   - Pełna skalowalność produkcyjna (load balancing, HA, replikacja).
+%   - Specjalizacje medyczne poza wymienionymi pięcioma.
 
 \section{Struktura pracy}\label{sec:struktura}
 
-% TODO: krótki przegląd kolejnych rozdziałów.
+% TREŚĆ DO NAPISANIA — przegląd rozdziałów, 1–2 zdania na rozdział:
 Praca składa się z~siedmiu rozdziałów. W~rozdziale~\ref{ch:stan-wiedzy}
 przedstawiono przegląd stanu wiedzy w~obszarach istotnych dla systemu
 (rozpoznawanie mowy, modele językowe, anonimizacja PII). Rozdział~%

@@ -4,52 +4,200 @@
 % Każdy wpis musi być zacytowany w tekście: \cite{klucz}, \parencite{klucz},
 % \textcite{klucz}. Wpisy nigdzie nie cytowane NIE powinny zostawać w tej
 % bazie (biber z opcją `sorting=none` pokazuje je w kolejności cytowania).
-%
-% Szablony najczęstszych typów — usuń komentarze i wypełnij pola.
 % ---------------------------------------------------------------------------
 
-% Przykład: artykuł w czasopiśmie
-% @article{radford2023whisper,
-%   author  = {Radford, Alec and Kim, Jong Wook and Xu, Tao and others},
-%   title   = {Robust Speech Recognition via Large-Scale Weak Supervision},
-%   journal = {Proceedings of the 40th International Conference on Machine Learning},
-%   year    = {2023},
-%   volume  = {202},
-%   pages   = {28492--28518}
-% }
+% ═══════════════════════════ STT / Whisper ═══════════════════════════════════
 
-% Przykład: książka
-% @book{knuth1984texbook,
-%   author    = {Knuth, Donald E.},
-%   title     = {The \TeX book},
-%   year      = {1984},
-%   publisher = {Addison-Wesley},
-%   address   = {Reading, MA}
-% }
+@article{radford2023whisper,
+  author  = {Radford, Alec and Kim, Jong Wook and Xu, Tao and Brockman, Greg
+             and McLeavey, Christine and Sutskever, Ilya},
+  title   = {Robust Speech Recognition via Large-Scale Weak Supervision},
+  journal = {Proceedings of the 40th International Conference on Machine Learning},
+  year    = {2023},
+  volume  = {202},
+  pages   = {28492--28518}
+}
 
-% Przykład: źródło internetowe
-% @online{presidio-docs,
-%   author  = {{Microsoft}},
-%   title   = {Presidio --- Data Protection and De-identification SDK},
-%   year    = {2026},
-%   url     = {https://microsoft.github.io/presidio/},
-%   urldate = {2026-04-21}
-% }
+@software{faster-whisper,
+  author  = {Klein, Guillaume},
+  title   = {faster-whisper: Faster Whisper transcription with CTranslate2},
+  year    = {2024},
+  url     = {https://github.com/SYSTRAN/faster-whisper},
+  version = {1.1.0}
+}
 
-% Przykład: repozytorium / oprogramowanie
-% @software{faster-whisper,
-%   author       = {Klein, Guillaume},
-%   title        = {faster-whisper: Faster Whisper transcription with CTranslate2},
-%   year         = {2024},
-%   url          = {https://github.com/SYSTRAN/faster-whisper},
-%   version      = {1.0.0}
-% }
+@inproceedings{bredin2023pyannote,
+  author    = {Bredin, Hervé and Laurent, Antoine},
+  title     = {pyannote.audio 2.1 speaker diarization pipeline},
+  booktitle = {Proc. INTERSPEECH},
+  year      = {2023}
+}
 
-% Przykład: praca dyplomowa
-% @thesis{doe2026thesis,
-%   author      = {Doe, John},
-%   title       = {Tytuł pracy},
-%   type        = {Praca magisterska},
-%   institution = {Polsko-Japońska Akademia Technik Komputerowych},
-%   year        = {2026}
-% }
+% ═══════════════════════════ SLM / LLM ══════════════════════════════════════
+
+@article{abdin2024phi3,
+  author = {Abdin, Marah and Jacobs, Sam Ade and others},
+  title  = {Phi-3 Technical Report: A Highly Capable Language Model
+            Locally on Your Phone},
+  year   = {2024},
+  note   = {arXiv:2404.14219}
+}
+
+@article{dubey2024llama3,
+  author = {Dubey, Abhimanyu and others},
+  title  = {The Llama 3 Herd of Models},
+  year   = {2024},
+  note   = {arXiv:2407.21783}
+}
+
+@misc{bielik2024,
+  author = {{SpeakLeash}},
+  title  = {Bielik: Polish Large Language Model},
+  year   = {2024},
+  url    = {https://huggingface.co/speakleash/Bielik-7B-Instruct-v0.1}
+}
+
+@article{weed1968soap,
+  author  = {Weed, Lawrence L.},
+  title   = {Medical Records That Guide and Teach},
+  journal = {New England Journal of Medicine},
+  year    = {1968},
+  volume  = {278},
+  number  = {11},
+  pages   = {593--600}
+}
+
+% ═══════════════════════════ Anonimizacja ════════════════════════════════════
+
+@online{presidio-docs,
+  author  = {{Microsoft}},
+  title   = {Presidio --- Data Protection and De-identification SDK},
+  year    = {2026},
+  url     = {https://microsoft.github.io/presidio/},
+  urldate = {2026-04-21}
+}
+
+@online{gdpr2016,
+  author  = {{Parlament Europejski i Rada (UE)}},
+  title   = {Rozporządzenie 2016/679 (RODO / GDPR)},
+  year    = {2016},
+  url     = {https://eur-lex.europa.eu/eli/reg/2016/679/oj},
+  urldate = {2026-04-21}
+}
+
+@article{dernoncourt2017,
+  author  = {Dernoncourt, Franck and Lee, Ji Young and Uzuner, Ozlem
+             and Szolovits, Peter},
+  title   = {De-identification of Patient Notes with Recurrent Neural Networks},
+  journal = {Journal of the American Medical Informatics Association},
+  year    = {2017},
+  volume  = {24},
+  number  = {3},
+  pages   = {596--606}
+}
+
+% ═══════════════════════════ RAG ═════════════════════════════════════════════
+
+@inproceedings{lewis2020rag,
+  author    = {Lewis, Patrick and Perez, Ethan and Piktus, Aleksandra
+               and others},
+  title     = {Retrieval-Augmented Generation for Knowledge-Intensive
+               NLP Tasks},
+  booktitle = {NeurIPS},
+  year      = {2020}
+}
+
+@article{karpukhin2020dpr,
+  author = {Karpukhin, Vladimir and Oguz, Barlas and Min, Sewon and others},
+  title  = {Dense Passage Retrieval for Open-Domain Question Answering},
+  year   = {2020},
+  note   = {arXiv:2004.04906}
+}
+
+@software{chromadb,
+  author = {{Chroma}},
+  title  = {ChromaDB --- the open-source embedding database},
+  year   = {2024},
+  url    = {https://www.trychroma.com/}
+}
+
+% ═══════════════════════════ CDSS ════════════════════════════════════════════
+
+@article{sutton2020cdss,
+  author  = {Sutton, Reed T. and Pincock, David and Baumgart, Daniel C.
+             and Sadowski, Daniel C. and Fedorak, Richard N.
+             and Kroeker, Karen I.},
+  title   = {An Overview of Clinical Decision Support Systems: Benefits,
+             Risks, and Strategies for Success},
+  journal = {npj Digital Medicine},
+  year    = {2020},
+  volume  = {3},
+  number  = {1},
+  pages   = {17}
+}
+
+@online{nuancedax2024,
+  author  = {{Microsoft / Nuance}},
+  title   = {DAX Copilot --- Ambient Clinical Intelligence},
+  year    = {2024},
+  url     = {https://www.nuance.com/healthcare/ambient-clinical-intelligence.html},
+  urldate = {2026-04-21}
+}
+
+% ═══════════════════════════ Multi-Agent ═════════════════════════════════════
+
+@software{langgraph2024,
+  author = {{LangChain, Inc.}},
+  title  = {LangGraph: Stateful Multi-Actor Applications with LLMs},
+  year   = {2024},
+  url    = {https://langchain-ai.github.io/langgraph/}
+}
+
+@article{yao2023react,
+  author = {Yao, Shunyu and Zhao, Jeffrey and Yu, Dian and Du, Nan
+            and Shafran, Izhak and Narasimhan, Karthik and Cao, Yuan},
+  title  = {ReAct: Synergizing Reasoning and Acting in Language Models},
+  year   = {2023},
+  note   = {arXiv:2210.03629}
+}
+
+@article{xi2023agents,
+  author = {Xi, Zhiheng and Chen, Wenxiang and others},
+  title  = {The Rise and Potential of Large Language Model Based Agents:
+            A Survey},
+  year   = {2023},
+  note   = {arXiv:2309.07864}
+}
+
+% ═══════════════════════════ TTS / Dataset ═══════════════════════════════════
+
+@software{coqui-tts,
+  author = {{Coqui AI (community fork)}},
+  title  = {coqui-tts: Text-to-Speech synthesis (XTTSv2)},
+  year   = {2024},
+  url    = {https://github.com/idiap/coqui-ai-TTS}
+}
+
+@online{commonvoice,
+  author  = {{Mozilla Foundation}},
+  title   = {Common Voice --- Open-source voice dataset},
+  year    = {2024},
+  url     = {https://commonvoice.mozilla.org/},
+  urldate = {2026-04-21}
+}
+
+% ═══════════════════════════ Inne ════════════════════════════════════════════
+
+@software{pydantic,
+  author = {Colvin, Samuel},
+  title  = {Pydantic: Data validation using Python type hints},
+  year   = {2024},
+  url    = {https://docs.pydantic.dev/}
+}
+
+@software{fastapi,
+  author = {Ramírez, Sebastián},
+  title  = {FastAPI: Modern, fast web framework for building APIs},
+  year   = {2024},
+  url    = {https://fastapi.tiangolo.com/}
+}

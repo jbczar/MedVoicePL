@@ -83,6 +83,12 @@ dataset_pipeline/noise_library/*.wav
 *.flac
 
 # ------------------------------------------
+# On-Premise — Transcripts (Phase 2a)
+# ------------------------------------------
+# Un-anonymized transcripts never leave the local dev box.
+application/on_premise/output/
+
+# ------------------------------------------
 # Research — Experiment Results
 # ------------------------------------------
 research_and_testing/results/benchmarks/

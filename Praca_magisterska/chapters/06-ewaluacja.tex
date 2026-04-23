@@ -1,58 +1,214 @@
 \chapter{Ewaluacja}\label{ch:ewaluacja}
 
-% TODO: wyniki ewaluacji — ok. 8--15 stron.
+% ═══════════════════════════════════════════════════════════════════════════════
+% Cel rozdziału: 8–15 stron. Wyniki ewaluacji systemu.
+% Struktura: metodyka → zbiór testowy → wyniki per komponent → e2e → dyskusja.
+% Każda sekcja ewaluacyjna: metryki, tabela wyników, interpretacja.
+% ═══════════════════════════════════════════════════════════════════════════════
 
 \section{Metodyka ewaluacji}\label{sec:metodyka-ewaluacji}
 
-% TODO: opis zbioru testowego, metryki, narzędzia pomiarowe.
+% TREŚĆ DO NAPISANIA:
+%
+% 1. Podejście: ewaluacja per komponent + ewaluacja end-to-end.
+%
+% 2. Metryki per komponent:
+%    - STT: WER (Word Error Rate), CER (Character Error Rate), RTF.
+%    - SLM/SOAP: ocena eksperta klinicznego (skala 1–5: spójność,
+%      kompletność, poprawność medyczna), ROUGE/BERTScore opcjonalnie.
+%    - Anonimizacja: Precision, Recall, F1 per typ encji, False Positive
+%      Rate, Leak Rate.
+%    - RAG: Recall@k, Precision@k, NDCG, MRR.
+%    - NFZ dopasowanie: Accuracy (poprawny lek), Coverage (% sugestii
+%      z refundacją).
+%
+% 3. Metryki end-to-end:
+%    - Czas przetwarzania per etap i sumaryczny.
+%    - Akceptowalność sugestii przez lekarza (% zatwierdzonych).
+%    - Potencjalna oszczędność czasu lekarza (szacunek na podstawie
+%      średniego czasu ręcznego wpisywania notatki).
+%
+% 4. Narzędzia pomiarowe:
+%    - wer_calculator.py: pure-Python WER/CER, Unicode-punct aware normalizer.
+%    - eval_stt_on_dataset.py: faster-whisper / mlx-whisper, clean vs noisy.
+%    - Planowane: eval_soap.py, eval_anonymization.py, eval_rag.py.
+%
+% 5. Uwaga metodologiczna:
+%    - Zbiór testowy jest syntetyczny → wyniki nie mogą być bezpośrednio
+%      ekstrapolowane na prawdziwe dialogi kliniczne.
+%    - Baseline: porównanie z ręcznym wpisywaniem dokumentacji.
 
 \section{Zbiór testowy (ground truth)}\label{sec:ground-truth}
 
-% TODO: opis scenariuszy testowych, sposób ich anotacji, liczba próbek
-% per specjalizacja.
+% TREŚĆ DO NAPISANIA:
+%
+% 1. Opis zbioru:
+%    - 8 scenariuszy syntetycznych (Phase 1a).
+%    - 5 specjalizacji: kardiologia, endokrynologia, neurologia,
+%      psychiatria, ortopedia. 1–2 scenariusze per specjalizacja.
+%    - Każdy scenariusz: dialog 10–20 tur (lekarz + pacjent).
+%    - Fikcyjne PII: PESEL, imiona, adresy, telefony.
+%
+% 2. Audio per scenariusz (Phase 1b + 1b.1):
+%    - Per-turn WAVs (22050 Hz) — ground truth per tura.
+%    - dialogue.wav (16 kHz, clean) — input STT.
+%    - dialogue_noisy.wav (16 kHz, augmentowany) — stress test STT.
+%    - bundle.json: SHA-256, duracje, parametry augmentacji.
+%
+% 3. Anotacja ground truth:
+%    - Tekst referencyjny: scenariusz JSON (DialogueTurn.text).
+%    - Encje PII: ground_truth_entities w ScenarioModel.
+%    - Notatka SOAP referencyjna: [do opracowania — ekspercka lub LLM].
+%
+% 4. Tabela statystyk zbioru:
+%    | Specjalizacja | Liczba scen. | Śr. tur | Śr. duracja | SNR (noisy) |
+%
+% 5. Manifest: manifest.json z SHA-256 per plik (reprodukowalność).
 
 \section{Jakość transkrypcji (STT)}\label{sec:ewaluacja-stt}
 
-% TODO: metryki WER i CER, porównanie konfiguracji faster-whisper,
-% wpływ diaryzacji na jakość.
+% TREŚĆ DO NAPISANIA:
+%
+% 1. Setup eksperymentu:
+%    - Model: Whisper large-v3.
+%    - Backendy: faster-whisper (CPU int8), mlx-whisper (Metal GPU).
+%    - Warianty audio: clean (dialogue.wav), noisy (dialogue_noisy.wav).
+%    - Normalizacja: usunięcie interpunkcji, lowercase, normalizacja
+%      polskich znaków diakrytycznych.
+%
+% 2. Wyniki WER (tabela — dane z Phase 1b.1 audit):
+%    - Baseline (8 scenariuszy, MLX): mean clean 9.73%, mean noisy 14.08%.
+%    - Delta: +4.35pp (zdrowa kalibracja szumu).
+%    - Rozpiętość: clean 3.1%–21.1%, noisy 3.4%–40.9%.
+%
+% 3. Analiza błędów:
+%    - Główne źródła błędów: ciągi liczbowe (PESEL, telefon, adres),
+%      terminologia medyczna (IGF-1, insulinopodobny), skróty.
+%    - Wpływ SNR na WER: wykres WER vs. SNR.
 
 \begin{table}[htbp]
   \centering
-  \caption{Przykładowe wyniki WER dla różnych konfiguracji STT
-           (dane zastępcze --- do uzupełnienia).}
+  \caption{Wyniki WER/CER dla zbioru 8 scenariuszy
+           (Whisper large-v3, MLX backend).}
   \label{tab:wer}
   \begin{tabular}{lrrr}
     \toprule
-    Konfiguracja & WER [\%] & CER [\%] & RTF \\
+    Wariant audio & WER [\%] & CER [\%] & RTF \\
     \midrule
-    whisper-small       & --- & --- & --- \\
-    whisper-medium      & --- & --- & --- \\
-    whisper-large-v3    & --- & --- & --- \\
+    Clean (dialogue.wav)       & 9.73 & -- & -- \\
+    Noisy (dialogue\_noisy.wav) & 14.08 & -- & -- \\
     \bottomrule
   \end{tabular}
 \end{table}
 
+% DODATKOWA TABELA: WER per specjalizacja (clean vs noisy).
+% DODATKOWY WYKRES: WER vs SNR scatter plot.
+
+% 4. Porównanie konfiguracji:
+\begin{table}[htbp]
+  \centering
+  \caption{Porównanie backendów STT na Apple Silicon M5.}
+  \label{tab:stt-backends}
+  \begin{tabular}{llrrr}
+    \toprule
+    Backend & Compute type & WER (clean) [\%] & RTF & Uwagi \\
+    \midrule
+    faster-whisper & int8 (CPU) & 9.12 & $\sim$0.6 & portable \\
+    mlx-whisper & Metal GPU & 9.73 & $\sim$0.1 & 5–10$\times$ szybszy \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+% UWAGA: drobna różnica WER (9.12% vs 9.73%) wynika z różnic w dekoderze
+% (ctranslate2 vs MLX), nie z jakości modelu.
+
 \section{Jakość strukturyzacji SOAP}\label{sec:ewaluacja-slm}
 
-% TODO: ewaluacja eksperta klinicznego, metryki spójności, kompletności,
-% poprawności medycznej.
+% TREŚĆ DO NAPISANIA (Phase 2 — dane jeszcze nie zebrane):
+%
+% 1. Setup: wybrany SLM, prompt, metryki.
+% 2. Ewaluacja eksperta klinicznego:
+%    - Skala 1–5 per sekcja SOAP: spójność, kompletność, poprawność.
+%    - Tabela: scenariusz × sekcja SOAP × ocena.
+% 3. Metryki automatyczne (opcjonalnie): ROUGE-L, BERTScore.
+% 4. Porównanie: SLM lokalny vs. chmurowy LLM.
+% 5. Analiza błędów: pominięte informacje, halucynacje, błędy
+%    w przypisaniu S/O/A/P.
 
 \section{Skuteczność anonimizacji}\label{sec:ewaluacja-anonimizacja}
 
-% TODO: precyzja/czułość rozpoznawania PII, współczynnik wycieku danych,
-% analiza błędów.
+% TREŚĆ DO NAPISANIA (Phase 2 — dane jeszcze nie zebrane):
+%
+% 1. Ground truth: ground_truth_entities z ScenarioModel.
+% 2. Metryki per typ encji (PESEL, imię, nazwisko, telefon, adres, NIP):
+%    - Precision, Recall, F1.
+%    - False Positive Rate (ile nie-PII błędnie zaanonimizowane).
+%    - Leak Rate (ile PII prześlizgnęło się przez trust gate).
+% 3. Tabela: typ encji × Precision × Recall × F1.
+% 4. Analiza błędów:
+%    - False positives: nazwy leków uznane za imiona.
+%    - False negatives: deklinowane imiona, skrócone PESEL-e.
+% 5. Test graniczny: celowo wadliwy payload → czy trust_gate blokuje.
 
 \section{Trafność sugestii RAG i NFZ}\label{sec:ewaluacja-rag}
 
-% TODO: metryki Recall@k, Precision@k, NDCG; akceptowalność sugestii
-% przez lekarzy w~scenariuszach testowych.
+% TREŚĆ DO NAPISANIA (Phase 3 — dane jeszcze nie zebrane):
+%
+% 1. Baza wiedzy: liczba dokumentów, chunków, pokrycie specjalizacji.
+% 2. Metryki retrieval:
+%    - Recall@k (k=3, 5, 10).
+%    - Precision@k.
+%    - NDCG, MRR.
+% 3. Metryki dopasowania NFZ:
+%    - Accuracy: czy sugerowany lek istnieje w bazie NFZ.
+%    - Coverage: % sugestii z informacją o refundacji.
+%    - Akceptowalność: ile sugestii lekarz zatwierdziłby (symulacja).
+% 4. Tabela: scenariusz × Recall@5 × lek sugerowany × lek NFZ × zgodnos'c'.
 
 \section{Wydajność systemu end-to-end}\label{sec:ewaluacja-wydajnosc}
 
-% TODO: czas odpowiedzi per etap, wykorzystanie zasobów GPU/CPU,
-% skalowanie przy większej liczbie równoległych wizyt.
+% TREŚĆ DO NAPISANIA:
+%
+% 1. Czas odpowiedzi per etap (tabela):
+%    | Etap | Czas [s] | Budżet [s] | Status |
+%    | STT | ~60 | 60 | ✓ |
+%    | SLM (SOAP) | ~30 | 30 | TBD |
+%    | Anonimizacja | ~5 | 5 | TBD |
+%    | Cloud LLM | ~30 | 30 | TBD |
+%    | RAG retrieval | ~15 | 15 | TBD |
+%    | SUMA | ~140 | 180 | ✓ |
+%
+% 2. Wykorzystanie zasobów:
+%    - RAM peak, VRAM peak.
+%    - CPU/GPU utilization.
+%    - Apple Silicon M5: 24 GB unified, XTTS 2 GB + whisper 1 GB = OK.
+%
+% 3. Skalowalność: ile równoległych wizyt? (Docker, resource limits).
+%
+% 4. Porównanie z ręcznym wpisywaniem:
+%    - Średni czas ręcznego wpisania notatki SOAP: ~10–15 min (z literatury).
+%    - MedVoicePL: ~2–3 min. Oszczędność: ~70–80%.
 
 \section{Dyskusja wyników}\label{sec:dyskusja}
 
-% TODO: interpretacja wyników, porównanie z~hipotezami, identyfikacja
-% ograniczeń.
+% TREŚĆ DO NAPISANIA:
+%
+% 1. Interpretacja wyników STT:
+%    - WER 9.7% clean = dobry wynik dla dialogu medycznego PL.
+%    - Główne źródło błędów: ciągi liczbowe, terminologia.
+%    - Delta clean↔noisy (+4.35pp) = zdrowa kalibracja szumu.
+%
+% 2. Porównanie z hipotezami:
+%    - N4 (WER ≤ 15%): spełnione dla clean, granicznie dla noisy.
+%    - N3 (czas ≤ 3 min): do weryfikacji po Phase 2+3.
+%
+% 3. Ograniczenia ewaluacji:
+%    - Zbiór testowy syntetyczny (TTS audio ≠ prawdziwa mowa).
+%    - 8 scenariuszy = mała próbka statystyczna.
+%    - Brak walidacji na prawdziwych danych klinicznych (RODO/IRB).
+%    - Brak porównania z komercyjnymi CDSS (brak dostępu).
+%
+% 4. Wnioski per komponent:
+%    - STT: Whisper large-v3 wystarczający jako baseline.
+%    - Noise calibration: SNR 15–20 dB realistyczny dla gabinetu.
+%    - [SLM, anonimizacja, RAG — do uzupełnienia po Phase 2–3].
