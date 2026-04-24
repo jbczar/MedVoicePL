@@ -17,10 +17,14 @@ dependencies = [
     "pyyaml>=6.0",
     "typer>=0.12",
     "rich>=13.7",
+    # Phase 2b — SLM structuring
+    "mlx-lm>=0.19",                 # Apple Silicon primary for Bielik / PLLuM
+    "lm-format-enforcer>=0.10",     # grammar-constrained JSON decoding (both backends)
 ]
 
 [project.optional-dependencies]
-apple = ["mlx-whisper>=0.4"]    # Apple Silicon speed-up; Linux/CI can drop it
+apple = ["mlx-whisper>=0.4", "mlx-lm>=0.19"]    # Apple Silicon speed-up; Linux/CI can drop it
+portable = ["llama-cpp-python>=0.2.90,<0.3"]    # GGUF fallback; compiles from source (~3-5 min on M5)
 
 [tool.uv.sources]
 shared = { workspace = true }

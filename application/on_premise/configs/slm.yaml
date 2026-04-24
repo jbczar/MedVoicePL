@@ -1,8 +1,19 @@
-# Local SLM configuration
+# Local SLM configuration — consumed by on_premise.structuring.slm_engine.build_extractor.
+# Values wrapped in ${VAR} are expanded against os.environ by load_slm_config() (mirrors
+# on_premise.stt.whisper_engine.load_whisper_config).
+
+backend: ${SLM_BACKEND}             # mlx-lm | llama-cpp
+
 model:
-  id: "${SLM_MODEL_ID}"
-  quantization: "${SLM_QUANTIZATION}"
-  device: "${SLM_DEVICE}"
+  id: ${SLM_MODEL_ID}               # HF repo id used for logging + metadata
+  mlx_repo: ${SLM_MLX_REPO}         # repo actually loaded by mlx-lm (usually a *-4bit MLX repack)
+  gguf_path: ${SLM_GGUF_PATH}       # absolute path to .gguf for llama-cpp (empty → llama-cpp disabled)
+  device: ${SLM_DEVICE}             # auto | cpu | cuda — llama-cpp only; mlx-lm always Metal
   max_new_tokens: 2048
   temperature: 0.1
   do_sample: false
+
+structured_mode: ${SLM_STRUCTURED_MODE}   # grammar | raw
+
+retry:
+  max_validation_retries: 3         # pipeline attempts this many corrections on Pydantic ValidationError
