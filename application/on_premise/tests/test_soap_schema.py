@@ -15,6 +15,7 @@ from on_premise.structuring.soap_schema import (
     SOAPAssessment,
     SOAPNote,
     SOAPNoteMetadata,
+    SOAPNoteSubmission,
     SOAPObjective,
     SOAPPlan,
     SOAPSubjective,
@@ -112,6 +113,48 @@ def test_labmention_accepts_free_form_name() -> None:
 def test_provenance_defaults_empty() -> None:
     s = SOAPSubjective(chief_complaint="x", history_of_present_illness="y")
     assert s.provenance == []
+
+
+def test_submission_does_not_accept_metadata() -> None:
+    """`SOAPNoteSubmission` is what the SLM produces — no metadata field.
+
+    Regression guard against accidental schema drift: if someone
+    re-introduces `metadata` on the submission type, grammar mode would
+    once again waste tokens forcing the model to invent SHA hashes,
+    and raw mode would once again retry-loop on impossible field
+    requirements (the bug the split was introduced to fix on 2026-04-25).
+    """
+    base = {
+        "subjective": SOAPSubjective(
+            chief_complaint="x", history_of_present_illness="y"
+        ).model_dump(),
+        "objective": SOAPObjective().model_dump(),
+        "assessment": SOAPAssessment(primary_diagnosis="dx").model_dump(),
+        "plan": SOAPPlan().model_dump(),
+        "red_flags": [],
+        "red_flags_provenance": [],
+    }
+    sub = SOAPNoteSubmission.model_validate(base)
+    assert sub.subjective.chief_complaint == "x"
+
+    metadata = SOAPNoteMetadata(
+        source_transcript_sha256=_SHA,
+        source_audio_sha256=_SHA,
+        scenario_id=None,
+        slm_backend="mlx-lm",
+        slm_model="x",
+        slm_device="mps",
+        slm_structured_mode="grammar",
+        generated_at=datetime.now().astimezone(),
+        generation_duration_s=0.0,
+    )
+    # Composing the full SOAPNote from a submission + metadata works.
+    full = SOAPNote(**sub.model_dump(), metadata=metadata)
+    assert full.metadata.slm_backend == "mlx-lm"
+
+    # And the submission itself rejects a metadata block.
+    with pytest.raises(ValidationError):
+        SOAPNoteSubmission.model_validate({**base, "metadata": metadata.model_dump(mode="json")})
 
 
 def test_metadata_rejects_malformed_sha() -> None:

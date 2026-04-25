@@ -147,9 +147,47 @@ def test_diagnosis_match_substring_either_direction() -> None:
     )
 
 
-def test_icd10_match_exact() -> None:
+def test_diagnosis_match_polish_inflection_via_stems() -> None:
+    """Substring fails on Polish inflection; stem fallback rescues."""
+    # The real failure case from grammar eval on `a9b1c2d3` (POChP):
+    # model output contains the diagnosis but in oblique cases.
+    assert diagnosis_match(
+        _soap(
+            dx=(
+                "podejrzenie przewlekłej obturacyjnej choroby płuc (POChP) "
+                "u wieloletniego palacza"
+            )
+        ),
+        _scenario(dx="Przewlekła obturacyjna choroba płuc (POChP)"),
+    )
+    # And the symmetric case — short predicted, long expected, both
+    # in different cases.
+    assert diagnosis_match(
+        _soap(dx="choroby Gravesa-Basedowa"),
+        _scenario(dx="Nadczynność tarczycy choroba Gravesa-Basedowa"),
+    )
+    # Stems must not over-match on disjoint diagnoses that happen to
+    # share connectives.
+    assert not diagnosis_match(
+        _soap(dx="cukrzyca typu drugiego"),
+        _scenario(dx="nadciśnienie tętnicze pierwotne"),
+    )
+
+
+def test_icd10_match_equality_and_prefix() -> None:
+    # Exact equality.
     assert icd10_match(_soap(icd="I10"), _scenario(icd="I10"))
-    assert not icd10_match(_soap(icd="I10.0"), _scenario(icd="I10"))
+    assert icd10_match(_soap(icd="I10.0"), _scenario(icd="I10.0"))
+    # Model under-specified: J44 vs scenario J44.9 (the real grammar-eval
+    # case from `a9b1c2d3` — POChP family).
+    assert icd10_match(_soap(icd="J44"), _scenario(icd="J44.9"))
+    # Model over-specified: I10.0 vs scenario I10.
+    assert icd10_match(_soap(icd="I10.0"), _scenario(icd="I10"))
+    # Prefix only at the dot boundary — J44 must NOT match J45.
+    assert not icd10_match(_soap(icd="J44"), _scenario(icd="J45"))
+    # Different families never match.
+    assert not icd10_match(_soap(icd="I10"), _scenario(icd="J44"))
+    # None on either side -> not a match.
     assert not icd10_match(_soap(icd=None), _scenario(icd="I10"))
     assert not icd10_match(_soap(icd="I10"), _scenario(icd=None))
 

@@ -31,6 +31,7 @@ FORBIDDEN_NAMES = {
     "WordTiming",
     # Phase 2b — un-anonymized SOAP
     "SOAPNote",
+    "SOAPNoteSubmission",
     "SOAPSubjective",
     "SOAPObjective",
     "SOAPAssessment",

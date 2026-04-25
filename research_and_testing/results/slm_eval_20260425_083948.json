@@ -1,0 +1,30 @@
+{
+  "timestamp": "2026-04-25T08:39:48.243815+02:00",
+  "backend": "mlx-lm:speakleash/Bielik-11B-v3.0-Instruct-MLX-4bit",
+  "device": "mps",
+  "structured_mode": "grammar",
+  "summary": {
+    "n": 1,
+    "schema_compliance_rate": 1.0,
+    "mean_cc_recall": 0.375,
+    "diagnosis_match_rate": 0.0,
+    "icd10_match_rate": 0.0,
+    "plan_nonempty_rate": 1.0,
+    "mean_duration_s": 59.42170016700402
+  },
+  "rows": [
+    {
+      "scenario_id": "a9b1c2d3-e4f5-6789-a0b1-c2d3e4f5a6b7",
+      "variant": "clean",
+      "schema_ok": true,
+      "cc_recall": 0.375,
+      "diag_match": false,
+      "icd10_match": false,
+      "plan_nonempty": true,
+      "coverage_filled": 10,
+      "coverage_total": 19,
+      "duration_s": 59.42170016700402,
+      "error": null
+    }
+  ]
+}

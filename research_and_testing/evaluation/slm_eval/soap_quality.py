@@ -16,12 +16,19 @@ Metrics:
 * `chief_complaint_recall(soap, scenario)` — normalized Levenshtein
   similarity between the SOAP's CC and the scenario's ground-truth CC.
   Reuses the WER normalizer so punctuation + diacritics don't count.
-* `diagnosis_match(soap, scenario)` — substring OR normalized exact
-  match against `ScenarioModel.expected_diagnosis`. Substring is
-  permissive on purpose: "nadciśnienie tętnicze pierwotne" should
-  match "nadciśnienie tętnicze" without us writing a synonym table.
-* `icd10_match(soap, scenario)` — exact-string match, case-sensitive.
-  ICD-10 codes are uppercase letters, so casefold would be noise.
+* `diagnosis_match(soap, scenario)` — substring fast-path against
+  `ScenarioModel.expected_diagnosis`, falling back to Polish-tolerant
+  stem-set containment when the substring check fails. Polish
+  inflection (`przewlekła` → `przewlekłej`, `choroba` → `choroby`)
+  defeats raw substring on real model output even when the model
+  emitted the right diagnosis. The prefix-stemming fallback (first
+  5 chars of each content token) closes the gap without needing a
+  Polish lemmatizer dependency.
+* `icd10_match(soap, scenario)` — equality OR boundary-aware prefix
+  match. The model is not penalized for under-specifying (`J44`
+  matches scenario `J44.9`) or over-specifying (`I10.0` matches
+  scenario `I10`) — both are clinically the same family. Match only
+  at code-segment boundaries: `J44` matches `J44.9` but not `J445`.
 * `plan_nonempty(soap)` — at least one of
   `{medications_prescribed, diagnostic_tests, referrals, follow_up}`
   is populated. Sanity check without pretending to grade plan content.
@@ -114,25 +121,75 @@ def chief_complaint_recall(soap: SOAPNote, scenario: ScenarioModel) -> float:
     return _normalized_similarity(soap.subjective.chief_complaint, scenario.chief_complaint)
 
 
+def _content_stems(normalized: str) -> set[str]:
+    """Polish-tolerant stems for set-containment matching.
+
+    Takes a `normalize()`-d string and returns the set of first-5-char
+    prefixes of every token of length ≥3. Drops short connectives
+    (`od`, `u`, `i`, `do`) so they can't accidentally match. Five
+    chars is enough to discriminate distinct medical terms while
+    collapsing Polish inflectional suffixes:
+
+        "przewlekła"  -> "przew"
+        "przewlekłej" -> "przew"   # same stem
+        "choroba"     -> "choro"
+        "choroby"     -> "choro"   # same stem
+        "POChP"       -> "pochp"   # acronym preserved
+    """
+    return {tok[:5] for tok in normalized.split() if len(tok) >= 3}
+
+
 def diagnosis_match(soap: SOAPNote, scenario: ScenarioModel) -> bool:
-    """Substring OR normalized exact match against scenario.expected_diagnosis."""
+    """Substring fast-path then Polish-tolerant stem-set containment.
+
+    Two layers:
+
+    1. **Substring on normalized text**: handles "nadciśnienie tętnicze
+       pierwotne" ⊇ "nadciśnienie tętnicze" and the reverse. Cheap and
+       sufficient when the model uses the same word forms as the
+       scenario.
+
+    2. **Stem-set containment**: when substring fails, compare sets of
+       5-char content-token prefixes. "Przewlekła obturacyjna choroba
+       płuc (POChP)" and "podejrzenie przewlekłej obturacyjnej choroby
+       płuc (POChP) u wieloletniego palacza" have identical stems for
+       the diagnostic content tokens; either side's stems being a
+       subset of the other's counts as a match. This is what catches
+       Polish inflection without pulling in a lemmatizer dep.
+    """
     predicted = normalize(soap.assessment.primary_diagnosis)
     expected = normalize(scenario.expected_diagnosis)
     if not predicted or not expected:
         return False
-    # Either direction: the model might say "nadciśnienie tętnicze
-    # pierwotne" (expected "nadciśnienie tętnicze") OR say
-    # "nadciśnienie" (expected "nadciśnienie tętnicze"). Both count.
-    return predicted in expected or expected in predicted
+    if predicted in expected or expected in predicted:
+        return True
+    pred_stems = _content_stems(predicted)
+    exp_stems = _content_stems(expected)
+    if not pred_stems or not exp_stems:
+        return False
+    return exp_stems.issubset(pred_stems) or pred_stems.issubset(exp_stems)
 
 
 def icd10_match(soap: SOAPNote, scenario: ScenarioModel) -> bool:
-    """Exact string match on ICD-10 code (case-sensitive)."""
+    """Equality OR boundary-aware prefix match.
+
+    `J44` matches scenario `J44.9` (model under-specified — clinically
+    the same family). `I10.0` matches scenario `I10` (model
+    over-specified). `J44` does NOT match `J45` and does NOT match
+    `J445` — prefix only at the `.` boundary, never on raw character
+    overlap. Codes are case-sensitive (uppercase by ICD-10 convention),
+    so we don't casefold.
+    """
     predicted = (soap.assessment.icd10_code or "").strip()
     expected = (scenario.icd10_code or "").strip()
     if not predicted or not expected:
         return False
-    return predicted == expected
+    if predicted == expected:
+        return True
+    longer, shorter = (
+        (predicted, expected) if len(predicted) > len(expected) else (expected, predicted)
+    )
+    return longer.startswith(shorter + ".")
 
 
 def plan_nonempty(soap: SOAPNote) -> bool:

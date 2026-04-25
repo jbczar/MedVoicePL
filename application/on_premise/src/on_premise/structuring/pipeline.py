@@ -49,6 +49,7 @@ from on_premise.structuring.prompts import (
 from on_premise.structuring.soap_schema import (
     SOAPNote,
     SOAPNoteMetadata,
+    SOAPNoteSubmission,
 )
 
 if TYPE_CHECKING:
@@ -89,9 +90,13 @@ def transcript_to_soap(
     # tokens; doing it ourselves would double-bracket them.
     full_prompt = f"{SYSTEM_PROMPT_PL}\n\n{user_prompt}"
 
-    schema = SOAPNote.model_json_schema()
+    # The model emits `SOAPNoteSubmission` (clinical fields only). The
+    # pipeline composes the full `SOAPNote` by attaching metadata it built
+    # itself — the model can't truthfully produce `source_transcript_sha256`
+    # / `generated_at` / backend strings.
+    schema = SOAPNoteSubmission.model_json_schema()
     last_error: Exception | None = None
-    soap: SOAPNote | None = None
+    submission: SOAPNoteSubmission | None = None
 
     t0 = time.monotonic()
     for attempt in range(max_validation_retries + 1):
@@ -105,7 +110,7 @@ def transcript_to_soap(
             ) from exc
 
         try:
-            soap = SOAPNote.model_validate_json(raw_json)
+            submission = SOAPNoteSubmission.model_validate_json(raw_json)
             break
         except ValidationError as exc:
             last_error = exc
@@ -119,7 +124,7 @@ def transcript_to_soap(
                 break
             full_prompt = full_prompt + "\n\n" + render_correction_hint(exc)
 
-    if soap is None:
+    if submission is None:
         raise SOAPExtractionError(
             f"SOAP extraction failed after {max_validation_retries + 1} attempts"
         ) from last_error
@@ -131,17 +136,17 @@ def transcript_to_soap(
     # never appeared in the source; pre-2c we strip them rather than
     # letting them cross into the trust gate.
     transcript_text = transcript.text
-    soap_scrubbed = _scrub_hallucinated_pii(soap, transcript_text)
+    submission_scrubbed = _scrub_hallucinated_pii(submission, transcript_text)
 
-    # Inject metadata — built here so the pipeline owns the SHA anchoring
-    # and Phase 2a's `Transcript` stays frozen.
+    # Compose the full SOAPNote — pipeline owns SHA anchoring + timing so
+    # Phase 2a's `Transcript` stays frozen.
     metadata = _build_metadata(
         transcript=transcript,
         extractor=extractor,
         generation_duration_s=generation_duration_s,
         scenario_id_override=scenario_id_override,
     )
-    return soap_scrubbed.model_copy(update={"metadata": metadata})
+    return SOAPNote(**submission_scrubbed.model_dump(), metadata=metadata)
 
 
 # ---------------------------------------------------------------------------
@@ -187,10 +192,12 @@ def _build_metadata(
     )
 
 
-def _scrub_hallucinated_pii(soap: SOAPNote, transcript_text: str) -> SOAPNote:
-    """Drop PII-shaped substrings from `soap` that are NOT in `transcript_text`.
+def _scrub_hallucinated_pii(
+    submission: SOAPNoteSubmission, transcript_text: str
+) -> SOAPNoteSubmission:
+    """Drop PII-shaped substrings that are NOT in `transcript_text`.
 
-    Walks every string leaf in the SOAPNote tree. A PESEL-shaped /
+    Walks every string leaf in the submission tree. A PESEL-shaped /
     phone-shaped substring that appears in the SLM output but not in
     the source transcript is replaced with an empty string in scalars
     and filtered out of lists of strings. Logs a warning per drop so
@@ -231,16 +238,16 @@ def _scrub_hallucinated_pii(soap: SOAPNote, transcript_text: str) -> SOAPNote:
             return type(node).model_validate(cleaned)
         return node
 
-    cleaned_soap = _walk(soap, "soap")
+    cleaned_submission = _walk(submission, "soap")
     if dropped:
         log.warning(
             "dropped %d hallucinated PII-shaped token(s): %s",
             len(dropped),
             ", ".join(dropped[:10]),
         )
-    # `_walk` returns a fresh SOAPNote when the root is a BaseModel.
-    assert isinstance(cleaned_soap, SOAPNote)
-    return cleaned_soap
+    # `_walk` returns a fresh SOAPNoteSubmission when the root is a BaseModel.
+    assert isinstance(cleaned_submission, SOAPNoteSubmission)
+    return cleaned_submission
 
 
 def _summarize(exc: ValidationError) -> str:

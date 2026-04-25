@@ -1,0 +1,121 @@
+{
+  "timestamp": "2026-04-25T09:03:19.514456+02:00",
+  "backend": "mlx-lm:speakleash/Bielik-11B-v3.0-Instruct-MLX-4bit",
+  "device": "mps",
+  "structured_mode": "grammar",
+  "summary": {
+    "n": 8,
+    "schema_compliance_rate": 1.0,
+    "mean_cc_recall": 0.32203282828282825,
+    "diagnosis_match_rate": 0.25,
+    "icd10_match_rate": 0.375,
+    "plan_nonempty_rate": 1.0,
+    "mean_duration_s": 136.43537117198866
+  },
+  "rows": [
+    {
+      "scenario_id": "a9b1c2d3-e4f5-6789-a0b1-c2d3e4f5a6b7",
+      "variant": "clean",
+      "schema_ok": true,
+      "cc_recall": 0.375,
+      "diag_match": false,
+      "icd10_match": false,
+      "plan_nonempty": true,
+      "coverage_filled": 11,
+      "coverage_total": 19,
+      "duration_s": 54.8379479169962,
+      "error": null
+    },
+    {
+      "scenario_id": "a9d8f7e6-c5b4-4e3d-8a2b-1f09c7d6b5a4",
+      "variant": "clean",
+      "schema_ok": true,
+      "cc_recall": 0.375,
+      "diag_match": false,
+      "icd10_match": true,
+      "plan_nonempty": true,
+      "coverage_filled": 8,
+      "coverage_total": 19,
+      "duration_s": 191.76191091700457,
+      "error": null
+    },
+    {
+      "scenario_id": "b3f0c1a9-7e5d-4a1b-9f2c-6d8e0a3b4c5d",
+      "variant": "clean",
+      "schema_ok": true,
+      "cc_recall": 0.5,
+      "diag_match": true,
+      "icd10_match": false,
+      "plan_nonempty": true,
+      "coverage_filled": 11,
+      "coverage_total": 19,
+      "duration_s": 47.46379979199264,
+      "error": null
+    },
+    {
+      "scenario_id": "endo-acromegaly-01",
+      "variant": "clean",
+      "schema_ok": true,
+      "cc_recall": 0.5,
+      "diag_match": false,
+      "icd10_match": true,
+      "plan_nonempty": true,
+      "coverage_filled": 9,
+      "coverage_total": 19,
+      "duration_s": 55.19457491597859,
+      "error": null
+    },
+    {
+      "scenario_id": "endo-graves-001",
+      "variant": "clean",
+      "schema_ok": true,
+      "cc_recall": 0.0,
+      "diag_match": false,
+      "icd10_match": true,
+      "plan_nonempty": true,
+      "coverage_filled": 12,
+      "coverage_total": 19,
+      "duration_s": 219.96781520795776,
+      "error": null
+    },
+    {
+      "scenario_id": "kardio-migotanie-01",
+      "variant": "clean",
+      "schema_ok": true,
+      "cc_recall": 0.18181818181818177,
+      "diag_match": false,
+      "icd10_match": false,
+      "plan_nonempty": true,
+      "coverage_filled": 8,
+      "coverage_total": 19,
+      "duration_s": 197.55882933398243,
+      "error": null
+    },
+    {
+      "scenario_id": "neuro-cts-001",
+      "variant": "clean",
+      "schema_ok": true,
+      "cc_recall": 0.19999999999999996,
+      "diag_match": false,
+      "icd10_match": false,
+      "plan_nonempty": true,
+      "coverage_filled": 8,
+      "coverage_total": 19,
+      "duration_s": 97.66235900000902,
+      "error": null
+    },
+    {
+      "scenario_id": "synth-mr-gerd-01",
+      "variant": "clean",
+      "schema_ok": true,
+      "cc_recall": 0.4444444444444444,
+      "diag_match": true,
+      "icd10_match": false,
+      "plan_nonempty": true,
+      "coverage_filled": 8,
+      "coverage_total": 19,
+      "duration_s": 227.0357322919881,
+      "error": null
+    }
+  ]
+}

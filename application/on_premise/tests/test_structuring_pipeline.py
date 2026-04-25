@@ -70,10 +70,12 @@ def _transcript(text: str = "Dzień dobry. Boli mnie głowa.") -> Transcript:
 
 
 def _valid_soap_json(*, cc: str = "ból głowy", icd10: str | None = "R51") -> str:
-    """Build a minimal-but-valid SOAPNote JSON for the stub to return.
+    """Build a minimal-but-valid SOAPNoteSubmission JSON for the stub to return.
 
-    Note: `metadata` is included because the schema requires it, but the
-    pipeline overwrites it — we still need a syntactically valid block.
+    The pipeline validates the model output as `SOAPNoteSubmission` (no
+    metadata) and composes the full `SOAPNote` itself. So the stub returns
+    submission-shape JSON — including `metadata` here would now fail
+    `extra="forbid"` validation.
     """
     return json.dumps(
         {
@@ -109,17 +111,6 @@ def _valid_soap_json(*, cc: str = "ból głowy", icd10: str | None = "R51") -> s
             },
             "red_flags": [],
             "red_flags_provenance": [],
-            "metadata": {
-                "source_transcript_sha256": "c" * 64,
-                "source_audio_sha256": "b" * 64,
-                "scenario_id": "test-01",
-                "slm_backend": "mlx-lm",
-                "slm_model": "stub",
-                "slm_device": "cpu",
-                "slm_structured_mode": "grammar",
-                "generated_at": "2026-04-24T12:00:00+00:00",
-                "generation_duration_s": 0.0,
-            },
         }
     )
 

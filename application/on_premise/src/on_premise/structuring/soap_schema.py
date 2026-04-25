@@ -155,8 +155,23 @@ class SOAPNoteMetadata(BaseModel):
     generation_duration_s: float = Field(ge=0.0)
 
 
-class SOAPNote(BaseModel):
-    """Full SOAP note for a single clinical visit."""
+class SOAPNoteSubmission(BaseModel):
+    """SOAP note as the SLM submits it — clinical content only, no metadata.
+
+    This is the schema we hand to `lm-format-enforcer` (grammar mode) and the
+    type we validate the model's raw JSON against. Splitting it from the full
+    `SOAPNote` matters because:
+
+    * The model can't produce `metadata` truthfully (it doesn't know the
+      transcript SHA, generation timestamp, or backend it's running on).
+      Asking it to invent those values wastes tokens in grammar mode and
+      fails validation outright in raw mode.
+    * The pipeline owns SHA anchoring + timing, then composes the full
+      `SOAPNote` by attaching a `SOAPNoteMetadata` it built itself.
+    * Phase 2c's Presidio + trust gate operates on the clinical content,
+      not the plumbing — `SOAPNoteSubmission` is the natural input type
+      for anonymization.
+    """
 
     model_config = ConfigDict(extra="forbid")
 
@@ -169,4 +184,14 @@ class SOAPNote(BaseModel):
     # so Phase 2c's audit can flag these specifically on the doctor UI.
     red_flags: list[str] = Field(default_factory=list)
     red_flags_provenance: list[int] = Field(default_factory=list)
+
+
+class SOAPNote(SOAPNoteSubmission):
+    """Full SOAP note for a single clinical visit — submission + metadata.
+
+    Inherits all clinical fields from `SOAPNoteSubmission` and adds the
+    pipeline-built metadata block. `extra="forbid"` is inherited via
+    `model_config`.
+    """
+
     metadata: SOAPNoteMetadata
