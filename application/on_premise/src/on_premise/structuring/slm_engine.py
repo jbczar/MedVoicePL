@@ -192,8 +192,13 @@ def _mlx_sampler_kwargs(
 ) -> dict[str, Any]:
     """Bridge across mlx-lm API versions (temp= vs sampler=)."""
     kwargs: dict[str, Any] = {"verbose": False}
-    # mlx-lm >=0.19 accepts `temp` at top level for back-compat.
-    kwargs["temp"] = temperature
+    try:
+        from mlx_lm.sample_utils import make_sampler
+        kwargs["sampler"] = make_sampler(temp=temperature)
+    except ImportError:
+        # fallback for very old mlx-lm versions
+        kwargs["temp"] = temperature
+
     if logits_processors:
         kwargs["logits_processors"] = logits_processors
     return kwargs
@@ -203,7 +208,8 @@ def _build_mlx_logits_processors(tokenizer: Any, schema: Mapping[str, Any]) -> l
     """Compile the JSON schema into an mlx-lm logits processor via lm-format-enforcer."""
     try:
         from lmformatenforcer import JsonSchemaParser  # type: ignore[import-not-found]
-        from lmformatenforcer.integrations.mlxlm import (  # type: ignore[import-not-found]
+
+        from on_premise.structuring.mlx_logits_processor import (
             build_mlx_logits_processor,
         )
     except ImportError as exc:  # pragma: no cover
