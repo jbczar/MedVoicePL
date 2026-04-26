@@ -55,7 +55,9 @@ def test_build_transcriber_unknown_backend_raises() -> None:
         build_transcriber({}, {"WHISPER_BACKEND": "whisperx"})
 
 
-def test_load_whisper_config_expands_env_templates(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_load_whisper_config_expands_env_templates(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     monkeypatch.setenv("WHISPER_MODEL_SIZE", "tiny")
     monkeypatch.setenv("WHISPER_DEVICE", "cpu")
     monkeypatch.setenv("WHISPER_COMPUTE_TYPE", "int8")

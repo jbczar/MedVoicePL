@@ -35,15 +35,15 @@ class RawDiarizationSegment:
 
     start_s: float
     end_s: float
-    speaker_label: str     # e.g. "SPEAKER_00", "SPEAKER_01"
+    speaker_label: str  # e.g. "SPEAKER_00", "SPEAKER_01"
     confidence: float | None = None
 
 
 class Diarizer(Protocol):
     """Minimal contract every diarization backend satisfies."""
 
-    name: str           # e.g. "pyannote/speaker-diarization-3.1"
-    device: str         # "cpu" | "cuda" | "mps"
+    name: str  # e.g. "pyannote/speaker-diarization-3.1"
+    device: str  # "cpu" | "cuda" | "mps"
 
     def diarize(self, wav_path: Path) -> list[RawDiarizationSegment]: ...
 
@@ -84,8 +84,7 @@ class PyannoteDiarizer:
             from pyannote.audio import Pipeline  # type: ignore[import-not-found]
         except ImportError as exc:  # pragma: no cover
             raise RuntimeError(
-                "pyannote.audio is not installed. "
-                "Run: uv pip install pyannote.audio"
+                "pyannote.audio is not installed. Run: uv pip install pyannote.audio"
             ) from exc
 
         resolved_device = _resolve_device(device)
@@ -127,8 +126,10 @@ class PyannoteDiarizer:
         # `DiarizeOutput` dataclass with the Annotation on `.speaker_diarization`
         # (exposed by the wrapper so downstream can also reach embeddings).
         # Duck-type across both versions without a hard version pin.
-        annotation = result if hasattr(result, "itertracks") else getattr(
-            result, "speaker_diarization", None
+        annotation = (
+            result
+            if hasattr(result, "itertracks")
+            else getattr(result, "speaker_diarization", None)
         )
         if annotation is None or not hasattr(annotation, "itertracks"):
             raise RuntimeError(
@@ -163,9 +164,11 @@ def build_diarizer(
     env = env if env is not None else os.environ
     token = env.get("HUGGINGFACE_TOKEN", "").strip()
     device = env.get("PYANNOTE_DEVICE", "auto")
-    model_id = str(
-        (config or {}).get("model_id") or PyannoteDiarizer.DEFAULT_MODEL
-    ) if isinstance(config, Mapping) else PyannoteDiarizer.DEFAULT_MODEL
+    model_id = (
+        str((config or {}).get("model_id") or PyannoteDiarizer.DEFAULT_MODEL)
+        if isinstance(config, Mapping)
+        else PyannoteDiarizer.DEFAULT_MODEL
+    )
     return PyannoteDiarizer(
         hf_token=token,
         model_id=model_id,

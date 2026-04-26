@@ -3,7 +3,9 @@ name = "shared"
 version = "0.1.0"
 description = "Shared Pydantic schemas and utilities across all application modules."
 requires-python = ">=3.11"
-dependencies = []
+dependencies = [
+    "pydantic>=2.6",
+]
 
 [build-system]
 requires = ["hatchling"]

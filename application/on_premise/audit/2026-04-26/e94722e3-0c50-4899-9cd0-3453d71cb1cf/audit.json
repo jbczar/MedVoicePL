@@ -1,0 +1,44 @@
+{
+  "schema_version": "2c.0",
+  "session_id": "e94722e3-0c50-4899-9cd0-3453d71cb1cf",
+  "records": [
+    {
+      "timestamp": "2026-04-26T21:40:44.338683+00:00",
+      "session_id": "e94722e3-0c50-4899-9cd0-3453d71cb1cf",
+      "soap_sha256": "0b3f09d948384ad00dec2b456c28cff52e0c3dc7fee29c851e85424730dce338",
+      "transcript_sha256": "498c7c3660e84c9891ab16883c25f4da679767ce31a06db4ab693a6e6a157473",
+      "entity_type": "PERSON",
+      "token": "<PERSON_1>",
+      "original_sha256": "52236e501540394ca1688b5520ef88ba8be60367d1d92aa4861cd1d5f7af3022",
+      "location_path": "assessment.primary_diagnosis",
+      "location_offset_start": 20,
+      "location_offset_end": 30,
+      "purpose": "anonymization",
+      "legal_basis": "Art_9_2_h",
+      "data_categories": [
+        "PERSON"
+      ],
+      "controller": "MedVoicePL",
+      "retention_until": "2028-04-25"
+    },
+    {
+      "timestamp": "2026-04-26T21:40:44.338693+00:00",
+      "session_id": "e94722e3-0c50-4899-9cd0-3453d71cb1cf",
+      "soap_sha256": "0b3f09d948384ad00dec2b456c28cff52e0c3dc7fee29c851e85424730dce338",
+      "transcript_sha256": "498c7c3660e84c9891ab16883c25f4da679767ce31a06db4ab693a6e6a157473",
+      "entity_type": "PERSON",
+      "token": "<PERSON_1>",
+      "original_sha256": "52236e501540394ca1688b5520ef88ba8be60367d1d92aa4861cd1d5f7af3022",
+      "location_path": "assessment.clinical_reasoning",
+      "location_offset_start": 104,
+      "location_offset_end": 114,
+      "purpose": "anonymization",
+      "legal_basis": "Art_9_2_h",
+      "data_categories": [
+        "PERSON"
+      ],
+      "controller": "MedVoicePL",
+      "retention_until": "2028-04-25"
+    }
+  ]
+}

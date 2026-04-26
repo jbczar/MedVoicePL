@@ -65,9 +65,9 @@ class StructuredExtractor(Protocol):
     the generation loop.
     """
 
-    name: str               # "mlx-lm:Bielik-11B-v3.0-Instruct-MLX-4bit" | "llama-cpp:Bielik-Q4_K_M"
-    device: str             # "mps" | "cpu" | "cuda"
-    structured_mode: str    # "grammar" | "raw"
+    name: str  # "mlx-lm:Bielik-11B-v3.0-Instruct-MLX-4bit" | "llama-cpp:Bielik-Q4_K_M"
+    device: str  # "mps" | "cpu" | "cuda"
+    structured_mode: str  # "grammar" | "raw"
 
     def extract(self, prompt: str, *, schema: Mapping[str, Any]) -> str: ...
 
@@ -95,15 +95,12 @@ class MLXLMExtractor:
         structured_mode: str = "grammar",
     ) -> None:
         if structured_mode not in {"grammar", "raw"}:
-            raise PermanentSLMError(
-                f"structured_mode must be grammar|raw, got {structured_mode!r}"
-            )
+            raise PermanentSLMError(f"structured_mode must be grammar|raw, got {structured_mode!r}")
         try:
             import mlx_lm  # type: ignore[import-not-found]  # noqa: F401
         except ImportError as exc:  # pragma: no cover — install-time guard
             raise PermanentSLMError(
-                "mlx-lm is not installed. "
-                "Run: uv pip install mlx-lm  (Apple Silicon only)"
+                "mlx-lm is not installed. Run: uv pip install mlx-lm  (Apple Silicon only)"
             ) from exc
 
         self._model_repo = model_repo
@@ -194,6 +191,7 @@ def _mlx_sampler_kwargs(
     kwargs: dict[str, Any] = {"verbose": False}
     try:
         from mlx_lm.sample_utils import make_sampler
+
         kwargs["sampler"] = make_sampler(temp=temperature)
     except ImportError:
         # fallback for very old mlx-lm versions
@@ -244,13 +242,9 @@ class LlamaCppExtractor:
         structured_mode: str = "grammar",
     ) -> None:
         if structured_mode not in {"grammar", "raw"}:
-            raise PermanentSLMError(
-                f"structured_mode must be grammar|raw, got {structured_mode!r}"
-            )
+            raise PermanentSLMError(f"structured_mode must be grammar|raw, got {structured_mode!r}")
         if not gguf_path or not Path(gguf_path).exists():
-            raise PermanentSLMError(
-                f"SLM_GGUF_PATH is empty or does not exist: {gguf_path!r}"
-            )
+            raise PermanentSLMError(f"SLM_GGUF_PATH is empty or does not exist: {gguf_path!r}")
         try:
             from llama_cpp import Llama  # type: ignore[import-not-found]
         except ImportError as exc:  # pragma: no cover — install-time guard
@@ -271,9 +265,7 @@ class LlamaCppExtractor:
                 verbose=False,
             )
         except Exception as exc:
-            raise PermanentSLMError(
-                f"failed to load GGUF {gguf_path}: {exc}"
-            ) from exc
+            raise PermanentSLMError(f"failed to load GGUF {gguf_path}: {exc}") from exc
 
         self._max_new_tokens = int(max_new_tokens)
         self._temperature = float(temperature)
@@ -289,9 +281,7 @@ class LlamaCppExtractor:
             "temperature": self._temperature,
         }
         if self.structured_mode == "grammar":
-            kwargs["logits_processor"] = _build_llama_cpp_logits_processor(
-                self._llm, schema
-            )
+            kwargs["logits_processor"] = _build_llama_cpp_logits_processor(self._llm, schema)
 
         try:
             response = self._llm.create_chat_completion(**kwargs)
@@ -301,9 +291,7 @@ class LlamaCppExtractor:
         try:
             content = response["choices"][0]["message"]["content"]
         except (KeyError, IndexError, TypeError) as exc:
-            raise PermanentSLMError(
-                f"unexpected llama-cpp response shape: {response!r}"
-            ) from exc
+            raise PermanentSLMError(f"unexpected llama-cpp response shape: {response!r}") from exc
         return str(content)
 
 
@@ -348,20 +336,13 @@ def build_extractor(
     model_cfg = config.get("model", {}) if isinstance(config, Mapping) else {}
     if not isinstance(model_cfg, Mapping):
         model_cfg = {}
-    max_new = int(
-        env.get("SLM_MAX_NEW_TOKENS")
-        or model_cfg.get("max_new_tokens")
-        or 2048
-    )
-    temperature = float(
-        env.get("SLM_TEMPERATURE")
-        or model_cfg.get("temperature")
-        or 0.1
-    )
+    max_new = int(env.get("SLM_MAX_NEW_TOKENS") or model_cfg.get("max_new_tokens") or 2048)
+    temperature = float(env.get("SLM_TEMPERATURE") or model_cfg.get("temperature") or 0.1)
     structured_mode = (
-        env.get("SLM_STRUCTURED_MODE")
-        or str(config.get("structured_mode") or "grammar")
-    ).strip().lower()
+        (env.get("SLM_STRUCTURED_MODE") or str(config.get("structured_mode") or "grammar"))
+        .strip()
+        .lower()
+    )
 
     if backend == "mlx-lm":
         repo = env.get("SLM_MLX_REPO") or str(
@@ -383,9 +364,7 @@ def build_extractor(
             temperature=temperature,
             structured_mode=structured_mode,
         )
-    raise PermanentSLMError(
-        f"unknown SLM_BACKEND: {backend!r} (expected: mlx-lm | llama-cpp)"
-    )
+    raise PermanentSLMError(f"unknown SLM_BACKEND: {backend!r} (expected: mlx-lm | llama-cpp)")
 
 
 def load_slm_config(config_path: Path) -> dict[str, Any]:

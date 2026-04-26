@@ -95,13 +95,13 @@ def test_word_in_pyannote_gap_goes_to_nearest_segment(wav: Path) -> None:
     word to the nearest segment by time distance.
     """
     words = [
-        RawWord(text="Dzień", start_s=0.0, end_s=0.4),     # inside seg 0
-        RawWord(text="dobry", start_s=0.4, end_s=0.8),     # inside seg 0
+        RawWord(text="Dzień", start_s=0.0, end_s=0.4),  # inside seg 0
+        RawWord(text="dobry", start_s=0.4, end_s=0.8),  # inside seg 0
         # Word sitting in a pyannote gap (1.5..2.0) — used to vanish.
         # Midpoint 1.75 is closer to seg 0 end (gap 0.75) than seg 1 start (gap 0.25),
         # so this word belongs on the patient side of the boundary.
         RawWord(text="Proszę", start_s=1.6, end_s=1.9),
-        RawWord(text="boli", start_s=2.1, end_s=2.4),      # inside seg 1
+        RawWord(text="boli", start_s=2.1, end_s=2.4),  # inside seg 1
     ]
     segs = [
         RawDiarizationSegment(start_s=0.0, end_s=1.5, speaker_label="SPEAKER_00"),
@@ -121,9 +121,7 @@ def test_word_in_pyannote_gap_goes_to_nearest_segment(wav: Path) -> None:
     # seg[0].end_s=1.5 (dist 0.25)... tie broken by first-match (seg 0).
     # Either assignment is acceptable as long as the word isn't lost;
     # assert it landed in exactly one bucket.
-    placements = [
-        seg for seg in transcript.segments if "Proszę" in seg.text
-    ]
+    placements = [seg for seg in transcript.segments if "Proszę" in seg.text]
     assert len(placements) == 1
 
 
@@ -156,13 +154,13 @@ def test_role_mapping_uses_first_segment_not_total_talk_time(wav: Path) -> None:
     doctor correctly; any total-talk-time variant flips it.
     """
     words = [
-        RawWord(text="Dzień",  start_s=0.2, end_s=0.7),
-        RawWord(text="dobry",  start_s=0.7, end_s=1.2),
-        RawWord(text="Boli",   start_s=5.0, end_s=5.4),
-        RawWord(text="mnie",   start_s=5.4, end_s=5.7),
+        RawWord(text="Dzień", start_s=0.2, end_s=0.7),
+        RawWord(text="dobry", start_s=0.7, end_s=1.2),
+        RawWord(text="Boli", start_s=5.0, end_s=5.4),
+        RawWord(text="mnie", start_s=5.4, end_s=5.7),
     ]
     segs = [
-        RawDiarizationSegment(start_s=0.0, end_s=4.0,  speaker_label="SPEAKER_00"),
+        RawDiarizationSegment(start_s=0.0, end_s=4.0, speaker_label="SPEAKER_00"),
         RawDiarizationSegment(start_s=4.0, end_s=29.0, speaker_label="SPEAKER_01"),
     ]
     transcript = transcribe_and_diarize(

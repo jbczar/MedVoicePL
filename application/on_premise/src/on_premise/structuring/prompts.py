@@ -164,8 +164,7 @@ def render_user_prompt(
     parts.append("Transkrypt wizyty do ustrukturyzowania:")
     parts.append(transcript_block)
     parts.append(
-        "Zwróć pojedynczy obiekt JSON zgodny ze schematem SOAPNote "
-        "(bez markdown, bez komentarzy):"
+        "Zwróć pojedynczy obiekt JSON zgodny ze schematem SOAPNote (bez markdown, bez komentarzy):"
     )
     return "\n\n".join(parts)
 

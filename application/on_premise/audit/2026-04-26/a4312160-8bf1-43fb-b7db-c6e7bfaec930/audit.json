@@ -1,0 +1,25 @@
+{
+  "schema_version": "2c.0",
+  "session_id": "a4312160-8bf1-43fb-b7db-c6e7bfaec930",
+  "records": [
+    {
+      "timestamp": "2026-04-26T21:41:28.219215+00:00",
+      "session_id": "a4312160-8bf1-43fb-b7db-c6e7bfaec930",
+      "soap_sha256": "ff56f6193e781f6b38a9556c3f4edfbc5e513ba5c1381460c75b0f62628f9a88",
+      "transcript_sha256": "295633c5e7045edc90fa2116f87bafbd6b5270d5e42012484f51de5406fc4d5e",
+      "entity_type": "LOCATION",
+      "token": "<LOCATION_1>",
+      "original_sha256": "e4f25d31f2d4bc2259ed96a3e1889fbe8f87bb065a0360707149eb9c3bf4a47b",
+      "location_path": "plan.diagnostic_tests[0]",
+      "location_offset_start": 21,
+      "location_offset_end": 36,
+      "purpose": "anonymization",
+      "legal_basis": "Art_9_2_h",
+      "data_categories": [
+        "LOCATION"
+      ],
+      "controller": "MedVoicePL",
+      "retention_until": "2028-04-25"
+    }
+  ]
+}

@@ -69,7 +69,7 @@ class Transcript(BaseModel):
     # `scenario_id` is set when the source is a synthetic bundle; production
     # recordings (future Phase 3) will pass `None` and use `audio_path` alone.
     scenario_id: str | None = None
-    audio_path: str                # absolute or repo-relative, forward slashes
+    audio_path: str  # absolute or repo-relative, forward slashes
     audio_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
     duration_s: float = Field(ge=0.0)
     language: str = "pl"

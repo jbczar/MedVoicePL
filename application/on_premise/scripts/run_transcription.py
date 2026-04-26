@@ -88,8 +88,12 @@ def transcribe(
     if scenario_id:
         wanted = tuple(scenario_id)
         bundles = [
-            b for b in bundles
-            if any(prefix in json.loads(b.read_text(encoding="utf-8"))["scenario_id"] for prefix in wanted)
+            b
+            for b in bundles
+            if any(
+                prefix in json.loads(b.read_text(encoding="utf-8"))["scenario_id"]
+                for prefix in wanted
+            )
         ]
     if limit:
         bundles = bundles[:limit]

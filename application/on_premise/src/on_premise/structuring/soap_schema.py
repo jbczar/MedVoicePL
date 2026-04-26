@@ -41,14 +41,14 @@ from pydantic import BaseModel, ConfigDict, Field
 # vital requires a code change + schema redeploy on purpose — the value
 # of this field is structure, and widening it silently defeats that.
 VITAL_NAMES = Literal[
-    "bp",      # blood pressure, e.g. "140/90" mmHg
-    "hr",      # heart rate, e.g. "72" bpm
-    "rr",      # respiratory rate, e.g. "16" /min
-    "temp",    # temperature, e.g. "36.8" °C
-    "spo2",    # pulse oximetry, e.g. "98" %
+    "bp",  # blood pressure, e.g. "140/90" mmHg
+    "hr",  # heart rate, e.g. "72" bpm
+    "rr",  # respiratory rate, e.g. "16" /min
+    "temp",  # temperature, e.g. "36.8" °C
+    "spo2",  # pulse oximetry, e.g. "98" %
     "weight",  # kg
     "height",  # cm
-    "bmi",     # kg/m^2
+    "bmi",  # kg/m^2
 ]
 
 
@@ -58,7 +58,7 @@ class Vital(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     name: VITAL_NAMES
-    value: str            # "140/90", "72", "36.8" — string to preserve original spelling
+    value: str  # "140/90", "72", "36.8" — string to preserve original spelling
     unit: str | None = None  # "mmHg", "bpm", "°C" — omitted when obvious from `name`
 
 
@@ -75,7 +75,7 @@ class LabMention(BaseModel):
 
     name: str
     value: str | None = None  # "180", "podwyższone", None when only requested
-    unit: str | None = None   # "mg/dL", None for qualitative
+    unit: str | None = None  # "mg/dL", None for qualitative
 
 
 class SOAPSubjective(BaseModel):
@@ -83,8 +83,8 @@ class SOAPSubjective(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
-    chief_complaint: str                # one-sentence lede
-    history_of_present_illness: str     # narrative paragraph
+    chief_complaint: str  # one-sentence lede
+    history_of_present_illness: str  # narrative paragraph
     review_of_systems: list[str] = Field(default_factory=list)
     medical_history: list[str] = Field(default_factory=list)
     medications_current: list[str] = Field(default_factory=list)

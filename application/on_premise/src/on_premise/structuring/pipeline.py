@@ -105,9 +105,7 @@ def transcript_to_soap(
         except Exception as exc:
             # Extractor errors propagate — retrying a bad prompt won't fix
             # "model not found" or "grammar compile failed".
-            raise SOAPExtractionError(
-                f"extractor failed on attempt {attempt + 1}: {exc}"
-            ) from exc
+            raise SOAPExtractionError(f"extractor failed on attempt {attempt + 1}: {exc}") from exc
 
         try:
             submission = SOAPNoteSubmission.model_validate_json(raw_json)
@@ -170,14 +168,10 @@ def _build_metadata(
     # Literal expects.
     backend_raw, _, model_raw = extractor.name.partition(":")
     if backend_raw not in {"mlx-lm", "llama-cpp"}:
-        raise SOAPExtractionError(
-            f"unexpected extractor.name prefix: {extractor.name!r}"
-        )
+        raise SOAPExtractionError(f"unexpected extractor.name prefix: {extractor.name!r}")
     mode_raw = getattr(extractor, "structured_mode", "grammar")
     if mode_raw not in {"grammar", "raw"}:
-        raise SOAPExtractionError(
-            f"unexpected extractor.structured_mode: {mode_raw!r}"
-        )
+        raise SOAPExtractionError(f"unexpected extractor.structured_mode: {mode_raw!r}")
 
     return SOAPNoteMetadata(
         source_transcript_sha256=transcript_sha,

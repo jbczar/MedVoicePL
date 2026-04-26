@@ -88,16 +88,17 @@ def extract(
         console.print(f"[red]--variant must be clean|noisy|both, got {variant!r}[/red]")
         raise typer.Exit(code=2)
 
-    variants_to_run = (
-        ["clean", "noisy"] if variant == "both" else [variant]
-    )
+    variants_to_run = ["clean", "noisy"] if variant == "both" else [variant]
     transcript_filenames = {
         "clean": "transcript.json",
         "noisy": "transcript_noisy.json",
     }
 
-    transcript_dirs = sorted(p for p in transcripts_dir.iterdir() if p.is_dir()) \
-        if transcripts_dir.exists() else []
+    transcript_dirs = (
+        sorted(p for p in transcripts_dir.iterdir() if p.is_dir())
+        if transcripts_dir.exists()
+        else []
+    )
     if not transcript_dirs:
         console.print(f"[red]No transcripts under {transcripts_dir}[/red]")
         raise typer.Exit(code=1)
@@ -152,12 +153,12 @@ def extract(
                         failures.append((tdir.name, f"no {transcript_filenames[v]}"))
                     continue
                 try:
-                    transcript = Transcript.model_validate_json(
-                        t_path.read_text(encoding="utf-8")
-                    )
+                    transcript = Transcript.model_validate_json(t_path.read_text(encoding="utf-8"))
                     soap = transcript_to_soap(transcript, extractor=extractor)
-                    out_path = soap_dir / tdir.name / (
-                        "soap_note_noisy.json" if v == "noisy" else "soap_note.json"
+                    out_path = (
+                        soap_dir
+                        / tdir.name
+                        / ("soap_note_noisy.json" if v == "noisy" else "soap_note.json")
                     )
                     out_path.parent.mkdir(parents=True, exist_ok=True)
                     out_path.write_text(

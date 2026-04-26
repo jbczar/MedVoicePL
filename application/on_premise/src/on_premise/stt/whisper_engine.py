@@ -48,7 +48,7 @@ class RawWord:
 class RawTranscription:
     """Whisper output, pre-diarization."""
 
-    text: str                 # concatenated segment texts (legacy WER path)
+    text: str  # concatenated segment texts (legacy WER path)
     words: list[RawWord] = field(default_factory=list)
     duration_s: float = 0.0
     language: str = "pl"
@@ -57,8 +57,8 @@ class RawTranscription:
 class Transcriber(Protocol):
     """Minimal contract every STT backend satisfies."""
 
-    name: str       # "mlx-whisper:large-v3" | "faster-whisper:large-v3"
-    device: str     # "mps" | "cpu" | "cuda"
+    name: str  # "mlx-whisper:large-v3" | "faster-whisper:large-v3"
+    device: str  # "mps" | "cpu" | "cuda"
 
     def transcribe(self, wav_path: Path) -> RawTranscription: ...
 
@@ -76,8 +76,7 @@ class FasterWhisperTranscriber:
             from faster_whisper import WhisperModel  # type: ignore[import-not-found]
         except ImportError as exc:  # pragma: no cover — install-time guard
             raise RuntimeError(
-                "faster-whisper is not installed. "
-                "Run: uv pip install faster-whisper"
+                "faster-whisper is not installed. Run: uv pip install faster-whisper"
             ) from exc
 
         resolved = device if device != "auto" else ("cuda" if _cuda_available() else "cpu")
@@ -179,9 +178,7 @@ class MLXWhisperTranscriber:
                         start_s=float(w.get("start") or 0.0),
                         end_s=float(w.get("end") or 0.0),
                         probability=(
-                            float(w["probability"])
-                            if w.get("probability") is not None
-                            else None
+                            float(w["probability"]) if w.get("probability") is not None else None
                         ),
                     )
                 )
@@ -229,9 +226,7 @@ def build_transcriber(
             device=str(device),
             compute_type=str(compute_type),
         )
-    raise ValueError(
-        f"unknown WHISPER_BACKEND: {backend!r} (expected: mlx | faster-whisper)"
-    )
+    raise ValueError(f"unknown WHISPER_BACKEND: {backend!r} (expected: mlx | faster-whisper)")
 
 
 def load_whisper_config(config_path: Path) -> dict[str, object]:

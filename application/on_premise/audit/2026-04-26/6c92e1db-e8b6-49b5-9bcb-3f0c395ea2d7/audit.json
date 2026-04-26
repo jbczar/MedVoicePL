@@ -1,0 +1,101 @@
+{
+  "schema_version": "2c.0",
+  "session_id": "6c92e1db-e8b6-49b5-9bcb-3f0c395ea2d7",
+  "records": [
+    {
+      "timestamp": "2026-04-26T21:41:28.171353+00:00",
+      "session_id": "6c92e1db-e8b6-49b5-9bcb-3f0c395ea2d7",
+      "soap_sha256": "ccaa8854f0f9334fd774eb532282198f0fd5f9c61f75123865a28302ba9ed881",
+      "transcript_sha256": "d46f91c5624a3fb64f034a1f2a69c0e4d87af19b98b6cbb23e95575856000657",
+      "entity_type": "PERSON",
+      "token": "<PERSON_1>",
+      "original_sha256": "2a3161b4fe7861a151246e4ee29e9c7dd05a875aac6de683ae184cc79b4d168c",
+      "location_path": "subjective.history_of_present_illness",
+      "location_offset_start": 282,
+      "location_offset_end": 289,
+      "purpose": "anonymization",
+      "legal_basis": "Art_9_2_h",
+      "data_categories": [
+        "PERSON"
+      ],
+      "controller": "MedVoicePL",
+      "retention_until": "2028-04-25"
+    },
+    {
+      "timestamp": "2026-04-26T21:41:28.171360+00:00",
+      "session_id": "6c92e1db-e8b6-49b5-9bcb-3f0c395ea2d7",
+      "soap_sha256": "ccaa8854f0f9334fd774eb532282198f0fd5f9c61f75123865a28302ba9ed881",
+      "transcript_sha256": "d46f91c5624a3fb64f034a1f2a69c0e4d87af19b98b6cbb23e95575856000657",
+      "entity_type": "PERSON",
+      "token": "<PERSON_2>",
+      "original_sha256": "44c7092cf7852a0e50ba073acfe032ae0ddcc5723c7c6c3934e99746f7f34499",
+      "location_path": "assessment.clinical_reasoning",
+      "location_offset_start": 172,
+      "location_offset_end": 180,
+      "purpose": "anonymization",
+      "legal_basis": "Art_9_2_h",
+      "data_categories": [
+        "PERSON"
+      ],
+      "controller": "MedVoicePL",
+      "retention_until": "2028-04-25"
+    },
+    {
+      "timestamp": "2026-04-26T21:41:28.171362+00:00",
+      "session_id": "6c92e1db-e8b6-49b5-9bcb-3f0c395ea2d7",
+      "soap_sha256": "ccaa8854f0f9334fd774eb532282198f0fd5f9c61f75123865a28302ba9ed881",
+      "transcript_sha256": "d46f91c5624a3fb64f034a1f2a69c0e4d87af19b98b6cbb23e95575856000657",
+      "entity_type": "PERSON",
+      "token": "<PERSON_3>",
+      "original_sha256": "4c917e78651431800d6574b760bd3d11434891cb09e8b6227e102f484d979043",
+      "location_path": "plan.medications_prescribed[0]",
+      "location_offset_start": 0,
+      "location_offset_end": 7,
+      "purpose": "anonymization",
+      "legal_basis": "Art_9_2_h",
+      "data_categories": [
+        "PERSON"
+      ],
+      "controller": "MedVoicePL",
+      "retention_until": "2028-04-25"
+    },
+    {
+      "timestamp": "2026-04-26T21:41:28.171364+00:00",
+      "session_id": "6c92e1db-e8b6-49b5-9bcb-3f0c395ea2d7",
+      "soap_sha256": "ccaa8854f0f9334fd774eb532282198f0fd5f9c61f75123865a28302ba9ed881",
+      "transcript_sha256": "d46f91c5624a3fb64f034a1f2a69c0e4d87af19b98b6cbb23e95575856000657",
+      "entity_type": "PERSON",
+      "token": "<PERSON_4>",
+      "original_sha256": "771ace766b8230aded54e5bf6be12acd51ddfb1036998a0659607419d46e1074",
+      "location_path": "plan.diagnostic_tests[0]",
+      "location_offset_start": 0,
+      "location_offset_end": 6,
+      "purpose": "anonymization",
+      "legal_basis": "Art_9_2_h",
+      "data_categories": [
+        "PERSON"
+      ],
+      "controller": "MedVoicePL",
+      "retention_until": "2028-04-25"
+    },
+    {
+      "timestamp": "2026-04-26T21:41:28.171365+00:00",
+      "session_id": "6c92e1db-e8b6-49b5-9bcb-3f0c395ea2d7",
+      "soap_sha256": "ccaa8854f0f9334fd774eb532282198f0fd5f9c61f75123865a28302ba9ed881",
+      "transcript_sha256": "d46f91c5624a3fb64f034a1f2a69c0e4d87af19b98b6cbb23e95575856000657",
+      "entity_type": "PERSON",
+      "token": "<PERSON_5>",
+      "original_sha256": "e5416ab182eb8497abdd0241d56cfb0536969d97105e8704bd64689d6474d1a5",
+      "location_path": "plan.follow_up",
+      "location_offset_start": 20,
+      "location_offset_end": 27,
+      "purpose": "anonymization",
+      "legal_basis": "Art_9_2_h",
+      "data_categories": [
+        "PERSON"
+      ],
+      "controller": "MedVoicePL",
+      "retention_until": "2028-04-25"
+    }
+  ]
+}

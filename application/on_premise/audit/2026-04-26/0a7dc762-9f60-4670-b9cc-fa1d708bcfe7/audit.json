@@ -1,0 +1,101 @@
+{
+  "schema_version": "2c.0",
+  "session_id": "0a7dc762-9f60-4670-b9cc-fa1d708bcfe7",
+  "records": [
+    {
+      "timestamp": "2026-04-26T21:31:38.677870+00:00",
+      "session_id": "0a7dc762-9f60-4670-b9cc-fa1d708bcfe7",
+      "soap_sha256": "ad3191752a04f8ea7da27ae5528259ff96a06bc47cd36bd4ccd107a9586b6dfa",
+      "transcript_sha256": "dba6ae16576594a0b0f72e1d9c6b77af50455550148cc6ceea8b5db7f23946d3",
+      "entity_type": "PERSON",
+      "token": "<PERSON_1>",
+      "original_sha256": "1838ce3af0f2adf0402e8ff40a5ff595d1be6728a539a3275d1f3dceff3946b2",
+      "location_path": "subjective.history_of_present_illness",
+      "location_offset_start": 307,
+      "location_offset_end": 327,
+      "purpose": "anonymization",
+      "legal_basis": "Art_9_2_h",
+      "data_categories": [
+        "PERSON"
+      ],
+      "controller": "MedVoicePL",
+      "retention_until": "2028-04-25"
+    },
+    {
+      "timestamp": "2026-04-26T21:31:38.677879+00:00",
+      "session_id": "0a7dc762-9f60-4670-b9cc-fa1d708bcfe7",
+      "soap_sha256": "ad3191752a04f8ea7da27ae5528259ff96a06bc47cd36bd4ccd107a9586b6dfa",
+      "transcript_sha256": "dba6ae16576594a0b0f72e1d9c6b77af50455550148cc6ceea8b5db7f23946d3",
+      "entity_type": "LOCATION",
+      "token": "<LOCATION_1>",
+      "original_sha256": "d56dfcc7895f393d5765be7d0840162b2414bb8082168d83014135f32b58f3c0",
+      "location_path": "subjective.history_of_present_illness",
+      "location_offset_start": 339,
+      "location_offset_end": 347,
+      "purpose": "anonymization",
+      "legal_basis": "Art_9_2_h",
+      "data_categories": [
+        "LOCATION"
+      ],
+      "controller": "MedVoicePL",
+      "retention_until": "2028-04-25"
+    },
+    {
+      "timestamp": "2026-04-26T21:31:38.677882+00:00",
+      "session_id": "0a7dc762-9f60-4670-b9cc-fa1d708bcfe7",
+      "soap_sha256": "ad3191752a04f8ea7da27ae5528259ff96a06bc47cd36bd4ccd107a9586b6dfa",
+      "transcript_sha256": "dba6ae16576594a0b0f72e1d9c6b77af50455550148cc6ceea8b5db7f23946d3",
+      "entity_type": "LOCATION",
+      "token": "<LOCATION_2>",
+      "original_sha256": "1db0daccba62f2027d277b4f35587b30948a117b7b2b6e9e58b669407efd6aca",
+      "location_path": "subjective.history_of_present_illness",
+      "location_offset_start": 351,
+      "location_offset_end": 365,
+      "purpose": "anonymization",
+      "legal_basis": "Art_9_2_h",
+      "data_categories": [
+        "LOCATION"
+      ],
+      "controller": "MedVoicePL",
+      "retention_until": "2028-04-25"
+    },
+    {
+      "timestamp": "2026-04-26T21:31:38.677884+00:00",
+      "session_id": "0a7dc762-9f60-4670-b9cc-fa1d708bcfe7",
+      "soap_sha256": "ad3191752a04f8ea7da27ae5528259ff96a06bc47cd36bd4ccd107a9586b6dfa",
+      "transcript_sha256": "dba6ae16576594a0b0f72e1d9c6b77af50455550148cc6ceea8b5db7f23946d3",
+      "entity_type": "PERSON",
+      "token": "<PERSON_2>",
+      "original_sha256": "265948729f26c012cc29dff584b69a0a92e8f21d5cf5ebdce3fb1431ce451ab3",
+      "location_path": "assessment.primary_diagnosis",
+      "location_offset_start": 43,
+      "location_offset_end": 50,
+      "purpose": "anonymization",
+      "legal_basis": "Art_9_2_h",
+      "data_categories": [
+        "PERSON"
+      ],
+      "controller": "MedVoicePL",
+      "retention_until": "2028-04-25"
+    },
+    {
+      "timestamp": "2026-04-26T21:31:38.677885+00:00",
+      "session_id": "0a7dc762-9f60-4670-b9cc-fa1d708bcfe7",
+      "soap_sha256": "ad3191752a04f8ea7da27ae5528259ff96a06bc47cd36bd4ccd107a9586b6dfa",
+      "transcript_sha256": "dba6ae16576594a0b0f72e1d9c6b77af50455550148cc6ceea8b5db7f23946d3",
+      "entity_type": "PERSON",
+      "token": "<PERSON_2>",
+      "original_sha256": "265948729f26c012cc29dff584b69a0a92e8f21d5cf5ebdce3fb1431ce451ab3",
+      "location_path": "assessment.clinical_reasoning",
+      "location_offset_start": 252,
+      "location_offset_end": 259,
+      "purpose": "anonymization",
+      "legal_basis": "Art_9_2_h",
+      "data_categories": [
+        "PERSON"
+      ],
+      "controller": "MedVoicePL",
+      "retention_until": "2028-04-25"
+    }
+  ]
+}

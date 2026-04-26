@@ -63,6 +63,15 @@ ignore = ["E501"]  # line length handled by formatter
 "**/tests/**/*.py" = ["TC001", "TC003"]  # tests import types at runtime
 # Polish prompt strings use EN DASH intentionally for numeric ranges (1–2, 2–3).
 "**/structuring/prompts.py" = ["RUF001"]
+# Phase 2c trust gate: en-dash in docstrings (range "100–500 ms"),
+# long-s in regex char class (Latin Extended-A range), and the
+# `Violation` exception name is intentional (semantic over PEP-conventional).
+"**/trust_gate.py" = ["RUF001", "RUF002", "RUF003", "N818"]
+# Phase 2c FastAPI app: `UUID`/`date`/`AsyncIterator` are imported at
+# runtime because FastAPI's parameter validation reads runtime
+# annotations; TC003 doesn't apply. `Query(...)` in defaults is the
+# canonical FastAPI idiom (B008 same as Typer's `Option(...)`).
+"**/api/app.py" = ["TC003", "B008"]
 
 [tool.ruff.lint.flake8-type-checking]
 runtime-evaluated-base-classes = ["pydantic.BaseModel"]

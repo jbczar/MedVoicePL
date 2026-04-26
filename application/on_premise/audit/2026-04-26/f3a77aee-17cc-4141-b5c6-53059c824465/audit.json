@@ -1,0 +1,63 @@
+{
+  "schema_version": "2c.0",
+  "session_id": "f3a77aee-17cc-4141-b5c6-53059c824465",
+  "records": [
+    {
+      "timestamp": "2026-04-26T21:41:28.332624+00:00",
+      "session_id": "f3a77aee-17cc-4141-b5c6-53059c824465",
+      "soap_sha256": "cdb38885ec16f9285b2f726d058e83ddfc0fa5dbfd24cc6fc832413a085cfca7",
+      "transcript_sha256": "c65c121b287d184c9d3b186e44186e849736e75914b9e7870e7e6439f73934eb",
+      "entity_type": "PERSON",
+      "token": "<PERSON_1>",
+      "original_sha256": "771ace766b8230aded54e5bf6be12acd51ddfb1036998a0659607419d46e1074",
+      "location_path": "assessment.clinical_reasoning",
+      "location_offset_start": 186,
+      "location_offset_end": 192,
+      "purpose": "anonymization",
+      "legal_basis": "Art_9_2_h",
+      "data_categories": [
+        "PERSON"
+      ],
+      "controller": "MedVoicePL",
+      "retention_until": "2028-04-25"
+    },
+    {
+      "timestamp": "2026-04-26T21:41:28.332631+00:00",
+      "session_id": "f3a77aee-17cc-4141-b5c6-53059c824465",
+      "soap_sha256": "cdb38885ec16f9285b2f726d058e83ddfc0fa5dbfd24cc6fc832413a085cfca7",
+      "transcript_sha256": "c65c121b287d184c9d3b186e44186e849736e75914b9e7870e7e6439f73934eb",
+      "entity_type": "PERSON",
+      "token": "<PERSON_1>",
+      "original_sha256": "771ace766b8230aded54e5bf6be12acd51ddfb1036998a0659607419d46e1074",
+      "location_path": "plan.diagnostic_tests[0]",
+      "location_offset_start": 0,
+      "location_offset_end": 6,
+      "purpose": "anonymization",
+      "legal_basis": "Art_9_2_h",
+      "data_categories": [
+        "PERSON"
+      ],
+      "controller": "MedVoicePL",
+      "retention_until": "2028-04-25"
+    },
+    {
+      "timestamp": "2026-04-26T21:41:28.332634+00:00",
+      "session_id": "f3a77aee-17cc-4141-b5c6-53059c824465",
+      "soap_sha256": "cdb38885ec16f9285b2f726d058e83ddfc0fa5dbfd24cc6fc832413a085cfca7",
+      "transcript_sha256": "c65c121b287d184c9d3b186e44186e849736e75914b9e7870e7e6439f73934eb",
+      "entity_type": "PERSON",
+      "token": "<PERSON_2>",
+      "original_sha256": "e5416ab182eb8497abdd0241d56cfb0536969d97105e8704bd64689d6474d1a5",
+      "location_path": "plan.follow_up",
+      "location_offset_start": 20,
+      "location_offset_end": 27,
+      "purpose": "anonymization",
+      "legal_basis": "Art_9_2_h",
+      "data_categories": [
+        "PERSON"
+      ],
+      "controller": "MedVoicePL",
+      "retention_until": "2028-04-25"
+    }
+  ]
+}

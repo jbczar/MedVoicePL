@@ -1,0 +1,12 @@
+{
+  "timestamp": "2026-04-26T21:31:38.678260+00:00",
+  "session_id": "0a7dc762-9f60-4670-b9cc-fa1d708bcfe7",
+  "decision": "fail",
+  "violations": [
+    {
+      "location": "red_flags[0]",
+      "kind": "charset",
+      "detail": "disallowed character"
+    }
+  ]
+}

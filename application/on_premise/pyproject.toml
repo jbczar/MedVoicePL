@@ -20,11 +20,23 @@ dependencies = [
     # Phase 2b — SLM structuring
     "mlx-lm>=0.19",                 # Apple Silicon primary for Bielik / PLLuM
     "lm-format-enforcer>=0.10",     # grammar-constrained JSON decoding (both backends)
+    # Phase 2c — Anonymization + FastAPI
+    "presidio-analyzer>=2.2",       # PII detection orchestrator
+    "presidio-anonymizer>=2.2",     # text-replacement engine
+    "spacy>=3.8",                   # NLP backbone for Presidio (PL model in [anonymization] extra). 3.8+ pulls blis 1.x which compiles on Python 3.14.
+    "fastapi>=0.110",               # localhost API for the gateway to call
+    "uvicorn[standard]>=0.27",      # ASGI server
+    "httpx>=0.27",                  # FastAPI TestClient dep + ad-hoc smoke calls
 ]
 
 [project.optional-dependencies]
 apple = ["mlx-whisper>=0.4", "mlx-lm>=0.19"]    # Apple Silicon speed-up; Linux/CI can drop it
 portable = ["llama-cpp-python>=0.2.90,<0.3"]    # GGUF fallback; compiles from source (~3-5 min on M5)
+# Polish spaCy model (~600 MB). Pinned by URL — deterministic, CI-friendly, doesn't require
+# `python -m spacy download` (which contacts spaCy's resolver at install time).
+anonymization = [
+    "pl-core-news-lg @ https://github.com/explosion/spacy-models/releases/download/pl_core_news_lg-3.8.0/pl_core_news_lg-3.8.0-py3-none-any.whl",
+]
 
 [tool.uv.sources]
 shared = { workspace = true }
@@ -32,6 +44,11 @@ shared = { workspace = true }
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[tool.hatch.metadata]
+# Required because [anonymization] pins `pl-core-news-lg` by GitHub release URL
+# (deterministic, doesn't hit spaCy's resolver at install time).
+allow-direct-references = true
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/on_premise"]

@@ -1,0 +1,121 @@
+{
+  "timestamp": "2026-04-26T12:42:48.541057+02:00",
+  "backend": "mlx-lm:speakleash/Bielik-11B-v3.0-Instruct-MLX-4bit",
+  "device": "mps",
+  "structured_mode": "raw",
+  "summary": {
+    "n": 8,
+    "schema_compliance_rate": 0.75,
+    "mean_cc_recall": 0.3490530303030303,
+    "diagnosis_match_rate": 0.8333333333333334,
+    "icd10_match_rate": 0.5,
+    "plan_nonempty_rate": 1.0,
+    "mean_duration_s": 125.80249131249002
+  },
+  "rows": [
+    {
+      "scenario_id": "a9b1c2d3-e4f5-6789-a0b1-c2d3e4f5a6b7",
+      "variant": "clean",
+      "schema_ok": false,
+      "cc_recall": 0.0,
+      "diag_match": false,
+      "icd10_match": false,
+      "plan_nonempty": false,
+      "coverage_filled": 0,
+      "coverage_total": 0,
+      "duration_s": 207.90949516597902,
+      "error": "SOAPExtractionError: SOAP extraction failed after 4 attempts"
+    },
+    {
+      "scenario_id": "a9d8f7e6-c5b4-4e3d-8a2b-1f09c7d6b5a4",
+      "variant": "clean",
+      "schema_ok": true,
+      "cc_recall": 0.375,
+      "diag_match": true,
+      "icd10_match": true,
+      "plan_nonempty": true,
+      "coverage_filled": 8,
+      "coverage_total": 19,
+      "duration_s": 42.41354425001191,
+      "error": null
+    },
+    {
+      "scenario_id": "b3f0c1a9-7e5d-4a1b-9f2c-6d8e0a3b4c5d",
+      "variant": "clean",
+      "schema_ok": true,
+      "cc_recall": 0.6,
+      "diag_match": true,
+      "icd10_match": false,
+      "plan_nonempty": true,
+      "coverage_filled": 12,
+      "coverage_total": 19,
+      "duration_s": 184.28018025000347,
+      "error": null
+    },
+    {
+      "scenario_id": "endo-acromegaly-01",
+      "variant": "clean",
+      "schema_ok": true,
+      "cc_recall": 0.5,
+      "diag_match": true,
+      "icd10_match": true,
+      "plan_nonempty": true,
+      "coverage_filled": 7,
+      "coverage_total": 19,
+      "duration_s": 50.97933987498982,
+      "error": null
+    },
+    {
+      "scenario_id": "endo-graves-001",
+      "variant": "clean",
+      "schema_ok": true,
+      "cc_recall": 0.25,
+      "diag_match": true,
+      "icd10_match": true,
+      "plan_nonempty": true,
+      "coverage_filled": 12,
+      "coverage_total": 19,
+      "duration_s": 228.40058495895937,
+      "error": null
+    },
+    {
+      "scenario_id": "kardio-migotanie-01",
+      "variant": "clean",
+      "schema_ok": true,
+      "cc_recall": 0.18181818181818177,
+      "diag_match": true,
+      "icd10_match": false,
+      "plan_nonempty": true,
+      "coverage_filled": 8,
+      "coverage_total": 19,
+      "duration_s": 51.44180641701678,
+      "error": null
+    },
+    {
+      "scenario_id": "neuro-cts-001",
+      "variant": "clean",
+      "schema_ok": true,
+      "cc_recall": 0.1875,
+      "diag_match": false,
+      "icd10_match": false,
+      "plan_nonempty": true,
+      "coverage_filled": 8,
+      "coverage_total": 19,
+      "duration_s": 53.019618207996245,
+      "error": null
+    },
+    {
+      "scenario_id": "synth-mr-gerd-01",
+      "variant": "clean",
+      "schema_ok": false,
+      "cc_recall": 0.0,
+      "diag_match": false,
+      "icd10_match": false,
+      "plan_nonempty": false,
+      "coverage_filled": 0,
+      "coverage_total": 0,
+      "duration_s": 187.97536137496354,
+      "error": "SOAPExtractionError: SOAP extraction failed after 4 attempts"
+    }
+  ]
+}

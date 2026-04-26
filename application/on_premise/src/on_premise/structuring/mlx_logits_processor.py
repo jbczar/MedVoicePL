@@ -119,9 +119,7 @@ class MLXLogitsProcessor:
         return logits + mask
 
 
-def build_mlx_logits_processor(
-    tokenizer: Any, parser: CharacterLevelParser
-) -> MLXLogitsProcessor:
+def build_mlx_logits_processor(tokenizer: Any, parser: CharacterLevelParser) -> MLXLogitsProcessor:
     tokenizer_data = build_mlx_tokenizer_data(tokenizer)
     token_enforcer = TokenEnforcer(tokenizer_data, parser)
     return MLXLogitsProcessor(token_enforcer)

@@ -126,7 +126,9 @@ def _check_pyannote(*, skip_load: bool) -> CheckResult:
             "uv pip install pyannote.audio",
         )
     if skip_load:
-        return CheckResult("pyannote/speaker-diarization-3.1", True, "import only (load skipped)", None)
+        return CheckResult(
+            "pyannote/speaker-diarization-3.1", True, "import only (load skipped)", None
+        )
 
     token = os.environ.get("HUGGINGFACE_TOKEN", "").strip()
     if not token:
