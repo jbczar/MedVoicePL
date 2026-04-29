@@ -1,0 +1,11 @@
+{
+  "scenario_id": "b3f0c1a9",
+  "diagnosis_label": "napadowe migotanie przedsionków",
+  "diagnostic_only": false,
+  "expected_empty_drug_list": false,
+  "expected_drugs": [
+    {"name": "Apixaban", "atc": "B01AF02", "must_be_refundable": true}
+  ],
+  "expected_referrals": ["kardiologia"],
+  "expected_tests": ["Holter EKG"]
+}

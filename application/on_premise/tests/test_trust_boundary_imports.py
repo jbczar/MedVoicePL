@@ -52,6 +52,16 @@ FORBIDDEN_NAMES = {
     "AuditLogger",
     "PresidioAnonymizer",
     "AnonymizationResult",
+    # Phase 3a — cloud-side operational internals.
+    "NFZIndex",
+    "NFZEntry",
+    "ChPLRetriever",
+    "ChPLChain",
+    "VertexClient",
+    "MatchResult",
+    "EnrichedCandidate",
+    "DrugCandidate",
+    "DrugCandidateList",
 }
 
 # Symbols that MUST be importable from `shared.schemas` for the

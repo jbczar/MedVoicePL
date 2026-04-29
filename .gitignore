@@ -101,6 +101,12 @@ research_and_testing/results/figures/
 application/cloud/data/vectorstore/*
 !application/cloud/data/vectorstore/.gitkeep
 
+# Phase 3a — cloud agent outputs + NFZ index + Qdrant DB (regen-able)
+application/cloud/output/
+application/cloud/data/nfz_formulary/raw/
+application/cloud/data/nfz_formulary/index_*.json
+application/cloud/data/qdrant/
+
 # ------------------------------------------
 # Jupyter Notebooks — outputs
 # ------------------------------------------

@@ -1,0 +1,9 @@
+{
+  "scenario_id": "kardio-m",
+  "diagnosis_label": "podejrzenie napadowego migotania przedsionków",
+  "diagnostic_only": true,
+  "expected_empty_drug_list": true,
+  "expected_drugs": [],
+  "expected_referrals": ["kardiologia"],
+  "expected_tests": ["Holter EKG (24h)"]
+}

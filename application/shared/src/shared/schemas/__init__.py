@@ -9,6 +9,12 @@ this at the module-graph level.
 
 from __future__ import annotations
 
+from shared.schemas.agent import (
+    AgentMetadata,
+    AgentSuggestion,
+    DiagnosticTest,
+    Referral,
+)
 from shared.schemas.anonymized import (
     AnonymizedAssessment,
     AnonymizedLabMention,
@@ -20,8 +26,11 @@ from shared.schemas.anonymized import (
     AnonymizedVital,
     Specialization,
 )
+from shared.schemas.drug import DrugSuggestion, ReimbursementLevel
 
 __all__ = [
+    "AgentMetadata",
+    "AgentSuggestion",
     "AnonymizedAssessment",
     "AnonymizedLabMention",
     "AnonymizedMetadata",
@@ -30,5 +39,9 @@ __all__ = [
     "AnonymizedSOAPNote",
     "AnonymizedSubjective",
     "AnonymizedVital",
+    "DiagnosticTest",
+    "DrugSuggestion",
+    "Referral",
+    "ReimbursementLevel",
     "Specialization",
 ]

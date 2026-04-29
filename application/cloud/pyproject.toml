@@ -5,6 +5,22 @@ description = "Cloud integration: LLM, RAG, and NFZ reimbursement search."
 requires-python = ">=3.11"
 dependencies = [
     "shared",
+    # Phase 3a — Agent stack (LangGraph + RAG + NFZ + Vertex Gemini)
+    "langgraph>=0.2",                   # StateGraph orchestrator (3 nodes)
+    "langchain-google-vertexai>=2.0",   # ChatVertexAI binding (LangGraph node)
+    "google-genai>=0.4",                # direct Vertex client (mirrors dataset_pipeline Phase 1a)
+    "qdrant-client>=1.10",              # in-process vector store (replaces ChromaDB; see DD-1)
+    "sentence-transformers>=3.0",       # sdadas/mmlw-roberta-large embedder
+    "tenacity>=8.2",                    # retry decorator for transient Vertex errors
+    "fastapi>=0.110",                   # /v1/agent/suggest endpoint
+    "uvicorn[standard]>=0.27",          # ASGI server
+    "httpx>=0.27",                      # FastAPI TestClient + ad-hoc HTTP
+    "openpyxl>=3.1",                    # NFZ XLSX parser
+    "pydantic>=2.6",
+    "pyyaml>=6.0",                      # config loader
+    "typer>=0.12",                      # CLI scripts
+    "rich>=13.7",                       # CLI tables
+    "python-dotenv>=1.0",               # load_dotenv() in CLIs
 ]
 
 [tool.uv.sources]

@@ -1,0 +1,9 @@
+{
+  "scenario_id": "a9b1c2d3",
+  "diagnosis_label": "podejrzenie POChP",
+  "diagnostic_only": true,
+  "expected_empty_drug_list": true,
+  "expected_drugs": [],
+  "expected_referrals": [],
+  "expected_tests": ["spirometria"]
+}

@@ -60,9 +60,23 @@ ignore = ["E501"]  # line length handled by formatter
 
 [tool.ruff.lint.per-file-ignores]
 "**/scripts/*.py" = ["B008"]  # Typer idiom: Option() in argument defaults
-"**/tests/**/*.py" = ["TC001", "TC003"]  # tests import types at runtime
+"**/tests/**/*.py" = ["TC001", "TC002", "TC003"]  # tests import types at runtime
+# Phase 3a — Typer CLI lives under data/ rather than scripts/.
+"**/data/nfz_formulary/ingest_nfz.py" = ["B008"]
 # Polish prompt strings use EN DASH intentionally for numeric ranges (1–2, 2–3).
 "**/structuring/prompts.py" = ["RUF001"]
+# Phase 3a — cloud modules use Pydantic + LangGraph with runtime annotations
+# (LangGraph reads `AgentState` TypedDict at runtime; orchestrator nodes
+# inspect `NFZIndex` / `ChPLChain` types). Move-to-type-checking-block
+# would break runtime introspection. EN DASH "—" appears in Polish
+# drug docstrings ("propranolol — beta-blocker") — RUF001/002 ignored.
+"**/cloud/orchestrator.py" = ["RUF001", "RUF002", "TC001", "TC002", "TC003"]
+"**/cloud/rag/retriever.py" = ["RUF002", "TC003"]
+"**/cloud/llm_integration/llm_client.py" = ["TC002"]
+"**/cloud/llm_integration/prompts.py" = ["RUF001", "TC001"]
+"**/cloud/data/nfz_formulary/ingest_nfz.py" = ["B008", "TC003"]
+"**/cloud/nfz/formulary_search.py" = ["TC003"]
+"**/cloud/rag/chain.py" = ["TC003"]
 # Phase 2c trust gate: en-dash in docstrings (range "100–500 ms"),
 # long-s in regex char class (Latin Extended-A range), and the
 # `Violation` exception name is intentional (semantic over PEP-conventional).
