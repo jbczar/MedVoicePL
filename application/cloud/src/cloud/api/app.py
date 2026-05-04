@@ -77,6 +77,7 @@ def get_agent() -> CloudAgent:
     """
     if "agent" not in _AGENT_HOLDER:
         from cloud.llm_integration.llm_client import build_llm_client
+        from cloud.nfz.atc_resolver import build_resolver
         from cloud.nfz.formulary_search import latest_index_path, load_nfz_index
         from cloud.rag.chain import build_chain
 
@@ -94,13 +95,16 @@ def get_agent() -> CloudAgent:
         )
         qdrant_path = os.environ.get("QDRANT_PATH")
 
+        llm_client = build_llm_client()
+        cache_path = nfz_dir / "atc_cache.json"
         _AGENT_HOLDER["agent"] = CloudAgent(
-            llm=build_llm_client(),
+            llm=llm_client,
             nfz=load_nfz_index(index_path),
             chain=build_chain(
                 corpus_dir=chpl_dir,
                 qdrant_path=Path(qdrant_path) if qdrant_path else None,
             ),
+            atc_resolver=build_resolver(llm=llm_client, cache_path=cache_path),
             agent_version=_agent_version(),
         )
     return _AGENT_HOLDER["agent"]

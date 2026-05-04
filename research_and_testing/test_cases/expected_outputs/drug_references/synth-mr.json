@@ -3,8 +3,11 @@
   "diagnosis_label": "GERD",
   "diagnostic_only": false,
   "expected_empty_drug_list": false,
-  "expected_drugs": [
-    {"name": "Omeprazol", "atc": "A02BC01", "must_be_refundable": true}
+  "expected_slots": [
+    {
+      "label": "PPI (inhibitor pompy protonowej, klasa A02BC)",
+      "acceptable": ["A02BC01", "A02BC02", "A02BC03", "A02BC04", "A02BC05"]
+    }
   ],
   "expected_referrals": [],
   "expected_tests": []

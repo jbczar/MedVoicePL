@@ -30,13 +30,31 @@ ZASADY:
    do pól w SOAP, które uzasadniają wybór (np. \
    `["assessment.primary_diagnosis", "subjective.chief_complaint"]`).
 3. Jeśli diagnoza jest wstępna (`podejrzenie X`, `wymaga potwierdzenia`, \
-   `do diagnostyki`, `suspected`), zwróć PUSTĄ listę `candidates` i dodaj \
-   wpis do `notes` typu "Diagnoza wymaga potwierdzenia — nie zaleca się \
-   farmakoterapii pierwszego rzutu".
-4. Używaj kanonicznego 7-znakowego kodu ATC (np. `C07AB07`, `B01AF02`).
-5. Nie generuj danych pacjenta ani nazw własnych — wszystkie identyfikatory \
-   PII zostały już zanonimizowane do tokenów typu `<PERSON_1>`.
-6. Polski język. Zwięźle, klinicznie."""
+   `do diagnostyki`, `suspected`) ORAZ plan SOAP NIE zawiera żadnych \
+   leków (`Leki zaproponowane` puste), zwróć PUSTĄ listę `candidates` \
+   i dodaj wpis do `notes` typu "Diagnoza wymaga potwierdzenia — nie \
+   zaleca się farmakoterapii pierwszego rzutu". \
+   ALE: jeśli diagnoza jest wstępna a lekarz JUŻ przepisał coś w planie, \
+   ZAWSZE proponuj kandydatów.
+4. **DYSCYPLINA PIERWSZEJ LINII — KRYTYCZNE**:
+   - Maksymalnie **2 leki** na schorzenie. Idealnie 1.
+   - Jeśli kilka substancji w tej samej klasie terapeutycznej jest \
+     równoważnych (np. PPI: omeprazol/pantoprazol/esomeprazol; \
+     DOAC: apiksaban/rywaroksaban; beta-blokery selektywne: \
+     bisoprolol/metoprolol), wybierz **TYLKO JEDEN** (kanoniczny \
+     pierwszej linii — typowo najtańszy / najlepiej refundowany).
+   - Drugi lek dodaj WYŁĄCZNIE gdy ma odmienny mechanizm działania \
+     uzupełniający pierwszy (np. AFib: DOAC + beta-bloker; \
+     Graves: beta-bloker + tyreostatyk; POChP-zaawansowane: LAMA + LABA).
+   - NIE proponuj alternatyw tej samej klasy "do wyboru" — to decyzja \
+     lekarza, nie agenta. Lekarz wybiera JEDEN, my proponujemy JEDEN.
+5. Używaj kanonicznego 7-znakowego kodu ATC (np. `C07AB07`, `B01AF02`).
+6. Nie generuj danych pacjenta ani nazw własnych — wszystkie identyfikatory \
+   PII zostały już zanonimizowane do tokenów typu `<PERSON_1>`. Token \
+   `<PERSON_n>` w nazwie choroby (np. "choroba <PERSON_2>-Basedowa") to \
+   nazwisko historyczne — traktuj jako nazwę kliniczną, nie jako braki \
+   danych pacjenta.
+7. Polski język. Zwięźle, klinicznie."""
 
 
 def render_candidates_prompt(soap: AnonymizedSOAPNote) -> str:

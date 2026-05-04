@@ -26,15 +26,44 @@ class ExpectedDrug:
 
 
 @dataclass(frozen=True)
+class DrugSlot:
+    """A clinical 'slot' the suggestion must fill — e.g. 'antikoagulant in
+    AFib' has multiple acceptable drugs (apiksaban OR rywaroksaban OR
+    dabigatran). Recall counts a slot as fulfilled when ANY of its
+    `acceptable` ATCs appears in the suggestion.
+    """
+
+    label: str
+    acceptable: tuple[str, ...]  # ATC codes — any one fulfills the slot
+
+    @classmethod
+    def from_dict(cls, raw: dict[str, Any]) -> DrugSlot:
+        return cls(
+            label=str(raw.get("label", "")),
+            acceptable=tuple(str(a).upper() for a in raw.get("acceptable", [])),
+        )
+
+
+@dataclass(frozen=True)
 class GroundTruth:
-    """Hand-curated reference for one scenario."""
+    """Hand-curated reference for one scenario.
+
+    Two ways to express expected drugs:
+    * `expected_drugs` (legacy) — list of single drugs, all required.
+    * `expected_slots` (new) — list of `DrugSlot`s, each slot has multiple
+      acceptable drugs (any one fulfills it).
+
+    Use `expected_slots` for scenarios where multiple drugs in the same
+    class are clinically equivalent (PPI, DOAC, BB-selective, etc.).
+    """
 
     scenario_id: str
     diagnostic_only: bool
     expected_empty_drug_list: bool
-    expected_drugs: tuple[ExpectedDrug, ...]
-    expected_referrals: tuple[str, ...]
-    expected_tests: tuple[str, ...]
+    expected_drugs: tuple[ExpectedDrug, ...] = ()
+    expected_slots: tuple[DrugSlot, ...] = ()
+    expected_referrals: tuple[str, ...] = ()
+    expected_tests: tuple[str, ...] = ()
     diagnosis_label: str = ""
 
     @classmethod
@@ -45,6 +74,9 @@ class GroundTruth:
             expected_empty_drug_list=bool(raw.get("expected_empty_drug_list", False)),
             expected_drugs=tuple(
                 ExpectedDrug.from_dict(d) for d in raw.get("expected_drugs", [])
+            ),
+            expected_slots=tuple(
+                DrugSlot.from_dict(s) for s in raw.get("expected_slots", [])
             ),
             expected_referrals=tuple(raw.get("expected_referrals", []) or []),
             expected_tests=tuple(raw.get("expected_tests", []) or []),
@@ -58,23 +90,47 @@ class GroundTruth:
 
 
 def drug_recall(suggestion_atc: list[str], expected: GroundTruth) -> float:
-    """Fraction of `expected.expected_drugs` whose ATC code appears in
-    `suggestion_atc`. Returns 1.0 when nothing was expected.
+    """Slot-aware recall.
+
+    * If `expected.expected_slots` is set, returns the fraction of slots
+      fulfilled (a slot is fulfilled when ANY of its `acceptable` ATCs
+      appears in the suggestion). This is the right semantics when the
+      ground truth allows clinically equivalent alternatives.
+    * Else falls back to legacy strict match against `expected_drugs`.
+    * Returns 1.0 when nothing was expected.
     """
+    suggested = {a.upper() for a in suggestion_atc}
+    if expected.expected_slots:
+        fulfilled = sum(
+            1 for slot in expected.expected_slots
+            if any(atc in suggested for atc in slot.acceptable)
+        )
+        return fulfilled / len(expected.expected_slots)
     if not expected.expected_drugs:
         return 1.0
-    suggested = {a.upper() for a in suggestion_atc}
     matched = sum(1 for d in expected.expected_drugs if d.atc.upper() in suggested)
     return matched / len(expected.expected_drugs)
 
 
 def drug_precision(suggestion_atc: list[str], expected: GroundTruth) -> float:
-    """Fraction of suggested ATCs that are in the expected list.
+    """Slot-aware precision.
 
-    Returns 1.0 on empty suggestion (nothing wrong was suggested).
+    * With `expected_slots`: a suggestion is "correct" if it appears in
+      ANY slot's `acceptable` list. Suggestions outside all slots count
+      against precision.
+    * Falls back to strict legacy match against `expected_drugs`.
+    * Returns 1.0 on empty suggestion (nothing wrong was suggested).
     """
     if not suggestion_atc:
         return 1.0
+    if expected.expected_slots:
+        all_acceptable = {
+            atc.upper()
+            for slot in expected.expected_slots
+            for atc in slot.acceptable
+        }
+        matched = sum(1 for atc in suggestion_atc if atc.upper() in all_acceptable)
+        return matched / len(suggestion_atc)
     expected_set = {d.atc.upper() for d in expected.expected_drugs}
     if not expected_set:
         # Nothing expected, but something suggested — over-suggestion.
@@ -83,19 +139,39 @@ def drug_precision(suggestion_atc: list[str], expected: GroundTruth) -> float:
     return matched / len(suggestion_atc)
 
 
-def nfz_refund_accuracy(suggestion_pairs: list[tuple[str, str]]) -> bool:
+def nfz_refund_accuracy(
+    suggestion_pairs: list[tuple[str, str]],
+    expected: GroundTruth | None = None,
+) -> bool:
     """For each suggested drug we received `(atc, refund_tier)`. Accuracy
     here means: every drug that has a known NFZ tier reports a non-`none`
-    tier. (We can't independently verify the tier without a second NFZ
-    index in the eval — that responsibility lives in the agent's
-    `enrich_from_nfz` node and is sanity-checked at agent runtime.)
+    tier — UNLESS the drug is in `expected.expected_slots` (clinically
+    valid even if not currently on the wykaz, e.g. Tiamazol in some
+    NFZ snapshots).
 
-    Returns True when every suggested drug has tier ≠ `nierefundowane`,
-    or when the suggestion list is empty.
+    Returns True when:
+    * suggestion list is empty, OR
+    * every suggested drug has tier ≠ `nierefundowane` OR is in an
+      expected slot (acknowledging genuine clinical necessity even
+      without refundacja in this NFZ edition).
     """
     if not suggestion_pairs:
         return True
-    return all(tier != "nierefundowane" for _, tier in suggestion_pairs)
+    expected_atcs: set[str] = set()
+    if expected is not None and expected.expected_slots:
+        expected_atcs = {
+            atc.upper()
+            for slot in expected.expected_slots
+            for atc in slot.acceptable
+        }
+    for atc, tier in suggestion_pairs:
+        if tier != "nierefundowane":
+            continue
+        # Tier is nierefundowane — pass only if it's a clinically
+        # expected drug (not a hallucinated one).
+        if atc.upper() not in expected_atcs:
+            return False
+    return True
 
 
 def empty_list_correctness(num_drugs: int, expected: GroundTruth) -> bool:

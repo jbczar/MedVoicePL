@@ -133,7 +133,12 @@ def _scenarios_root() -> Path | None:
 
 def get_anonymizer() -> PresidioAnonymizer:
     """Default factory. Tests override with a stub-registry-backed instance."""
-    return PresidioAnonymizer(registry=default_registry(scenarios_dir=_scenarios_root()))
+    from on_premise.anonymization.eponym_filter import load_default
+
+    return PresidioAnonymizer(
+        registry=default_registry(scenarios_dir=_scenarios_root()),
+        eponym_filter=load_default(),
+    )
 
 
 def get_audit_logger() -> AuditLogger:

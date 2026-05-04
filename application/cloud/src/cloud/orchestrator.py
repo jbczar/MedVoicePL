@@ -32,6 +32,7 @@ from cloud.llm_integration.prompts import (
     render_correction_hint,
 )
 from cloud.llm_integration.response_parser import DrugCandidate, DrugCandidateList
+from cloud.nfz.atc_resolver import LazyAtcResolver, _NullResolver
 from cloud.nfz.drug_matcher import MatchResult, match_candidate
 from cloud.nfz.formulary_search import NFZEntry, NFZIndex
 from cloud.rag.chain import ChPLChain
@@ -81,6 +82,7 @@ class AgentState(TypedDict, total=False):
     llm: LLMClient
     nfz: NFZIndex
     chain: ChPLChain
+    atc_resolver: LazyAtcResolver
     agent_version: str
 
 
@@ -136,13 +138,30 @@ def _propose_candidates_node(state: AgentState) -> dict[str, Any]:
 
 
 def _is_preliminary(soap: AnonymizedSOAPNote) -> bool:
+    """Short-circuit only when the diagnosis is preliminary AND the doctor
+    has not already prescribed anything.
+
+    Phase 2b's SLM frequently prefixes diagnoses with "podejrzenie" even
+    in cases where the doctor has clinically committed to bridge therapy
+    (e.g. Graves' with propranolol). If `plan.medications_prescribed` is
+    already populated, the doctor has decided to prescribe — the agent
+    should still propose NFZ-aware alternatives instead of returning an
+    empty list.
+
+    The DD-2 empty-output rule still fires when:
+      - diagnosis carries a preliminary marker AND
+      - the SOAP plan has zero prescribed medications.
+    """
     text_blob = " ".join(
         [
             soap.assessment.primary_diagnosis or "",
             soap.assessment.clinical_reasoning or "",
         ]
     )
-    return bool(_PRELIMINARY_RE.search(text_blob))
+    if not _PRELIMINARY_RE.search(text_blob):
+        return False
+    # Doctor already prescribed → not "purely diagnostic".
+    return not any(med.strip() for med in soap.plan.medications_prescribed)
 
 
 # ---------------------------------------------------------------------------
@@ -152,6 +171,7 @@ def _is_preliminary(soap: AnonymizedSOAPNote) -> bool:
 
 def _enrich_from_nfz_node(state: AgentState) -> dict[str, Any]:
     nfz: NFZIndex = state["nfz"]
+    resolver: LazyAtcResolver = state.get("atc_resolver", _NullResolver())
     candidates: list[DrugCandidate] = state.get("candidates", [])
     notes: list[str] = list(state.get("notes", []))
 
@@ -160,6 +180,19 @@ def _enrich_from_nfz_node(state: AgentState) -> dict[str, Any]:
         match: MatchResult | None = match_candidate(
             name=cand.name, atc_code=cand.atc_code, index=nfz
         )
+
+        # First-pass miss → consult lazy resolver, re-attempt lookup.
+        if match is None:
+            resolved_atc = resolver.resolve(cand.name)
+            if resolved_atc is not None and resolved_atc != cand.atc_code:
+                match = match_candidate(
+                    name=cand.name, atc_code=resolved_atc, index=nfz
+                )
+                if match is not None:
+                    log.info(
+                        "lazy resolver recovered %r → %s", cand.name, resolved_atc
+                    )
+
         if match is None:
             notes.append(
                 f"{cand.name} ({cand.atc_code}): brak w wykazie NFZ — pełnopłatne."
@@ -283,6 +316,7 @@ class CloudAgent:
     llm: LLMClient
     nfz: NFZIndex
     chain: ChPLChain
+    atc_resolver: LazyAtcResolver = field(default_factory=_NullResolver)
     agent_version: str = "3a.0"
     _graph: Any = field(init=False, default=None)
 
@@ -299,6 +333,7 @@ class CloudAgent:
             "llm": self.llm,
             "nfz": self.nfz,
             "chain": self.chain,
+            "atc_resolver": self.atc_resolver,
             "agent_version": self.agent_version,
         }
         result = self._graph.invoke(state)

@@ -1,0 +1,3118 @@
+{
+  "Propranololi hydrochloridum": {
+    "atc": "C07AA05",
+    "display": "Propranolol"
+  },
+  "Thiamazolum": {
+    "atc": "H03BB02",
+    "display": "Tiamazol"
+  },
+  "Methimazolum": {
+    "atc": "H03BB02",
+    "display": "Tiamazol"
+  },
+  "Apixabanum": {
+    "atc": "B01AF02",
+    "display": "Apixaban"
+  },
+  "Bisoprololi fumaras": {
+    "atc": "C07AB07",
+    "display": "Bisoprolol"
+  },
+  "Bisoprololum": {
+    "atc": "C07AB07",
+    "display": "Bisoprolol"
+  },
+  "Omeprazolum": {
+    "atc": "A02BC01",
+    "display": "Omeprazol"
+  },
+  "Salbutamolum": {
+    "atc": "R03AC02",
+    "display": "Salbutamol"
+  },
+  "Ipratropii bromidum": {
+    "atc": "R03BB01",
+    "display": "Ipratropium"
+  },
+  "Levodopum + Carbidopum": {
+    "atc": "N04BA02",
+    "display": "Levodopa+Karbidopa"
+  },
+  "Levodopa + Carbidopa": {
+    "atc": "N04BA02",
+    "display": "Levodopa+Karbidopa"
+  },
+  "Levodopum + Benserazidum": {
+    "atc": "N04BA02",
+    "display": "Levodopa+Benserazyd"
+  },
+  "Octreotidum": {
+    "atc": "H01CB02",
+    "display": "Oktreotyd"
+  },
+  "Tamsulosini hydrochloridum": {
+    "atc": "G04CA02",
+    "display": "Tamsulosyna"
+  },
+  "Tamsulosinum": {
+    "atc": "G04CA02",
+    "display": "Tamsulosyna"
+  },
+  "Metforminum": {
+    "atc": "A10BA02",
+    "display": "Metformina"
+  },
+  "Metformini hydrochloridum": {
+    "atc": "A10BA02",
+    "display": "Metformina"
+  },
+  "Ramiprilum": {
+    "atc": "C09AA05",
+    "display": "Ramipryl"
+  },
+  "Lidocaini hydrochloridum": {
+    "atc": "N01BB02",
+    "display": "Lidokaina"
+  },
+  "Lisinoprilum": {
+    "atc": "C09AA03",
+    "display": "Lizynopryl"
+  },
+  "Amlodipinum": {
+    "atc": "C08CA01",
+    "display": "Amlodypina"
+  },
+  "Amlodipini besilas": {
+    "atc": "C08CA01",
+    "display": "Amlodypina"
+  },
+  "Atorvastatinum": {
+    "atc": "C10AA05",
+    "display": "Atorwastatyna"
+  },
+  "Simvastatinum": {
+    "atc": "C10AA01",
+    "display": "Simwastatyna"
+  },
+  "Rosuvastatinum": {
+    "atc": "C10AA07",
+    "display": "Rosuwastatyna"
+  },
+  "Levothyroxinum natricum": {
+    "atc": "H03AA01",
+    "display": "Lewotyroksyna"
+  },
+  "Pantoprazolum": {
+    "atc": "A02BC02",
+    "display": "Pantoprazol"
+  },
+  "Esomeprazolum": {
+    "atc": "A02BC05",
+    "display": "Ezomeprazol"
+  },
+  "Lansoprazolum": {
+    "atc": "A02BC03",
+    "display": "Lansoprazol"
+  },
+  "Acidum acetylsalicylicum": {
+    "atc": "B01AC06",
+    "display": "Kwas acetylosalicylowy"
+  },
+  "Clopidogrelum": {
+    "atc": "B01AC04",
+    "display": "Klopidogrel"
+  },
+  "Rivaroxabanum": {
+    "atc": "B01AF01",
+    "display": "Rywaroksaban"
+  },
+  "Dabigatranum etexilatum": {
+    "atc": "B01AE07",
+    "display": "Dabigatran"
+  },
+  "Warfarinum natricum": {
+    "atc": "B01AA03",
+    "display": "Warfaryna"
+  },
+  "Acenocoumarolum": {
+    "atc": "B01AA07",
+    "display": "Acenokumarol"
+  },
+  "Furosemidum": {
+    "atc": "C03CA01",
+    "display": "Furosemid"
+  },
+  "Hydrochlorothiazidum": {
+    "atc": "C03AA03",
+    "display": "Hydrochlorotiazyd"
+  },
+  "Indapamidum": {
+    "atc": "C03BA11",
+    "display": "Indapamid"
+  },
+  "Spironolactonum": {
+    "atc": "C03DA01",
+    "display": "Spironolakton"
+  },
+  "Metoprololi tartras": {
+    "atc": "C07AB02",
+    "display": "Metoprolol"
+  },
+  "Metoprololi succinas": {
+    "atc": "C07AB02",
+    "display": "Metoprolol"
+  },
+  "Carvedilolum": {
+    "atc": "C07AG02",
+    "display": "Karwedilol"
+  },
+  "Nebivololum": {
+    "atc": "C07AB12",
+    "display": "Nebiwolol"
+  },
+  "Verapamilum": {
+    "atc": "C08DA01",
+    "display": "Werapamil"
+  },
+  "Diltiazemum": {
+    "atc": "C08DB01",
+    "display": "Diltiazem"
+  },
+  "Lerkanidipinum": {
+    "atc": "C08CA13",
+    "display": "Lerkanidypina"
+  },
+  "Enalaprilum": {
+    "atc": "C09AA02",
+    "display": "Enalapryl"
+  },
+  "Perindoprilum": {
+    "atc": "C09AA04",
+    "display": "Perindopryl"
+  },
+  "Captoprilum": {
+    "atc": "C09AA01",
+    "display": "Kaptopryl"
+  },
+  "Losartanum kalicum": {
+    "atc": "C09CA01",
+    "display": "Losartan"
+  },
+  "Telmisartanum": {
+    "atc": "C09CA07",
+    "display": "Telmisartan"
+  },
+  "Valsartanum": {
+    "atc": "C09CA03",
+    "display": "Walsartan"
+  },
+  "Insulinum humanum": {
+    "atc": "A10AB01",
+    "display": "Insulina ludzka"
+  },
+  "Insulinum glargine": {
+    "atc": "A10AE04",
+    "display": "Insulina glargine"
+  },
+  "Insulinum lispro": {
+    "atc": "A10AB04",
+    "display": "Insulina lispro"
+  },
+  "Gliclazidum": {
+    "atc": "A10BB09",
+    "display": "Gliklazyd"
+  },
+  "Glimepiridum": {
+    "atc": "A10BB12",
+    "display": "Glimepiryd"
+  },
+  "Empagliflozinum": {
+    "atc": "A10BK03",
+    "display": "Empagliflozyna"
+  },
+  "Dapagliflozinum": {
+    "atc": "A10BK01",
+    "display": "Dapagliflozyna"
+  },
+  "Sitagliptinum": {
+    "atc": "A10BH01",
+    "display": "Sitagliptyna"
+  },
+  "Paracetamolum": {
+    "atc": "N02BE01",
+    "display": "Paracetamol"
+  },
+  "Ibuprofenum": {
+    "atc": "M01AE01",
+    "display": "Ibuprofen"
+  },
+  "Diclofenacum natricum": {
+    "atc": "M01AB05",
+    "display": "Diklofenak"
+  },
+  "Naproxenum": {
+    "atc": "M01AE02",
+    "display": "Naproksen"
+  },
+  "Acidum folicum": {
+    "atc": "B03BB01",
+    "display": "Kwas foliowy"
+  },
+  "Cyanocobalaminum": {
+    "atc": "B03BA01",
+    "display": "Witamina B12"
+  },
+  "Cholecalciferolum": {
+    "atc": "A11CC05",
+    "display": "Cholekalcyferol (wit. D3)"
+  },
+  "Sertralinum": {
+    "atc": "N06AB06",
+    "display": "Sertralina"
+  },
+  "Escitalopramum": {
+    "atc": "N06AB10",
+    "display": "Escytalopram"
+  },
+  "Fluoxetinum": {
+    "atc": "N06AB03",
+    "display": "Fluoksetyna"
+  },
+  "Citalopramum": {
+    "atc": "N06AB04",
+    "display": "Citalopram"
+  },
+  "Mirtazapinum": {
+    "atc": "N06AX11",
+    "display": "Mirtazapina"
+  },
+  "Quetiapinum": {
+    "atc": "N05AH04",
+    "display": "Kwetiapina"
+  },
+  "Olanzapinum": {
+    "atc": "N05AH03",
+    "display": "Olanzapina"
+  },
+  "Diazepamum": {
+    "atc": "N05BA01",
+    "display": "Diazepam"
+  },
+  "Hydroxyzinum": {
+    "atc": "N05BB01",
+    "display": "Hydroksyzyna"
+  },
+  "Alprazolamum": {
+    "atc": "N05BA12",
+    "display": "Alprazolam"
+  },
+  "Amoxicillinum": {
+    "atc": "J01CA04",
+    "display": "Amoksycylina"
+  },
+  "Amoxicillinum + Acidum clavulanicum": {
+    "atc": "J01CR02",
+    "display": "Amoksycylina + kwas klawulanowy"
+  },
+  "Doxycyclinum": {
+    "atc": "J01AA02",
+    "display": "Doksycyklina"
+  },
+  "Azithromycinum": {
+    "atc": "J01FA10",
+    "display": "Azytromycyna"
+  },
+  "Clarithromycinum": {
+    "atc": "J01FA09",
+    "display": "Klarytromycyna"
+  },
+  "Ciprofloxacinum": {
+    "atc": "J01MA02",
+    "display": "Cyprofloksacyna"
+  },
+  "Levofloxacinum": {
+    "atc": "J01MA12",
+    "display": "Lewofloksacyna"
+  },
+  "Acyclovirum": {
+    "atc": "J05AB01",
+    "display": "Acyklowir"
+  },
+  "Aciclovirum": {
+    "atc": "J05AB01",
+    "display": "Acyklowir"
+  },
+  "Allopurinolum": {
+    "atc": "M04AA01",
+    "display": "Allopurynol"
+  },
+  "Atorvastatinum calcicum": {
+    "atc": "C10AA05",
+    "display": "Atorwastatyna"
+  },
+  "Budesonidum": {
+    "atc": "R03BA02",
+    "display": "Budezonid"
+  },
+  "Fluticasoni propionas": {
+    "atc": "R03BA05",
+    "display": "Flutykazon"
+  },
+  "Formoterolum": {
+    "atc": "R03AC13",
+    "display": "Formoterol"
+  },
+  "Salmeterolum": {
+    "atc": "R03AC12",
+    "display": "Salmeterol"
+  },
+  "Tiotropii bromidum": {
+    "atc": "R03BB04",
+    "display": "Tiotropium"
+  },
+  "Montelukastum": {
+    "atc": "R03DC03",
+    "display": "Montelukast"
+  },
+  "Loratadinum": {
+    "atc": "R06AX13",
+    "display": "Loratadyna"
+  },
+  "Cetirizinum": {
+    "atc": "R06AE07",
+    "display": "Cetyryzyna"
+  },
+  "Anakinrum": {
+    "atc": "L04AC03",
+    "display": "Anakinra"
+  },
+  "Anastrozolum": {
+    "atc": "L02BG03",
+    "display": "Anastrozol"
+  },
+  "Anifrolumabum": {
+    "atc": "L04AC17",
+    "display": "Anifrolumab"
+  },
+  "Apalutamidum": {
+    "atc": "L02BB05",
+    "display": "Apalutamid"
+  },
+  "Apomorphini hydrochloridum hemihydricum": {
+    "atc": "N04BC07",
+    "display": "Apomorfina"
+  },
+  "Aprepitantum": {
+    "atc": "A04AD12",
+    "display": "Aprepitant"
+  },
+  "Aripiprazolum": {
+    "atc": "N05AX12",
+    "display": "Arypiprazol"
+  },
+  "Arsenii trioxidum": {
+    "atc": "L01XX27",
+    "display": "Trójtlenek arsenu"
+  },
+  "Asciminibum": {
+    "atc": "L01EA07",
+    "display": "Ascyminib"
+  },
+  "Asfotasum alfa": {
+    "atc": "A16AA10",
+    "display": "Asfotaza alfa"
+  },
+  "Atezolizumabum": {
+    "atc": "L01FF04",
+    "display": "Atezolizumab"
+  },
+  "Atomoxetinum": {
+    "atc": "N06BA09",
+    "display": "Atomoksetyna"
+  },
+  "Atorvastatinum calcicum trihydricum": {
+    "atc": "C10AA05",
+    "display": "Atorwastatyna"
+  },
+  "Avacopanum": {
+    "atc": "L04AA50",
+    "display": "Awakopan"
+  },
+  "Avalglucosidasum alfa": {
+    "atc": "A16AB18",
+    "display": "Awalglukozydaza alfa"
+  },
+  "Avapritinibum": {
+    "atc": "L01EX22",
+    "display": "Awaprytynib"
+  },
+  "Avatrombopag": {
+    "atc": "B02BX08",
+    "display": "Awaprombopag"
+  },
+  "Avelumabum": {
+    "atc": "L01FF03",
+    "display": "Awelumab"
+  },
+  "Axicabtagene ciloleucel": {
+    "atc": "L01XX74",
+    "display": "Aksykabtagen cyloleucel"
+  },
+  "Axitinibum": {
+    "atc": "L01XE17",
+    "display": "Aksytynib"
+  },
+  "Azacitidine": {
+    "atc": "L01BC07",
+    "display": "Azacytydyna"
+  },
+  "Azacitidinum": {
+    "atc": "L01BC07",
+    "display": "Azacytydyna"
+  },
+  "Azathioprinum": {
+    "atc": "L04AX01",
+    "display": "Azatiopryna"
+  },
+  "Baricitinibum": {
+    "atc": "L04AA37",
+    "display": "Barycytynib"
+  },
+  "Beclometasoni dipropionas + Formoteroli fumaras": {
+    "atc": "R03AK07",
+    "display": "Beklometazon + Formoterol"
+  },
+  "Beclometasoni dipropionas + Formoteroli fumaras + Glycopyrronium": {
+    "atc": "R03AL11",
+    "display": "Beklometazon + Formoterol + Glikopironium"
+  },
+  "Beclometasoni dipropionas + Formoteroli fumaras dihydricus": {
+    "atc": "R03AK07",
+    "display": "Beklometazon + Formoterol"
+  },
+  "Beclometasoni dipropionas anhydricus + Formoteroli fumaras dihydricus": {
+    "atc": "R03AK07",
+    "display": "Beklometazon + Formoterol"
+  },
+  "Bedaquilinum": {
+    "atc": "J04AK05",
+    "display": "Bedakwilina"
+  },
+  "Bendamustini hydrochloridum": {
+    "atc": "L01AA09",
+    "display": "Bendamustyna"
+  },
+  "Bendamustini hydrochloridum monohydricum": {
+    "atc": "L01AA09",
+    "display": "Bendamustyna"
+  },
+  "Benralizumab": {
+    "atc": "R03DX10",
+    "display": "Benralizumab"
+  },
+  "Benzathini phenoxymethylpenicillinum": {
+    "atc": "J01CE10",
+    "display": "Fenoksymetylopenicylina"
+  },
+  "Berotralstatum": {
+    "atc": "B02BX09",
+    "display": "Berotralstat"
+  },
+  "Betainum anhydricum": {
+    "atc": "A16AA06",
+    "display": "Betaina"
+  },
+  "Betamethasoni dipropionas + Acidum salicylicum": {
+    "atc": "D07BC01",
+    "display": "Betametazon + Kwas salicylowy"
+  },
+  "Betamethasoni dipropionas + Betamethasoni natrii phosphas": {
+    "atc": "H02AB01",
+    "display": "Betametazon"
+  },
+  "Betamethasonum + Acidum salicylicum": {
+    "atc": "D07BC01",
+    "display": "Betametazon + Kwas salicylowy"
+  },
+  "Betaxololum": {
+    "atc": "C07AB05",
+    "display": "Betaksolol"
+  },
+  "Bevacizumabum": {
+    "atc": "L01XC07",
+    "display": "Bewacyzumab"
+  },
+  "Bexarotenum": {
+    "atc": "L01XX34",
+    "display": "Beksaroten"
+  },
+  "Bicalutamidum": {
+    "atc": "L02BB03",
+    "display": "Bikalutamid"
+  },
+  "Bilastinum": {
+    "atc": "R06AX29",
+    "display": "Bilastyna"
+  },
+  "Bimatoprostum": {
+    "atc": "S01EE03",
+    "display": "Bimatoprost"
+  },
+  "Bimatoprostum + Timololum": {
+    "atc": "S01ED51",
+    "display": "Bimatoprost + Tymolol"
+  },
+  "Bimekizumabum": {
+    "atc": "L04AC19",
+    "display": "Bimekizumab"
+  },
+  "Binimetinib": {
+    "atc": "L01EE03",
+    "display": "Binimetynib"
+  },
+  "Biperideni hydrochloridum": {
+    "atc": "N04AA02",
+    "display": "Biperyden"
+  },
+  "Bisoprolol fumarate": {
+    "atc": "C07AB07",
+    "display": "Bisoprolol"
+  },
+  "Bleomycini sulphas": {
+    "atc": "L01DC01",
+    "display": "Bleomycyna"
+  },
+  "Blinatumomabum": {
+    "atc": "L01XC19",
+    "display": "Blinatumomab"
+  },
+  "Bortezomibum": {
+    "atc": "L01XX32",
+    "display": "Bortezomib"
+  },
+  "Bosentanum": {
+    "atc": "C02KX01",
+    "display": "Bozentan"
+  },
+  "Bosutinibum": {
+    "atc": "L01XE14",
+    "display": "Bosutynib"
+  },
+  "Brentuximabum vedotinum": {
+    "atc": "L01XC12",
+    "display": "Brentuksymab wedotyny"
+  },
+  "Brexpiprazolum": {
+    "atc": "N05AX16",
+    "display": "Brekspiprazol"
+  },
+  "Brexucabtagene autoleucel": {
+    "atc": "L01XX74",
+    "display": "Breksukabtagenu autoleucel"
+  },
+  "Brigatinibum": {
+    "atc": "L01XE40",
+    "display": "Brygatynib"
+  },
+  "Brimonidini tartras": {
+    "atc": "S01EA05",
+    "display": "Brymonidyna"
+  },
+  "Brimonidini tartras + Timololum": {
+    "atc": "S01ED52",
+    "display": "Brymonidyna + Tymolol"
+  },
+  "Brinzolamidum": {
+    "atc": "S01EC04",
+    "display": "Brynzolamid"
+  },
+  "Brivaracetamum": {
+    "atc": "N03AX23",
+    "display": "Brywaracetam"
+  },
+  "Brolucizumabum": {
+    "atc": "S01LA06",
+    "display": "Brolucyzumab"
+  },
+  "Bromocriptinum": {
+    "atc": "N04BC01",
+    "display": "Bromokryptyna"
+  },
+  "Budesonidum + Formoteroli fumaras dihydricus": {
+    "atc": "R03AK07",
+    "display": "Budesonid + Formoterol"
+  },
+  "Buprenorphinum": {
+    "atc": "N07BC01",
+    "display": "Buprenorfina"
+  },
+  "Burosumab": {
+    "atc": "M05BX06",
+    "display": "Burosumab"
+  },
+  "Buspironi hydrochloridum": {
+    "atc": "N05BE01",
+    "display": "Buspiron"
+  },
+  "Busulfanum": {
+    "atc": "L01AB01",
+    "display": "Busulfan"
+  },
+  "Cabazitaxelum": {
+    "atc": "L01CD04",
+    "display": "Kabazytaksel"
+  },
+  "Cabozantinibum": {
+    "atc": "L01XE26",
+    "display": "Kabozantynib"
+  },
+  "Calcii folinas": {
+    "atc": "B03BB01",
+    "display": "Folinian wapnia"
+  },
+  "Calcipotriolum + Betamethasonum": {
+    "atc": "D05AX52",
+    "display": "Kalcypotriol + Betametazon"
+  },
+  "Calcitriolum": {
+    "atc": "A11CC04",
+    "display": "Kalcytriol"
+  },
+  "Canagliflozinum": {
+    "atc": "A10BK02",
+    "display": "Kanagliflozyna"
+  },
+  "Canakinumabum": {
+    "atc": "L04AC08",
+    "display": "Kanakinumab"
+  },
+  "Candesartanum cilexetili": {
+    "atc": "C09CA06",
+    "display": "Kandesartan"
+  },
+  "Candesartanum cilexetili + Amlodipinum": {
+    "atc": "C09DB07",
+    "display": "Kandesartan + Amlodypina"
+  },
+  "Candesartanum cilexetili + Hydrochlorothiazidum": {
+    "atc": "C09DA06",
+    "display": "Kandesartan + Hydrochlorotiazyd"
+  },
+  "Candesartanum cilexetilum": {
+    "atc": "C09CA06",
+    "display": "Kandesartan"
+  },
+  "Candesartanum cilexetilum + Hydrochlorothiazidum": {
+    "atc": "C09DA06",
+    "display": "Kandesartan + Hydrochlorotiazyd"
+  },
+  "Cannabidiolum": {
+    "atc": "N03AX24",
+    "display": "Kannabidiol"
+  },
+  "Capecitabinum": {
+    "atc": "L01BC06",
+    "display": "Kapecytabina"
+  },
+  "Capivasertibum": {
+    "atc": "L01XE62",
+    "display": "Kapiwasertyb"
+  },
+  "Caplacizumabum": {
+    "atc": "B01AX07",
+    "display": "Kaplacyzumab"
+  },
+  "Carbamazepinum": {
+    "atc": "N03AF01",
+    "display": "Karbamazepina"
+  },
+  "Carboplatinum": {
+    "atc": "L01XA02",
+    "display": "Karboplatyna"
+  },
+  "Carfilzomibum": {
+    "atc": "L01XX44",
+    "display": "Karfilzomib"
+  },
+  "Cariprazinum": {
+    "atc": "N05AX17",
+    "display": "Karyprazyna"
+  },
+  "Cefaclorum": {
+    "atc": "J01DC04",
+    "display": "Cefaklor"
+  },
+  "Cefuroximum": {
+    "atc": "J01DC02",
+    "display": "Cefuroksym"
+  },
+  "Cemiplimabum": {
+    "atc": "L01FF05",
+    "display": "Cemiplimab"
+  },
+  "Cenobamate": {
+    "atc": "N03AX25",
+    "display": "Cenobamat"
+  },
+  "Certolizumabum pegol": {
+    "atc": "L04AB05",
+    "display": "Certolizumab pegol"
+  },
+  "Cetirizine dihydrochloride": {
+    "atc": "R06AE07",
+    "display": "Cetyryzyna"
+  },
+  "Cetirizini dihydrochloridum": {
+    "atc": "R06AE07",
+    "display": "Cetyryzyna"
+  },
+  "Cetrorelixum": {
+    "atc": "H01CC02",
+    "display": "Cetroreliks"
+  },
+  "Cetuximabum": {
+    "atc": "L01XC06",
+    "display": "Cetuksymab"
+  },
+  "Chlorambucilum": {
+    "atc": "L01AA02",
+    "display": "Chlorambucyl"
+  },
+  "Chlorprothixeni hydrochloridum": {
+    "atc": "N05AF03",
+    "display": "Chlorprotiksen"
+  },
+  "Ciclesonidum": {
+    "atc": "R03BA08",
+    "display": "Cyklezonid"
+  },
+  "Ciclosporinum": {
+    "atc": "L04AD01",
+    "display": "Cyklosporyna"
+  },
+  "Cilazaprilum": {
+    "atc": "C09AA08",
+    "display": "Cilazapryl"
+  },
+  "Cinacalcetii hydrochloridum": {
+    "atc": "H05BX01",
+    "display": "Cinakalcet"
+  },
+  "Cinacalcetum": {
+    "atc": "H05BX01",
+    "display": "Cinakalcet"
+  },
+  "Cisplatinum": {
+    "atc": "L01XA01",
+    "display": "Cisplatyna"
+  },
+  "Cladribinum": {
+    "atc": "L01BB04",
+    "display": "Kladrybina"
+  },
+  "Clindamycinum": {
+    "atc": "J01FF01",
+    "display": "Klindamycyna"
+  },
+  "Clobetasoli propionas": {
+    "atc": "D07AD01",
+    "display": "Klobetazolu propionian"
+  },
+  "Clomipramini hydrochloridum": {
+    "atc": "N06AA04",
+    "display": "Klomipramina"
+  },
+  "Clonazepamum": {
+    "atc": "N03AE01",
+    "display": "Klonazepam"
+  },
+  "Clonidini hydrochloridum": {
+    "atc": "C02AC01",
+    "display": "Klonidyna"
+  },
+  "Clopamidum": {
+    "atc": "C03BA03",
+    "display": "Klopamid"
+  },
+  "Cloxacillinum": {
+    "atc": "J01CF02",
+    "display": "Kloksacylina"
+  },
+  "Clozapinum": {
+    "atc": "N05AH02",
+    "display": "Klozapina"
+  },
+  "Cobimetinibum": {
+    "atc": "L01XE39",
+    "display": "Kobimetynib"
+  },
+  "Colistimethatum natricum": {
+    "atc": "J01XB01",
+    "display": "Kolistymetat sodu"
+  },
+  "Collagenasum": {
+    "atc": "D03BA02",
+    "display": "Kolagenaza"
+  },
+  "Conestatum alfa": {
+    "atc": "B06AC01",
+    "display": "Konestat alfa"
+  },
+  "Corifollitropinum alfa": {
+    "atc": "G03GA09",
+    "display": "Koryfolitropina alfa"
+  },
+  "Crizotinibum": {
+    "atc": "L01XE16",
+    "display": "Kryzotynib"
+  },
+  "Crovalimab": {
+    "atc": "L04AG14",
+    "display": "Krowalimab"
+  },
+  "Cyanocobalaminum (vit. B12)": {
+    "atc": "B03BA01",
+    "display": "Cyjanokobalamina"
+  },
+  "Cyclophosphamidum": {
+    "atc": "L01AA01",
+    "display": "Cyklofosfamid"
+  },
+  "Cyproteroni acetas": {
+    "atc": "G03HA01",
+    "display": "Octan cyproteronu"
+  },
+  "Cyproteroni acetas + Ethinylestradiolum": {
+    "atc": "G03HB01",
+    "display": "Octan cyproteronu + Etynyloestradiol"
+  },
+  "Cytarabinum": {
+    "atc": "L01BC01",
+    "display": "Cytarabina"
+  },
+  "Czterowalentna szczepionka przeciw grypie (rozszczepiony wirion), inaktywowana": {
+    "atc": "J07BB02",
+    "display": "Czterowalentna szczepionka przeciw grypie (rozszczepiony wirion), inaktywowana"
+  },
+  "Dabrafenibum": {
+    "atc": "L01EC02",
+    "display": "Dabrafenib"
+  },
+  "Dacarbazinum": {
+    "atc": "L01AX04",
+    "display": "Dakarbazyna"
+  },
+  "Danazolum": {
+    "atc": "G03XA01",
+    "display": "Danazol"
+  },
+  "Danicopanum": {
+    "atc": "L04AG13",
+    "display": "Danikopan"
+  },
+  "Daratumumabum": {
+    "atc": "L01XC27",
+    "display": "Daratumumab"
+  },
+  "Darbepoetinum alfa": {
+    "atc": "B03XA02",
+    "display": "Darbepoetyna alfa"
+  },
+  "Darolutamidum": {
+    "atc": "L02BB06",
+    "display": "Darolutamid"
+  },
+  "Dasatinibum": {
+    "atc": "L01XE06",
+    "display": "Dasatynib"
+  },
+  "Daunorubicini hydrochloridum + Cytarabinum": {
+    "atc": "L01BC51",
+    "display": "Chlorowodorek daunorubicyny + Cytarabina"
+  },
+  "Deferasiroxum": {
+    "atc": "V03AC03",
+    "display": "Deferazyroks"
+  },
+  "Degarelixum": {
+    "atc": "L02BX02",
+    "display": "Degareliks"
+  },
+  "Denosumabum": {
+    "atc": "M05BX04",
+    "display": "Denosumab"
+  },
+  "Desloratadinum": {
+    "atc": "R06AX27",
+    "display": "Desloratadyna"
+  },
+  "Desmopressinum": {
+    "atc": "H01BA02",
+    "display": "Desmopresyna"
+  },
+  "Dexamethasoni phosphas": {
+    "atc": "H02AB02",
+    "display": "Fosforan deksametazonu"
+  },
+  "Dexamethasonum": {
+    "atc": "H02AB02",
+    "display": "Deksametazon"
+  },
+  "Diclofenacum": {
+    "atc": "M01AB05",
+    "display": "Diklofenak"
+  },
+  "Dienogestum": {
+    "atc": "G03DB08",
+    "display": "Dienogest"
+  },
+  "Dihydrocodeini tartras": {
+    "atc": "N02AA08",
+    "display": "Winian dihydrokodeiny"
+  },
+  "Dimethylis fumaras": {
+    "atc": "L04AX07",
+    "display": "Fumaran dimetylu"
+  },
+  "Dinatrii pamidronas": {
+    "atc": "M05BA03",
+    "display": "Pamidronian disodowy"
+  },
+  "Dinutuximabum beta": {
+    "atc": "L01XC20",
+    "display": "Dinutuksymab beta"
+  },
+  "Docetaxelum": {
+    "atc": "L01CD02",
+    "display": "Docetaksel"
+  },
+  "Donepezili hydrochloridum": {
+    "atc": "N06DA02",
+    "display": "Chlorowodorek donepezilu"
+  },
+  "Dornasum alfa": {
+    "atc": "R05CB01",
+    "display": "Dornaza alfa"
+  },
+  "Dorzolamidum": {
+    "atc": "S01EC03",
+    "display": "Dorzolamid"
+  },
+  "Dorzolamidum + Timololum": {
+    "atc": "S01ED51",
+    "display": "Dorzolamid + Tymolol"
+  },
+  "Dostarlimabum": {
+    "atc": "L01FF06",
+    "display": "Dostarlimab"
+  },
+  "Doxazosini mesilas": {
+    "atc": "C02CA04",
+    "display": "Doksazosyna"
+  },
+  "Doxazosinum": {
+    "atc": "C02CA04",
+    "display": "Doksazosyna"
+  },
+  "Doxorubicini hydrochloridum": {
+    "atc": "L01DB07",
+    "display": "Doksorubicyna"
+  },
+  "Doxorubicinum": {
+    "atc": "L01DB07",
+    "display": "Doksorubicyna"
+  },
+  "Dulaglutidum": {
+    "atc": "A10BJ05",
+    "display": "Dulaglutyd"
+  },
+  "Duloxetinum": {
+    "atc": "N06AX21",
+    "display": "Duloksetyna"
+  },
+  "Dupilumabum": {
+    "atc": "L04AC12",
+    "display": "Dupilumab"
+  },
+  "Durvalumabum": {
+    "atc": "L01FF03",
+    "display": "Durwalumab"
+  },
+  "Dutasteridum": {
+    "atc": "G04CB02",
+    "display": "Dutasteryd"
+  },
+  "Dutasteridum + Tamsulosini hydrochloridum": {
+    "atc": "G04CA52",
+    "display": "Dutasteryd + Tamsulosyna"
+  },
+  "Eculizumabum": {
+    "atc": "L04AJ01",
+    "display": "Ekulizumab"
+  },
+  "Efanesoctocog alfa": {
+    "atc": "B02BD02",
+    "display": "Efanesoktokog alfa"
+  },
+  "Efgartigimod alfa": {
+    "atc": "L04AA50",
+    "display": "Efgartygimod alfa"
+  },
+  "Efmoroctocogum alfa": {
+    "atc": "B02BD02",
+    "display": "Efmoroctokog alfa"
+  },
+  "Eftrenonacogum alpha": {
+    "atc": "B02BD04",
+    "display": "Eftrenonakog alfa"
+  },
+  "Eliglustatum": {
+    "atc": "A16AX10",
+    "display": "Eliglustat"
+  },
+  "Elotuzumabum": {
+    "atc": "L01XC19",
+    "display": "Elotuzumab"
+  },
+  "Elranatamab": {
+    "atc": "L01FX24",
+    "display": "Elranatamab"
+  },
+  "Eltrombopagum": {
+    "atc": "B02BX05",
+    "display": "Eltrombopag"
+  },
+  "Emicizumabum": {
+    "atc": "B02BD06",
+    "display": "Emicizumab"
+  },
+  "Enalaprili maleas": {
+    "atc": "C09AA02",
+    "display": "Enalapryl"
+  },
+  "Encorafenibum": {
+    "atc": "L01EC03",
+    "display": "Enkorafenib"
+  },
+  "Enfortumabum vedotini": {
+    "atc": "L01FX16",
+    "display": "Enfortumab wedotyny"
+  },
+  "Enoxaparinum natricum": {
+    "atc": "B01AB05",
+    "display": "Enoksaparyna"
+  },
+  "Entecavirum": {
+    "atc": "J05AF10",
+    "display": "Entekawir"
+  },
+  "Entecavirum monohydricum": {
+    "atc": "J05AF10",
+    "display": "Entekawir"
+  },
+  "Entrectinibum": {
+    "atc": "L01XF07",
+    "display": "Entrektynib"
+  },
+  "Enzalutamidum": {
+    "atc": "L02BX04",
+    "display": "Enzalutamid"
+  },
+  "Enzyma pancreatis": {
+    "atc": "A09AA02",
+    "display": "Enzymy trzustkowe"
+  },
+  "Epcoritamabum": {
+    "atc": "L01FX24",
+    "display": "Epkorytamab"
+  },
+  "Epinephrinum": {
+    "atc": "C01CA24",
+    "display": "Epinefryna"
+  },
+  "Epirubicini hydrochloridum": {
+    "atc": "L01DB03",
+    "display": "Epirubicyna"
+  },
+  "Eplerenonum": {
+    "atc": "C03DA04",
+    "display": "Eplerenon"
+  },
+  "Epoetinum alfa": {
+    "atc": "B03XA01",
+    "display": "Epoetyna alfa"
+  },
+  "Epoprostenolum": {
+    "atc": "B01AC09",
+    "display": "Epoprostenol"
+  },
+  "Eptinezumabum": {
+    "atc": "N02CD05",
+    "display": "Eptynezumab"
+  },
+  "Erdafitinibum": {
+    "atc": "L01XE50",
+    "display": "Erdafitinib"
+  },
+  "Erenumabum": {
+    "atc": "N02CD03",
+    "display": "Erenumab"
+  },
+  "Ergotamini tartras": {
+    "atc": "N02CA02",
+    "display": "Ergotamina"
+  },
+  "Eribulinum": {
+    "atc": "L01XX41",
+    "display": "Erybulina"
+  },
+  "Erlotinibum": {
+    "atc": "L01XE03",
+    "display": "Erlotynib"
+  },
+  "Esketaminum": {
+    "atc": "N01AX14",
+    "display": "Esketamina"
+  },
+  "Estradioli valeras + Norgestrelum": {
+    "atc": "G03FB06",
+    "display": "Estradiol + Norgestrel"
+  },
+  "Estradiolum": {
+    "atc": "G03CA03",
+    "display": "Estradiol"
+  },
+  "Estradiolum + Drospirenonum": {
+    "atc": "G03FA17",
+    "display": "Estradiol + Drospirenon"
+  },
+  "Estradiolum + Dydrogesteronum": {
+    "atc": "G03FA14",
+    "display": "Estradiol + Dydrogesteron"
+  },
+  "Estradiolum + Norethisteroni acetas": {
+    "atc": "G03FA01",
+    "display": "Estradiol + Noretysteron"
+  },
+  "Estradiolum + Norethisteronum": {
+    "atc": "G03FA01",
+    "display": "Estradiol + Noretysteron"
+  },
+  "Etanerceptum": {
+    "atc": "L04AB01",
+    "display": "Etanercept"
+  },
+  "Ethambutoli hydrochloridum": {
+    "atc": "J04AK02",
+    "display": "Etambutol"
+  },
+  "Ethinylestradiolum + Levonorgestrelum": {
+    "atc": "G03AA07",
+    "display": "Etynyloestradiol + Lewonorgestrel"
+  },
+  "Ethosuximidum": {
+    "atc": "N03AD01",
+    "display": "Etosuksymid"
+  },
+  "Etoposidum": {
+    "atc": "L01CB01",
+    "display": "Etopozyd"
+  },
+  "Everolimusum": {
+    "atc": "L01XE10",
+    "display": "Ewerolimus"
+  },
+  "Evolocumabum": {
+    "atc": "C10AX13",
+    "display": "Ewokumab"
+  },
+  "Exemestanum": {
+    "atc": "L02BG06",
+    "display": "Eksemestan"
+  },
+  "Ezetimibum": {
+    "atc": "C10AX09",
+    "display": "Ezetymib"
+  },
+  "Ezetimibum + Atorvastatinum": {
+    "atc": "C10BA05",
+    "display": "Ezetymib + Atorwastatyna"
+  },
+  "Factor IX coagulationis humanus": {
+    "atc": "B02BD04",
+    "display": "Czynnik IX krzepnięcia"
+  },
+  "Factor VIII coagulationis humanus": {
+    "atc": "B02BD02",
+    "display": "Czynnik VIII krzepnięcia"
+  },
+  "Famotidinum": {
+    "atc": "A02BA03",
+    "display": "Famotydyna"
+  },
+  "Farycymab": {
+    "atc": "S01LA09",
+    "display": "Farycymab"
+  },
+  "Febuxostatum": {
+    "atc": "M04AA03",
+    "display": "Febuksostat"
+  },
+  "Fedratinibum": {
+    "atc": "L01XE56",
+    "display": "Fedratynib"
+  },
+  "Fenfluraminum": {
+    "atc": "N07BC01",
+    "display": "Fenfluramina"
+  },
+  "Fenofibratum": {
+    "atc": "C10AB05",
+    "display": "Fenofibrat"
+  },
+  "Fenoteroli hydrobromidum": {
+    "atc": "R03AC04",
+    "display": "Fenoterol"
+  },
+  "Fenoteroli hydrobromidum + Ipratropii bromidum": {
+    "atc": "R03AL03",
+    "display": "Fenoterol + Bromek ipratropium"
+  },
+  "Fentanylum": {
+    "atc": "N02AB03",
+    "display": "Fentanyl"
+  },
+  "Filgotinibum": {
+    "atc": "L04AA45",
+    "display": "Filgotynib"
+  },
+  "Filgrastimum": {
+    "atc": "L03AA02",
+    "display": "Filgrastym"
+  },
+  "Finasteridum": {
+    "atc": "G04CB01",
+    "display": "Finasteryd"
+  },
+  "Finerenonum": {
+    "atc": "C03DA06",
+    "display": "Finerenon"
+  },
+  "Fingolimodum": {
+    "atc": "L04AA27",
+    "display": "Fingolimod"
+  },
+  "Flecainidi acetas": {
+    "atc": "C01BC04",
+    "display": "Flekainid"
+  },
+  "Fluconazolum": {
+    "atc": "J02AC01",
+    "display": "Flukonazol"
+  },
+  "Fludarabini phosphas": {
+    "atc": "L01BB05",
+    "display": "Fludarabina"
+  },
+  "Fludrocortisonum": {
+    "atc": "H02AA02",
+    "display": "Fludrokortyzon"
+  },
+  "Fluorouracilum": {
+    "atc": "L01BC02",
+    "display": "Fluorouracyl"
+  },
+  "Flupentixolum": {
+    "atc": "N05AF01",
+    "display": "Flupentyksol"
+  },
+  "Flutamidum": {
+    "atc": "L02BB01",
+    "display": "Flutamid"
+  },
+  "Fluticasoni furoas + Umeclidinium + Vilanterolum": {
+    "atc": "R03AL12",
+    "display": "Furoinian flutykazonu + Umeklidynium + Wilanterol"
+  },
+  "Fluticasoni propionas + Salmeterolum": {
+    "atc": "R03AK06",
+    "display": "Propionian flutykazonu + Salmeterol"
+  },
+  "Fluvoxamini maleas": {
+    "atc": "N06AB08",
+    "display": "Fluwoksamina"
+  },
+  "Folitropinum delta": {
+    "atc": "G03GA11",
+    "display": "Folitropina delta"
+  },
+  "Follitropinum alfa": {
+    "atc": "G03GA05",
+    "display": "Folitropina alfa"
+  },
+  "Follitropinum beta": {
+    "atc": "G03GA06",
+    "display": "Folitropina beta"
+  },
+  "Formoteroli fumaras": {
+    "atc": "R03AC13",
+    "display": "Formoterol"
+  },
+  "Formoteroli fumaras dihydricus": {
+    "atc": "R03AC13",
+    "display": "Formoterol"
+  },
+  "Formoteroli fumaras dihydricus + Glycopyrronium + Budesonidum": {
+    "atc": "R03AL13",
+    "display": "Formoterol + Glikopironium + Budesonid"
+  },
+  "Foslevodopum + Foscarbidopum": {
+    "atc": "N04BA04",
+    "display": "Foslewodopa + Foskarbidopa"
+  },
+  "Fremanezumabum": {
+    "atc": "N02CD02",
+    "display": "Fremanezumab"
+  },
+  "Fruquintinibum": {
+    "atc": "L01XE62",
+    "display": "Frukwitynib"
+  },
+  "Fulvestrantum": {
+    "atc": "L02BA03",
+    "display": "Fulwestrant"
+  },
+  "Furazidinum": {
+    "atc": "J01XE03",
+    "display": "Furazydyna"
+  },
+  "Gabapentinum": {
+    "atc": "N03AX12",
+    "display": "Gabapentyna"
+  },
+  "Ganirelixum": {
+    "atc": "H01CC02",
+    "display": "Ganireliks"
+  },
+  "Gefitynibum": {
+    "atc": "L01XE01",
+    "display": "Gefitynib"
+  },
+  "Gemcitabinum": {
+    "atc": "L01BC05",
+    "display": "Gemcytabina"
+  },
+  "Gemtuzumabum ozogamicinum": {
+    "atc": "L01XC05",
+    "display": "Gemtuzumab ozogamycyna"
+  },
+  "Gilteritinibi fumaras": {
+    "atc": "L01XE50",
+    "display": "Gilterytynib"
+  },
+  "Givosiranum": {
+    "atc": "A16AX18",
+    "display": "Giwosyran"
+  },
+  "Glatirameri acetas": {
+    "atc": "L03AX13",
+    "display": "Octan glatirameru"
+  },
+  "Glecaprevirum + Pibrentasvirum": {
+    "atc": "J05AP57",
+    "display": "Glekaprewir + Pibrentaswir"
+  },
+  "Glipizidum": {
+    "atc": "A10BB07",
+    "display": "Glipizyd"
+  },
+  "Glofitamabum": {
+    "atc": "L01FX24",
+    "display": "Glofitamab"
+  },
+  "Glucagoni hydrochloridum": {
+    "atc": "H04AA01",
+    "display": "Glukagon"
+  },
+  "Glyceroli phenylbutyras": {
+    "atc": "A16AX10",
+    "display": "Fenylomaślan glicerolu"
+  },
+  "Glyceroli trinitras": {
+    "atc": "C01DA02",
+    "display": "Nitrogliceryna"
+  },
+  "Glycopyrronii bromidum": {
+    "atc": "R03BB01",
+    "display": "Bromek glikopironium"
+  },
+  "Golimumabum": {
+    "atc": "L04AB06",
+    "display": "Golimumab"
+  },
+  "Goserelinum": {
+    "atc": "L02AE03",
+    "display": "Goserelina"
+  },
+  "Guselkumabum": {
+    "atc": "L04AC16",
+    "display": "Guselkumab"
+  },
+  "Haloperidoli decanoas": {
+    "atc": "N05AD02",
+    "display": "Dekanian haloperydolu"
+  },
+  "Haloperidolum": {
+    "atc": "N05AD01",
+    "display": "Haloperydol"
+  },
+  "Hydrocortisoni acetas": {
+    "atc": "H02AB09",
+    "display": "Octan hydrokortyzonu"
+  },
+  "Hydrocortisonum": {
+    "atc": "H02AB02",
+    "display": "Hydrokortyzon"
+  },
+  "Hydroxycarbamidum": {
+    "atc": "L01XX05",
+    "display": "Hydroksykarbamid"
+  },
+  "Ibrutinibum": {
+    "atc": "L01XE27",
+    "display": "Ibrutynib"
+  },
+  "Icatibantum": {
+    "atc": "B06AC02",
+    "display": "Ikatybant"
+  },
+  "Idursulfasum": {
+    "atc": "A16AB09",
+    "display": "Idursulfaza"
+  },
+  "Ifosfamidum": {
+    "atc": "L01AA06",
+    "display": "Ifosfamid"
+  },
+  "Iloprostum": {
+    "atc": "B01AC11",
+    "display": "Iloprost"
+  },
+  "Imatinibum": {
+    "atc": "L01XE01",
+    "display": "Imatynib"
+  },
+  "Imiglucerasum": {
+    "atc": "A16AB02",
+    "display": "Imigluceraza"
+  },
+  "Imlifidasum": {
+    "atc": "L04AA43",
+    "display": "Imlifidaza"
+  },
+  "Immunoglobulinum humanum": {
+    "atc": "J06BA01",
+    "display": "Immunoglobulina ludzka"
+  },
+  "Immunoglobulinum humanum normale": {
+    "atc": "J06BA01",
+    "display": "Immunoglobulina ludzka normalna"
+  },
+  "Immunoglobulinum humanum normale (IgG)": {
+    "atc": "J06BA01",
+    "display": "Immunoglobulina ludzka normalna (IgG)"
+  },
+  "Immunoglobulinum humanum normale (SCIg)": {
+    "atc": "J06BA01",
+    "display": "Immunoglobulina ludzka normalna (SCIg)"
+  },
+  "Inclisiranum": {
+    "atc": "C10AX16",
+    "display": "Inklisiran"
+  },
+  "Indacaterolum + Glycopyrronii bromidum": {
+    "atc": "R03AL08",
+    "display": "Indakaterol + Bromek glikopironium"
+  },
+  "Indacaterolum + Glycopyrronii bromidum + Mometasoni furoas": {
+    "atc": "R03AL13",
+    "display": "Indakaterol + Bromek glikopironium + Furoinian mometazonu"
+  },
+  "Indakaterol + Mometazonu furoinian": {
+    "atc": "R03AL12",
+    "display": "Indakaterol + Furoinian mometazonu"
+  },
+  "Infliximabum": {
+    "atc": "L04AB02",
+    "display": "Infliksymab"
+  },
+  "Inhibitor C1-esterazy, ludzki": {
+    "atc": "B06AC01",
+    "display": "Inhibitor C1-esterazy, ludzki"
+  },
+  "Inotuzumabum ozogamicini": {
+    "atc": "L01FX06",
+    "display": "Inotuzumab ozogamycyny"
+  },
+  "Insulinum aspartum": {
+    "atc": "A10AB05",
+    "display": "Insulina aspart"
+  },
+  "Insulinum degludecum": {
+    "atc": "A10AE06",
+    "display": "Insulina degludec"
+  },
+  "Insulinum degludecum + Insulinum aspartum": {
+    "atc": "A10AD06",
+    "display": "Insulina degludec + Insulina aspart"
+  },
+  "Insulinum detemirum": {
+    "atc": "A10AE05",
+    "display": "Insulina detemir"
+  },
+  "Insulinum glarginum": {
+    "atc": "A10AE04",
+    "display": "Insulina glargine"
+  },
+  "Insulinum glarginum + Lixisenatidum": {
+    "atc": "A10AE54",
+    "display": "Insulina glargine + Liksysenatyd"
+  },
+  "Insulinum glulisinum": {
+    "atc": "A10AB06",
+    "display": "Insulina glulizynowa"
+  },
+  "Insulinum lisprum": {
+    "atc": "A10AB04",
+    "display": "Insulina lispro"
+  },
+  "Interferonum beta-1a": {
+    "atc": "L03AB07",
+    "display": "Interferon beta-1a"
+  },
+  "Interferonum beta-1b": {
+    "atc": "L03AB08",
+    "display": "Interferon beta-1b"
+  },
+  "Ipilimumabum": {
+    "atc": "L01FX07",
+    "display": "Ipilimumab"
+  },
+  "Iptacopan": {
+    "atc": "L04AA60",
+    "display": "Iptakopan"
+  },
+  "Irinotecani hydrochloridum trihydricum": {
+    "atc": "L01CE02",
+    "display": "Irynotekan"
+  },
+  "Isatuximabum": {
+    "atc": "L01FX16",
+    "display": "Izatuksymab"
+  },
+  "Itraconazolum": {
+    "atc": "J02AB02",
+    "display": "Itrakonazol"
+  },
+  "Ivabradinum": {
+    "atc": "C01EB17",
+    "display": "Iwabradyba"
+  },
+  "Ivacaftorum": {
+    "atc": "R07AX02",
+    "display": "Iwakaftor"
+  },
+  "Ivacaftorum + Lumacaftorum": {
+    "atc": "R07AX03",
+    "display": "Iwakaftor + Lumakaftor"
+  },
+  "Ivacaftorum + Tezacaftorum": {
+    "atc": "R07AX04",
+    "display": "Iwakaftor + Tezakaftor"
+  },
+  "Ivacaftorum + Tezacaftorum + Elexacaftorum": {
+    "atc": "R07AX05",
+    "display": "Iwakaftor + Tezakaftor + Eleksakaftor"
+  },
+  "Ivosidenibum": {
+    "atc": "L01XX65",
+    "display": "Iwosidenib"
+  },
+  "Ixazomibum": {
+    "atc": "L01XX50",
+    "display": "Ikazomib"
+  },
+  "Ixekizumabum": {
+    "atc": "L04AC12",
+    "display": "Ikskekizumab"
+  },
+  "Kalii citras + Kalii hydrocarbonas": {
+    "atc": "A12BA30",
+    "display": "Cytrynian potasu + Wodorowęglan potasu"
+  },
+  "Ketoprofenum": {
+    "atc": "M01AE03",
+    "display": "Ketoprofen"
+  },
+  "L-karnityna": {
+    "atc": "A16AA01",
+    "display": "Lewokarnityna"
+  },
+  "Lacidipinum": {
+    "atc": "C08CA09",
+    "display": "Lacydypina"
+  },
+  "Lacosamidum": {
+    "atc": "N03AX18",
+    "display": "Lakosamid"
+  },
+  "Lamivudinum": {
+    "atc": "J05AF05",
+    "display": "Lamiwudyna"
+  },
+  "Lamotriginum": {
+    "atc": "N03AX09",
+    "display": "Lamotrygina"
+  },
+  "Lanadelumabum": {
+    "atc": "L04AC15",
+    "display": "Lanadelumab"
+  },
+  "Lanreotidum": {
+    "atc": "H01CB03",
+    "display": "Lanreotyd"
+  },
+  "Lapatynibum": {
+    "atc": "L01XE07",
+    "display": "Lapatynib"
+  },
+  "Laronidasum": {
+    "atc": "A16AB05",
+    "display": "Laronidaza"
+  },
+  "Larotrectinibum": {
+    "atc": "L01XE51",
+    "display": "Larotrektinib"
+  },
+  "Latanoprostum": {
+    "atc": "S01EE04",
+    "display": "Latanoprost"
+  },
+  "Latanoprostum + Timololum": {
+    "atc": "S01ED51",
+    "display": "Latanoprost + Tymolol"
+  },
+  "Lazertinib": {
+    "atc": "L01XE62",
+    "display": "Lazertynib"
+  },
+  "Lebrikizumabum": {
+    "atc": "L04AC21",
+    "display": "Lebrikizumab"
+  },
+  "Leflunomidum": {
+    "atc": "L04AA13",
+    "display": "Leflunomid"
+  },
+  "Lenalidomidum": {
+    "atc": "L04AX04",
+    "display": "Lenalidomid"
+  },
+  "Letermovirum": {
+    "atc": "J05AX19",
+    "display": "Letermowir"
+  },
+  "Letrozolum": {
+    "atc": "L02BG04",
+    "display": "Letrozol"
+  },
+  "Leuprorelinum": {
+    "atc": "L02AE02",
+    "display": "Leuprorelina"
+  },
+  "Levetiracetamum": {
+    "atc": "N03AX14",
+    "display": "Lewetyracetam"
+  },
+  "Levocetirizine": {
+    "atc": "R06AE09",
+    "display": "Lewocetyryzyna"
+  },
+  "Levocetirizini dihydrochloridum": {
+    "atc": "R06AE09",
+    "display": "Lewocetyryzyna"
+  },
+  "Levomepromazinum": {
+    "atc": "N05AA02",
+    "display": "Lewomepromazyna"
+  },
+  "Lisinoprilum + Amlodipinum": {
+    "atc": "C09BB03",
+    "display": "Lizynopryl + Amlodypina"
+  },
+  "Lisinoprilum + Hydrochlorothiazidum": {
+    "atc": "C09BA03",
+    "display": "Lizynopryl + Hydrochlorotiazyd"
+  },
+  "Lisocabtagene maraleucel": {
+    "atc": "L01XX77",
+    "display": "Lizokabtagene maraleucel"
+  },
+  "Lithii carbonas": {
+    "atc": "N05AN01",
+    "display": "Węglan litu"
+  },
+  "Lomitapidum": {
+    "atc": "C10AX12",
+    "display": "Lomitapid"
+  },
+  "Loncastuximabum tesirini": {
+    "atc": "L01FX17",
+    "display": "Lonkastuksymab tezeryny"
+  },
+  "Loperamidi hydrochloridum": {
+    "atc": "A07DA03",
+    "display": "Loperamid"
+  },
+  "Lorlatinibum": {
+    "atc": "L01XE50",
+    "display": "Lorlatynib"
+  },
+  "Losartan potassium": {
+    "atc": "C09CA01",
+    "display": "Losartan"
+  },
+  "Losartanum": {
+    "atc": "C09CA01",
+    "display": "Losartan"
+  },
+  "Losartanum + Hydrochlorothiazidum": {
+    "atc": "C09DA01",
+    "display": "Losartan + Hydrochlorotiazyd"
+  },
+  "Losartanum kalicum + Amlodipinum": {
+    "atc": "C09DB06",
+    "display": "Losartan potasowy + Amlodypina"
+  },
+  "Losartanum kalicum + Hydrochlorothiazidum": {
+    "atc": "C09DA01",
+    "display": "Losartan potasowy + Hydrochlorotiazyd"
+  },
+  "Lovastatin": {
+    "atc": "C10AA02",
+    "display": "Lowastatyna"
+  },
+  "Lovastatinum": {
+    "atc": "C10AA02",
+    "display": "Lowastatyna"
+  },
+  "Lumasiranum": {
+    "atc": "A16AX18",
+    "display": "Lumasiran"
+  },
+  "Lurasidoni hydrochloridum": {
+    "atc": "N05AE05",
+    "display": "Lurasydon"
+  },
+  "Lurasidonum": {
+    "atc": "N05AE05",
+    "display": "Lurasydon"
+  },
+  "Luspaterceptum": {
+    "atc": "B03XA06",
+    "display": "Luspatercept"
+  },
+  "Lutetium (177Lu) oxodotreotidi": {
+    "atc": "V10XX05",
+    "display": "Lutecjum (177Lu) oksodotreotyd"
+  },
+  "Macitentanum": {
+    "atc": "C02KX06",
+    "display": "Macytentan"
+  },
+  "Maralixibatum": {
+    "atc": "A05AX10",
+    "display": "Maraliksibat"
+  },
+  "Maribavirum": {
+    "atc": "J05AX20",
+    "display": "Maribawir"
+  },
+  "Mavacamtenum": {
+    "atc": "C01CX08",
+    "display": "Mawakamten"
+  },
+  "Mebendazolum": {
+    "atc": "P02CA01",
+    "display": "Mebendazol"
+  },
+  "Mecaserminum": {
+    "atc": "H01AC03",
+    "display": "Mekasermina"
+  },
+  "Megestroli acetas": {
+    "atc": "L02AB01",
+    "display": "Octan megestrolu"
+  },
+  "Meloxicam": {
+    "atc": "M01AC06",
+    "display": "Meloksykam"
+  },
+  "Meloxicamum": {
+    "atc": "M01AC06",
+    "display": "Meloksykam"
+  },
+  "Melphalanum": {
+    "atc": "L01AA03",
+    "display": "Melfalan"
+  },
+  "Menotropinum": {
+    "atc": "G03GA02",
+    "display": "Menotropina"
+  },
+  "Mepolizumabum": {
+    "atc": "R03DX09",
+    "display": "Mepolizumab"
+  },
+  "Mercaptamini bitartras": {
+    "atc": "A16AA01",
+    "display": "Cysteamina"
+  },
+  "Mercaptamini hydrochloridum": {
+    "atc": "A16AA01",
+    "display": "Cysteamina"
+  },
+  "Mercaptopurinum": {
+    "atc": "L01BB02",
+    "display": "Merkaptopuryna"
+  },
+  "Mesalazinum": {
+    "atc": "A07EC02",
+    "display": "Mesalazyna"
+  },
+  "Mesnum": {
+    "atc": "V03AF01",
+    "display": "Mesna"
+  },
+  "Methadoni hydrochloridum": {
+    "atc": "N07BC02",
+    "display": "Metadon"
+  },
+  "Methotrexatum": {
+    "atc": "L01BA01",
+    "display": "Metotreksat"
+  },
+  "Methyldopum": {
+    "atc": "C02AB01",
+    "display": "Metyldopa"
+  },
+  "Methylphenidati hydrochloridum": {
+    "atc": "N06BA04",
+    "display": "Metylofenidat"
+  },
+  "Methylprednisoloni acetas": {
+    "atc": "H02AB04",
+    "display": "Metyloprednizolon"
+  },
+  "Methylprednisoloni acetas + Lidocaini hydrochloridum": {
+    "atc": "M01BA52",
+    "display": "Metyloprednizolon + Lidokaina"
+  },
+  "Methylprednisolonum": {
+    "atc": "H02AB04",
+    "display": "Metyloprednizolon"
+  },
+  "Mianserini hydrochloridum": {
+    "atc": "N06AX03",
+    "display": "Mianseryna"
+  },
+  "Mianserinum": {
+    "atc": "N06AX03",
+    "display": "Mianseryna"
+  },
+  "Miconazoli nitras": {
+    "atc": "D01AC02",
+    "display": "Mikonazol"
+  },
+  "Midazolamum": {
+    "atc": "N05CD08",
+    "display": "Midazolam"
+  },
+  "Midostaurinum": {
+    "atc": "L01XE39",
+    "display": "Midostauryna"
+  },
+  "Mieszanki wyciągów alergenowych 5 traw (688)": {
+    "atc": "V01AA02",
+    "display": "Mieszanki wyciągów alergenowych 5 traw"
+  },
+  "Mieszanki wyciągów alergenowych roztoczy kurzu domowego (350 Dermatophagoides pteronyssinus, Dermatophagoides farinae)": {
+    "atc": "V01AA03",
+    "display": "Mieszanki wyciągów alergenowych roztoczy kurzu domowego"
+  },
+  "Migalastatum": {
+    "atc": "A16AA12",
+    "display": "Migalastat"
+  },
+  "Mirikizumabum": {
+    "atc": "L04AC22",
+    "display": "Mirikizumab"
+  },
+  "Mirvetuximabum soravtansinum": {
+    "atc": "L01FX24",
+    "display": "Mirwetuksymab sorawtansyna"
+  },
+  "Mitotanum": {
+    "atc": "L01XX23",
+    "display": "Mitotan"
+  },
+  "Moclobemidum": {
+    "atc": "N06AG02",
+    "display": "Moklobemid"
+  },
+  "Modafinilum": {
+    "atc": "N06BA07",
+    "display": "Modafinil"
+  },
+  "Mogamulizumabum": {
+    "atc": "L01FX11",
+    "display": "Mogamulizumab"
+  },
+  "Momelotinibum": {
+    "atc": "L01EJ07",
+    "display": "Momelotynib"
+  },
+  "Mometasoni fuoras": {
+    "atc": "D07AC13",
+    "display": "Mometazon"
+  },
+  "Mometasoni furoas": {
+    "atc": "D07AC13",
+    "display": "Mometazon"
+  },
+  "Morphini hydrochloridum": {
+    "atc": "N02AA01",
+    "display": "Morfina"
+  },
+  "Morphini sulfas": {
+    "atc": "N02AA01",
+    "display": "Morfina"
+  },
+  "Mosunetuzumabum": {
+    "atc": "L01FX25",
+    "display": "Mosunetuzumab"
+  },
+  "Mycophenolas mofetil": {
+    "atc": "L04AA06",
+    "display": "Mykofenolan mofetylu"
+  },
+  "Nabumetonum": {
+    "atc": "M01AE04",
+    "display": "Nabumeton"
+  },
+  "Nadroparinum calcicum": {
+    "atc": "B01AB06",
+    "display": "Nadroparyna"
+  },
+  "Naldemedinum": {
+    "atc": "A06AH04",
+    "display": "Naldemedyna"
+  },
+  "Naproxenum natricum": {
+    "atc": "M01AE02",
+    "display": "Naproksen"
+  },
+  "Natalizumabum": {
+    "atc": "L04AG03",
+    "display": "Natalizumab"
+  },
+  "Natrii risedronas": {
+    "atc": "M05BA07",
+    "display": "Ryzedronian"
+  },
+  "Natrii valproas": {
+    "atc": "N03AG01",
+    "display": "Walproinian"
+  },
+  "Nebivololi hydrochloridum": {
+    "atc": "C07AB12",
+    "display": "Nebiwolol"
+  },
+  "Nelarabinum": {
+    "atc": "L01BB07",
+    "display": "Nelarabina"
+  },
+  "Netupitantum + Palonosetroni hydrochloridum": {
+    "atc": "A04AA55",
+    "display": "Netupitant + Palonosetron"
+  },
+  "Nilotinibum": {
+    "atc": "L01XE08",
+    "display": "Nilotynib"
+  },
+  "Nimesulidum": {
+    "atc": "M01AX17",
+    "display": "Nimesulid"
+  },
+  "Nintedanibum": {
+    "atc": "L01XE31",
+    "display": "Nintedanib"
+  },
+  "Niraparibum": {
+    "atc": "L01XK02",
+    "display": "Niraparyb"
+  },
+  "Nitisinonum": {
+    "atc": "A16AX04",
+    "display": "Nityzynon"
+  },
+  "Nitrendipinum": {
+    "atc": "C08CA08",
+    "display": "Nitrendypina"
+  },
+  "Nivolumabum": {
+    "atc": "L01FC08",
+    "display": "Niwolumab"
+  },
+  "Niwolumab + Relatlimab": {
+    "atc": "L01FX25",
+    "display": "Niwolumab + Relatlimab"
+  },
+  "Nonacog alfa": {
+    "atc": "B02BD04",
+    "display": "Nonakog alfa"
+  },
+  "Norethisteroni acetas + Estradioli valeras": {
+    "atc": "G03FA01",
+    "display": "Octan noretysteronu + Walerianian estradiolu"
+  },
+  "Nusinersenum": {
+    "atc": "N07BC04",
+    "display": "Nusinersen"
+  },
+  "Obinutuzumabum": {
+    "atc": "L01FX07",
+    "display": "Obinutuzumab"
+  },
+  "Ocrelizumabum": {
+    "atc": "L04AG03",
+    "display": "Okrelizumab"
+  },
+  "Octocogum alfa": {
+    "atc": "B02BD02",
+    "display": "Oktokog alfa"
+  },
+  "Odevixibatum": {
+    "atc": "A05AA08",
+    "display": "Odeviksybat"
+  },
+  "Ofatumumabum": {
+    "atc": "L04AG04",
+    "display": "Ofatumumab"
+  },
+  "Olanzapina": {
+    "atc": "N05AH03",
+    "display": "Olanzapina"
+  },
+  "Olaparibum": {
+    "atc": "L01XK01",
+    "display": "Olaparyb"
+  },
+  "Olipudaza alfa": {
+    "atc": "A16AB17",
+    "display": "Olipudaza alfa"
+  },
+  "Olodaterolum + Tiotropium": {
+    "atc": "R03AL06",
+    "display": "Olodaterol + Tiotropium"
+  },
+  "Omalizumabum": {
+    "atc": "R03DX05",
+    "display": "Omalizumab"
+  },
+  "Omaveloxolonum": {
+    "atc": "N07XX15",
+    "display": "Omaveloksolon"
+  },
+  "Onasemnogenum abeparvovecum": {
+    "atc": "N07XX14",
+    "display": "Onasemnogenu abeparwowek"
+  },
+  "Ondansetronum": {
+    "atc": "A04AA01",
+    "display": "Ondansetron"
+  },
+  "Osimertinibum": {
+    "atc": "L01XE35",
+    "display": "Ozymertynib"
+  },
+  "Oxaliplatinum": {
+    "atc": "L01XA03",
+    "display": "Oksaliplatyna"
+  },
+  "Oxcarbazepinum": {
+    "atc": "N03AF02",
+    "display": "Okskarbazepina"
+  },
+  "Oxybutynini hydrochloridum": {
+    "atc": "G04BD04",
+    "display": "Chlorowodorek oksybutyniny"
+  },
+  "Oxycodoni hydrochloridum": {
+    "atc": "N02AA05",
+    "display": "Chlorowodorek oksykodonu"
+  },
+  "Oxycodoni hydrochloridum + Naloxoni hydrochloridum": {
+    "atc": "N02AA55",
+    "display": "Chlorowodorek oksykodonu + Chlorowodorek naloksonu"
+  },
+  "Ozanimodum": {
+    "atc": "L04AA42",
+    "display": "Ozanimod"
+  },
+  "Paclitaxelum": {
+    "atc": "L01CD01",
+    "display": "Paklitaksel"
+  },
+  "Paclitaxelum albuminatum": {
+    "atc": "L01CD01",
+    "display": "Paklitaksel związany z albuminami"
+  },
+  "Palbociclibum": {
+    "atc": "L01EF01",
+    "display": "Palbocyklib"
+  },
+  "Paliperidonum": {
+    "atc": "N05AX13",
+    "display": "Paliperydon"
+  },
+  "Palivizumabum": {
+    "atc": "J06BD01",
+    "display": "Paliwizumab"
+  },
+  "Pancreatinum": {
+    "atc": "A09AA02",
+    "display": "Pankreatyna"
+  },
+  "Panitumumabum": {
+    "atc": "L01FX08",
+    "display": "Panitumumab"
+  },
+  "Paricalcitolum": {
+    "atc": "A11CC04",
+    "display": "Parykalcytol"
+  },
+  "Paroxetinum": {
+    "atc": "N06AB05",
+    "display": "Paroksetyna"
+  },
+  "Pasireotidum": {
+    "atc": "H01CB05",
+    "display": "Pasyreotyd"
+  },
+  "Patiromerum": {
+    "atc": "V03AE08",
+    "display": "Patiromer"
+  },
+  "Pazopanibum": {
+    "atc": "L01XE11",
+    "display": "Pazopanib"
+  },
+  "Pegaspargasum": {
+    "atc": "L01XX24",
+    "display": "Pegaspargaza"
+  },
+  "Pegcetakoplan": {
+    "atc": "L04AJ04",
+    "display": "Pegcetakoplan"
+  },
+  "Pegfilgrastimum": {
+    "atc": "L03AA13",
+    "display": "Pegfilgrastym"
+  },
+  "Peginterferonum alfa-2a": {
+    "atc": "L03AB07",
+    "display": "Peginterferon alfa-2a"
+  },
+  "Peginterferonum beta-1a": {
+    "atc": "L03AB08",
+    "display": "Peginterferon beta-1a"
+  },
+  "Pegvisomantum": {
+    "atc": "H01BB04",
+    "display": "Pegwisomant"
+  },
+  "Pembrolizumabum": {
+    "atc": "L01FC09",
+    "display": "Pembrolizumab"
+  },
+  "Pemetreksedum": {
+    "atc": "L01BA04",
+    "display": "Pemetreksed"
+  },
+  "Pemetrexedum": {
+    "atc": "L01BA04",
+    "display": "Pemetreksed"
+  },
+  "Pemigatinibum": {
+    "atc": "L01EN02",
+    "display": "Pemigatynib"
+  },
+  "Penicillaminum": {
+    "atc": "M01CC01",
+    "display": "Penicylamina"
+  },
+  "Pentozanu wielosiarczan sodowy": {
+    "atc": "G04BX17",
+    "display": "Pentozanu wielosiarczan sodowy"
+  },
+  "Perazinum": {
+    "atc": "N05AB03",
+    "display": "Perazyna"
+  },
+  "Perindoprili tosilas + Amlodipinum": {
+    "atc": "C09BB04",
+    "display": "Peryndopryl + Amlodypina"
+  },
+  "Perindoprili tosilas + Indapamidum": {
+    "atc": "C09BA04",
+    "display": "Peryndopryl + Indapamid"
+  },
+  "Perindoprilum argininum": {
+    "atc": "C09AA04",
+    "display": "Peryndopryl"
+  },
+  "Perindoprilum argininum + Amlodipinum": {
+    "atc": "C09BB04",
+    "display": "Peryndopryl + Amlodypina"
+  },
+  "Perindoprilum argininum + Indapamidum": {
+    "atc": "C09BA04",
+    "display": "Peryndopryl + Indapamid"
+  },
+  "Pertuzumabum": {
+    "atc": "L01XC10",
+    "display": "Pertuzumab"
+  },
+  "Phenobarbitalum": {
+    "atc": "N03AA02",
+    "display": "Fenobarbital"
+  },
+  "Phenoxymethylpenicillinum kalicum": {
+    "atc": "J01CE02",
+    "display": "Fenoksymetylopenicylina potasowa"
+  },
+  "Phenoxymetylopenicillinum potassium": {
+    "atc": "J01CE02",
+    "display": "Fenoksymetylopenicylina potasowa"
+  },
+  "Phenytoinum": {
+    "atc": "N03AB02",
+    "display": "Fenytoina"
+  },
+  "Phytomenadionum (vit. K1)": {
+    "atc": "B02BD01",
+    "display": "Fitomenadion"
+  },
+  "Pirfenidonum": {
+    "atc": "L04AX05",
+    "display": "Pirfenidon"
+  },
+  "Piribedilum": {
+    "atc": "N04BC08",
+    "display": "Piribedyl"
+  },
+  "Pitolisantum": {
+    "atc": "N07XX11",
+    "display": "Pitolisant"
+  },
+  "Plerixaforum": {
+    "atc": "L03AX16",
+    "display": "Pleriksafor"
+  },
+  "Pleryksafor": {
+    "atc": "L03AX16",
+    "display": "Pleriksafor"
+  },
+  "Polatuzumabum vedotinum": {
+    "atc": "L01FX13",
+    "display": "Polatuzumab wedotyny"
+  },
+  "Pomalidomidum": {
+    "atc": "L04AX06",
+    "display": "Pomalidomid"
+  },
+  "Ponatinibum": {
+    "atc": "L01XE24",
+    "display": "Ponatynib"
+  },
+  "Ponesimodum": {
+    "atc": "L04AE05",
+    "display": "Ponesimod"
+  },
+  "Posaconazolum": {
+    "atc": "J02AC04",
+    "display": "Pozakonazol"
+  },
+  "Pramipexolum": {
+    "atc": "N04BC05",
+    "display": "Pramipeksol"
+  },
+  "Prednisolonum": {
+    "atc": "H02AB06",
+    "display": "Prednizolon"
+  },
+  "Prednisonum": {
+    "atc": "H02AB07",
+    "display": "Prednizon"
+  },
+  "Pregabalinum": {
+    "atc": "N03AX16",
+    "display": "Pregabalina"
+  },
+  "Pretomanidum": {
+    "atc": "J04AK06",
+    "display": "Pretomanid"
+  },
+  "Progesteronum": {
+    "atc": "G03DA04",
+    "display": "Progesteron"
+  },
+  "Propafenoni hydrochloridum": {
+    "atc": "C01BC03",
+    "display": "Propafenon"
+  },
+  "Pyrazinamidum": {
+    "atc": "J04AK01",
+    "display": "Pirazynamid"
+  },
+  "Pyridostigmini bromidum": {
+    "atc": "N07AA02",
+    "display": "Pirydostygmina"
+  },
+  "Quinapril": {
+    "atc": "C09AA06",
+    "display": "Chinapryl"
+  },
+  "Quinaprilum": {
+    "atc": "C09AA06",
+    "display": "Chinapryl"
+  },
+  "Radium dichloridum Ra223": {
+    "atc": "V10XX03",
+    "display": "Dichlorid radu (223Ra)"
+  },
+  "Ramiprilum + Amlodipinum": {
+    "atc": "C09BB07",
+    "display": "Ramipryl + Amlodypina"
+  },
+  "Ramiprilum + Felodipinum": {
+    "atc": "C09BB10",
+    "display": "Ramipryl + Felodypina"
+  },
+  "Ramiprilum + Hydrochlorothiazidum": {
+    "atc": "C09BA05",
+    "display": "Ramipryl + Hydrochlorotiazyd"
+  },
+  "Ramiprilum + Indapamidum": {
+    "atc": "C09BA12",
+    "display": "Ramipryl + Indapamid"
+  },
+  "Ramucirumabum": {
+    "atc": "L01XC19",
+    "display": "Ramucyrumab"
+  },
+  "Ranibizumab": {
+    "atc": "S01LA04",
+    "display": "Ranibizumab"
+  },
+  "Rasburicasum": {
+    "atc": "V03AF07",
+    "display": "Rasburykaza"
+  },
+  "Ravulizumabum": {
+    "atc": "L04AJ04",
+    "display": "Rawulizumab"
+  },
+  "Regorafenib": {
+    "atc": "L01EX05",
+    "display": "Regorafenib"
+  },
+  "Relugolixum": {
+    "atc": "L02BX04",
+    "display": "Relugoliks"
+  },
+  "Relugolixum + Estradiolum + Norethisterone acetate": {
+    "atc": "G03XA03",
+    "display": "Relugoliks + Estradiol + Octan noretysteronu"
+  },
+  "Ribociclibum": {
+    "atc": "L01EF04",
+    "display": "Rybocyklib"
+  },
+  "Rifampicinum": {
+    "atc": "J04AB02",
+    "display": "Ryfampicyna"
+  },
+  "Rifampicinum + Isoniazidum": {
+    "atc": "J04AM02",
+    "display": "Ryfampicyna + Izoniazyd"
+  },
+  "Riluzolum": {
+    "atc": "N07BX02",
+    "display": "Ryluzol"
+  },
+  "Riociguatum": {
+    "atc": "C02KX05",
+    "display": "Riocyguat"
+  },
+  "Ripretinibum": {
+    "atc": "L01EX22",
+    "display": "Ripretynib"
+  },
+  "Risankizumabum": {
+    "atc": "L04AC16",
+    "display": "Ryzankizumab"
+  },
+  "Risdiplamum": {
+    "atc": "N07XX15",
+    "display": "Rysdiplam"
+  },
+  "Risperidonum": {
+    "atc": "N05AX08",
+    "display": "Rysperydon"
+  },
+  "Ritlecitinibum": {
+    "atc": "L04AA54",
+    "display": "Rytlecytynib"
+  },
+  "Rituximabum": {
+    "atc": "L01FA01",
+    "display": "Rytuksymab"
+  },
+  "Rivastigminum": {
+    "atc": "N07AA03",
+    "display": "Rywastygmina"
+  },
+  "Romiplostimum": {
+    "atc": "B02AB04",
+    "display": "Romiplostym"
+  },
+  "Romosozumabum": {
+    "atc": "M05BX06",
+    "display": "Romosozumab"
+  },
+  "Ropeginterferonum alfa-2b": {
+    "atc": "L03AB15",
+    "display": "Ropeginterferon alfa-2b"
+  },
+  "Ropinirolum": {
+    "atc": "N04BC04",
+    "display": "Ropinirol"
+  },
+  "Rosuvastatinum + Ezetimibum": {
+    "atc": "C10BA06",
+    "display": "Rozuwastatyna + Ezetymib"
+  },
+  "Roxadustatum": {
+    "atc": "B03XA05",
+    "display": "Roksadustat"
+  },
+  "Roxithromycinum": {
+    "atc": "J01FA06",
+    "display": "Roksytromycyna"
+  },
+  "Rucaparibum": {
+    "atc": "L01XK03",
+    "display": "Rukaparyb"
+  },
+  "Rupatadinum": {
+    "atc": "R06AX28",
+    "display": "Rupatadyna"
+  },
+  "Rurioctocogum alfa pegolum": {
+    "atc": "B02BD02",
+    "display": "Rurioctocog alfa pegol"
+  },
+  "Ruxolitinibum": {
+    "atc": "L01EJ01",
+    "display": "Ruksolitynib"
+  },
+  "Sacituzumabum govitecanum": {
+    "atc": "L01FX17",
+    "display": "Sacituzumab gowitekan"
+  },
+  "Satralizumabum": {
+    "atc": "N07XX13",
+    "display": "Satralizumab"
+  },
+  "Sekukinumab": {
+    "atc": "L04AC10",
+    "display": "Sekukinumab"
+  },
+  "Selegilinum": {
+    "atc": "N04BD01",
+    "display": "Selegilina"
+  },
+  "Selexipagum": {
+    "atc": "B01AC27",
+    "display": "Seleksypag"
+  },
+  "Selpercatinibum": {
+    "atc": "L01EX22",
+    "display": "Selperkatynib"
+  },
+  "Selumetinibum": {
+    "atc": "L01EE04",
+    "display": "Selumetynib"
+  },
+  "Semaglutidum": {
+    "atc": "A10BJ06",
+    "display": "Semaglutyd"
+  },
+  "Serplulimabum": {
+    "atc": "L01FF06",
+    "display": "Serplulimab"
+  },
+  "Sertindolum": {
+    "atc": "N05AE03",
+    "display": "Sertindol"
+  },
+  "Sildenafili citras": {
+    "atc": "G04BE03",
+    "display": "Sildenafil"
+  },
+  "Sildenafilum": {
+    "atc": "G04BE03",
+    "display": "Sildenafil"
+  },
+  "Silodosinum": {
+    "atc": "G04CA04",
+    "display": "Sylodosyna"
+  },
+  "Siltuximabum": {
+    "atc": "L04AC09",
+    "display": "Syltuksymab"
+  },
+  "Siponimodum": {
+    "atc": "L04AA42",
+    "display": "Syponimod"
+  },
+  "Sirolimusum": {
+    "atc": "L04AA10",
+    "display": "Syrolimus"
+  },
+  "Sitagliptinum + Metformin hydrochloride": {
+    "atc": "A10BD07",
+    "display": "Sitagliptyna + Metformina"
+  },
+  "Sitagliptinum + Metformini hydrochloridum": {
+    "atc": "A10BD07",
+    "display": "Sitagliptyna + Metformina"
+  },
+  "Sodium zirconium cyclosilicate": {
+    "atc": "V03AE10",
+    "display": "Cyklokrzemian cyrkonowo-sodowy"
+  },
+  "Sofosbuvirum + Velpatasvirum": {
+    "atc": "J05AP54",
+    "display": "Sofosbuwir + Welpataswir"
+  },
+  "Sofosbuvirum + Velpatasvirum + Voxilaprevirum": {
+    "atc": "J05AP57",
+    "display": "Sofosbuwir + Welpataswir + Woksilaprewir"
+  },
+  "Solifenacini succinas": {
+    "atc": "G04BD08",
+    "display": "Solifenacyna"
+  },
+  "Solifenacini succinas + Tamsulosini hydrochloridum": {
+    "atc": "G04BD11",
+    "display": "Solifenacyna + Tamsulosyna"
+  },
+  "Somatrogonum": {
+    "atc": "H01AC07",
+    "display": "Somatrogon"
+  },
+  "Somatropinum": {
+    "atc": "H01AC01",
+    "display": "Somatropina"
+  },
+  "Sorafenibum": {
+    "atc": "L01EX02",
+    "display": "Sorafenib"
+  },
+  "Sotalolum": {
+    "atc": "C07AA07",
+    "display": "Sotalol"
+  },
+  "Sotatercept": {
+    "atc": "B03XA07",
+    "display": "Sotatercept"
+  },
+  "Sotorasibum": {
+    "atc": "L01XX74",
+    "display": "Sotorasyb"
+  },
+  "Spiramycinum": {
+    "atc": "J01FA02",
+    "display": "Spiramycyna"
+  },
+  "Stiripentolum": {
+    "atc": "N03AX08",
+    "display": "Stiripentol"
+  },
+  "Sulfamethoxazolum + Trimethoprimum": {
+    "atc": "J01EE01",
+    "display": "Sulfametoksazol + Trimetoprim"
+  },
+  "Sulfasalazinum": {
+    "atc": "A07EC01",
+    "display": "Sulfasalazyna"
+  },
+  "Sulpiridum": {
+    "atc": "N05AL01",
+    "display": "Sulpiryd"
+  },
+  "Sunitinibum": {
+    "atc": "L01XE04",
+    "display": "Sunitynib"
+  },
+  "Szczepionka przeciw pneumokokom sacharydowa, skoniugowana, adsorbowana (13-walentna)": {
+    "atc": "J07AL02",
+    "display": "Szczepionka przeciw pneumokokom (13-walentna)"
+  },
+  "Szczepionka przeciw półpaścowi (rekombinowana, z adiuwantem)": {
+    "atc": "J07BK02",
+    "display": "Szczepionka przeciw półpaścowi (rekombinowana)"
+  },
+  "Szczepionka przeciw syncytialnemu wirusowi dróg oddechowych (RSV) (rekombinowana, z adiuwantem)": {
+    "atc": "J07BX04",
+    "display": "Szczepionka przeciw RSV (rekombinowana, z adiuwantem)"
+  },
+  "Szczepionka przeciw syncytialnemu wirusowi oddechowemu (RSV) (biwalentna, rekombinowana)": {
+    "atc": "J07BX05",
+    "display": "Szczepionka przeciw RSV (biwalentna, rekombinowana)"
+  },
+  "Szczepionka przeciw wirusowi brodawczaka ludzkiego [typy 16 i 18] (rekombinowana, z adiuwantem, adsorbowana)": {
+    "atc": "J07BM02",
+    "display": "Szczepionka przeciw HPV (typy 16 i 18)"
+  },
+  "Tacrolimusum": {
+    "atc": "L04AD02",
+    "display": "Takrolimus"
+  },
+  "Tafamidisum": {
+    "atc": "N07XX10",
+    "display": "Tafamidis"
+  },
+  "Tafasitamabum": {
+    "atc": "L01FX16",
+    "display": "Tafasitamab"
+  },
+  "Tafluprostum": {
+    "atc": "S01EE05",
+    "display": "Tafluprost"
+  },
+  "Tafluprostum + Timololum": {
+    "atc": "S01ED51",
+    "display": "Tafluprost + Tymolol"
+  },
+  "Talazoparibum": {
+    "atc": "L01XK05",
+    "display": "Talazoparyb"
+  },
+  "Talquetamabum": {
+    "atc": "L01FX24",
+    "display": "Talkwetamab"
+  },
+  "Tamoxifenum": {
+    "atc": "L02BA01",
+    "display": "Tamoksyfen"
+  },
+  "Tapentadolum": {
+    "atc": "N02AX06",
+    "display": "Tapentadol"
+  },
+  "Tebentafuspum": {
+    "atc": "L01FX23",
+    "display": "Tebentafusp"
+  },
+  "Teclistamabum": {
+    "atc": "L01FX22",
+    "display": "Teklistamab"
+  },
+  "Telmisartanum + Amlodipini besilas + Hydrochlorothiazidum": {
+    "atc": "C09DX01",
+    "display": "Telmisartan + Amlodypina + Hydrochlorotiazyd"
+  },
+  "Telmisartanum + Amlodipinum": {
+    "atc": "C09DB07",
+    "display": "Telmisartan + Amlodypina"
+  },
+  "Telmisartanum + Hydrochlorothiazidum": {
+    "atc": "C09DA07",
+    "display": "Telmisartan + Hydrochlorotiazyd"
+  },
+  "Temozolomidum": {
+    "atc": "L01AX03",
+    "display": "Temozolomid"
+  },
+  "Temsirolimusum": {
+    "atc": "L01XE09",
+    "display": "Temsyrolimus"
+  },
+  "Tenofovirum disoproxilum": {
+    "atc": "J05AF07",
+    "display": "Tenofowir dizoproksylu"
+  },
+  "Terazosinum": {
+    "atc": "G04CA03",
+    "display": "Terazozyna"
+  },
+  "Terbinafinum": {
+    "atc": "D01BA02",
+    "display": "Terbinafina"
+  },
+  "Teriflunomidum": {
+    "atc": "L04AA31",
+    "display": "Teryflunomid"
+  },
+  "Tetrabenazinum": {
+    "atc": "N07XX06",
+    "display": "Tetrabenazyna"
+  },
+  "Tezepelumabum": {
+    "atc": "R03DX12",
+    "display": "Tezepelumab"
+  },
+  "Theophyllinum": {
+    "atc": "R03DA04",
+    "display": "Teofilina"
+  },
+  "Thiethylperazinum": {
+    "atc": "N05AB03",
+    "display": "Tietylperazyna"
+  },
+  "Tiagabinum": {
+    "atc": "N03AG06",
+    "display": "Tiagabina"
+  },
+  "Tianeptinum natricum": {
+    "atc": "N06AX14",
+    "display": "Tianeptyna sodowa"
+  },
+  "Ticagrelorum": {
+    "atc": "B01AC24",
+    "display": "Tikagrelor"
+  },
+  "Ticlopidini hydrochloridum": {
+    "atc": "B01AC05",
+    "display": "Tiklopidyna chlorowodorek"
+  },
+  "Tioguaninum": {
+    "atc": "L01BB03",
+    "display": "Tioguanina"
+  },
+  "Tiotropium": {
+    "atc": "R03BB04",
+    "display": "Tiotropium"
+  },
+  "Tisagenlecleucelum": {
+    "atc": "L01XX69",
+    "display": "Tisagenlekleucel"
+  },
+  "Tislelizumabum": {
+    "atc": "L01FF06",
+    "display": "Tislelizumab"
+  },
+  "Tizanidinum": {
+    "atc": "M03BX02",
+    "display": "Tyzanidyna"
+  },
+  "Tobramycinum": {
+    "atc": "J01GB01",
+    "display": "Tobramycyna"
+  },
+  "Tocilizumabum": {
+    "atc": "L04AC07",
+    "display": "Tocilizumab"
+  },
+  "Tofacitinibum": {
+    "atc": "L04AA29",
+    "display": "Tofacytynib"
+  },
+  "Tofersenum": {
+    "atc": "N07XX15",
+    "display": "Tofersen"
+  },
+  "Tolterodini hydrogenotartras": {
+    "atc": "G04BD07",
+    "display": "Tolterodyna"
+  },
+  "Tolterodini tartras": {
+    "atc": "G04BD07",
+    "display": "Tolterodyna"
+  },
+  "Tolvaptanum": {
+    "atc": "V03AA12",
+    "display": "Tolwaptan"
+  },
+  "Topiramatum": {
+    "atc": "N03AX11",
+    "display": "Topiramat"
+  },
+  "Topotecanum": {
+    "atc": "L01CB03",
+    "display": "Topotekan"
+  },
+  "Torasemidum": {
+    "atc": "C03CA04",
+    "display": "Torasemid"
+  },
+  "Toxinum botulinicum typum A ad iniectabile": {
+    "atc": "M03AX01",
+    "display": "Toksyna botulinowa typu A"
+  },
+  "Trabectedinum": {
+    "atc": "L01CX01",
+    "display": "Trabektedyna"
+  },
+  "Tralokinumabum": {
+    "atc": "D11AH09",
+    "display": "Tralokinumab"
+  },
+  "Tramadoli hydrochloridum": {
+    "atc": "N02AX02",
+    "display": "Tramadol"
+  },
+  "Tramadoli hydrochloridum + Paracetamolum": {
+    "atc": "N02AJ13",
+    "display": "Tramadol z paracetamolem"
+  },
+  "Tramadolum + Paracetamolum": {
+    "atc": "N02AJ13",
+    "display": "Tramadol z paracetamolem"
+  },
+  "Trametinibum": {
+    "atc": "L01XE16",
+    "display": "Trametynib"
+  },
+  "Trastuzumab deruxtecan": {
+    "atc": "L01FX17",
+    "display": "Trastuzumab derukstekan"
+  },
+  "Trastuzumabum": {
+    "atc": "L01XC03",
+    "display": "Trastuzumab"
+  },
+  "Trastuzumabum + Pertuzumabum": {
+    "atc": "L01XC06",
+    "display": "Trastuzumab z pertuzumabem"
+  },
+  "Trastuzumabum emtansinum": {
+    "atc": "L01FX05",
+    "display": "Trastuzumab emtanzyna"
+  },
+  "Travoprostum": {
+    "atc": "S01EE04",
+    "display": "Travoprost"
+  },
+  "Travoprostum + Timololum": {
+    "atc": "S01ED51",
+    "display": "Travoprost z tymololem"
+  },
+  "Trazodoni hydrochloridum": {
+    "atc": "N06AX05",
+    "display": "Trazodon"
+  },
+  "Tremelimumabum": {
+    "atc": "L01FX22",
+    "display": "Tremelimumab"
+  },
+  "Treprostinilum": {
+    "atc": "B01AC21",
+    "display": "Treprostynil"
+  },
+  "Treprostynilum": {
+    "atc": "B01AC21",
+    "display": "Treprostynil"
+  },
+  "Trientinum tetrahydrochloridum": {
+    "atc": "A16AX07",
+    "display": "Trientyna"
+  },
+  "Trifluridinum + Tipiracilum": {
+    "atc": "L01BC07",
+    "display": "Triflurydyna z typiracylem"
+  },
+  "Trimetazidini dihydrochloridum": {
+    "atc": "C01EB15",
+    "display": "Trimetazydyna"
+  },
+  "Triptorelinum": {
+    "atc": "L02AE04",
+    "display": "Triptorelina"
+  },
+  "Tropicamidum": {
+    "atc": "S01FA06",
+    "display": "Tropikamid"
+  },
+  "Tucatinibum": {
+    "atc": "L01XE50",
+    "display": "Tukatynib"
+  },
+  "Tyldrakizumabum": {
+    "atc": "L04AC16",
+    "display": "Tyldrakizumab"
+  },
+  "Ublituximabum": {
+    "atc": "L04AA50",
+    "display": "Ublituksymab"
+  },
+  "Umeclidinii bromidum + Vilanterolum": {
+    "atc": "R03AL07",
+    "display": "Umeklidynium z wilanterolem"
+  },
+  "Upadacitinibum": {
+    "atc": "L04AA46",
+    "display": "Upadacytynib"
+  },
+  "Urofollitropinum": {
+    "atc": "G03GA04",
+    "display": "Urofollitropina"
+  },
+  "Ustekinumabum": {
+    "atc": "L04AC05",
+    "display": "Ustekinumab"
+  },
+  "Vaccinum influenzae inactivatum ex corticis antigeniis praeparatum": {
+    "atc": "J07BB02",
+    "display": "Szczepionka przeciw grypie (antygen powierzchniowy), inaktywowana"
+  },
+  "Valganciclovirum": {
+    "atc": "J05AB14",
+    "display": "Walgancyklowir"
+  },
+  "Valsartanum + Hydrochlorothiazidum": {
+    "atc": "C09DA03",
+    "display": "Walsartan + Hydrochlorotiazyd"
+  },
+  "Vandetanibum": {
+    "atc": "L01EX04",
+    "display": "Wandetanib"
+  },
+  "Vedolizumabum": {
+    "atc": "L04AG07",
+    "display": "Wedolizumab"
+  },
+  "Velaglucerasum alfa": {
+    "atc": "A16AB10",
+    "display": "Welagluceraza alfa"
+  },
+  "Vemurafenibum": {
+    "atc": "L01EC01",
+    "display": "Wemurafenib"
+  },
+  "Venetoclaxum": {
+    "atc": "L01XX52",
+    "display": "Wenetoklaks"
+  },
+  "Venlafaxinum": {
+    "atc": "N06AX16",
+    "display": "Wenlafaksyna"
+  },
+  "Vigabatrinum": {
+    "atc": "N03AG04",
+    "display": "Wigabatryna"
+  },
+  "Vildagliptinum": {
+    "atc": "A10BH02",
+    "display": "Wildagliptyna"
+  },
+  "Vildagliptinum + Metformini hydrochloridum": {
+    "atc": "A10BD10",
+    "display": "Wildagliptyna + Metformina"
+  },
+  "Vincristini sulfas": {
+    "atc": "L01CA02",
+    "display": "Winkrystyna"
+  },
+  "Vinorelbinum": {
+    "atc": "L01CA04",
+    "display": "Winorelbina"
+  },
+  "Vismodegibum": {
+    "atc": "L01XJ01",
+    "display": "Wismodefib"
+  },
+  "Voclosporinum": {
+    "atc": "L04AD06",
+    "display": "Woklosporin"
+  },
+  "Voretigene neparvovec": {
+    "atc": "S01LA01",
+    "display": "Woretigen neparwowek"
+  },
+  "Voriconazolum": {
+    "atc": "J02AC03",
+    "display": "Worykonazol"
+  },
+  "Vortioxetini hydrobromidum": {
+    "atc": "N06AX26",
+    "display": "Wortioksetyna"
+  },
+  "Vosoritidum": {
+    "atc": "H01CC03",
+    "display": "Wosorytyd"
+  },
+  "Vutrisiran": {
+    "atc": "N07XX15",
+    "display": "Wutrisyran"
+  },
+  "Wyciąg alergenów z pyłków traw": {
+    "atc": "V01AA02",
+    "display": "Wyciąg alergenów z pyłków traw"
+  },
+  "Wyciągi alergenowe pyłku brzozy (615)": {
+    "atc": "V01AA05",
+    "display": "Wyciąg alergenów z pyłku brzozy"
+  },
+  "Wyciągi alergenowe roztoczy kurzu domowego": {
+    "atc": "V01AA03",
+    "display": "Wyciąg alergenów z roztoczy kurzu domowego"
+  },
+  "Zanubrutinibum": {
+    "atc": "L01EL05",
+    "display": "Zanubrutynib"
+  },
+  "Ziprasidonum": {
+    "atc": "N05AE04",
+    "display": "Ziprazydon"
+  },
+  "Zofenoprilum calcicum": {
+    "atc": "C09AA15",
+    "display": "Zofenopryl"
+  },
+  "Zuclopenthixoli decanoas": {
+    "atc": "N05AF05",
+    "display": "Zuklopentyksol"
+  },
+  "Zuclopenthixolum": {
+    "atc": "N05AF05",
+    "display": "Zuklopentyksol"
+  },
+  "tert-Butylamini Perindoprilum": {
+    "atc": "C09AA04",
+    "display": "Peryndopryl"
+  },
+  "tert-Butylamini Perindoprilum + Indapamidum": {
+    "atc": "C09BA04",
+    "display": "Peryndopryl + Indapamid"
+  },
+  "tert-Butylamini perindoprilum + Amlodipinum": {
+    "atc": "C09BB04",
+    "display": "Peryndopryl + Amlodypina"
+  }
+}

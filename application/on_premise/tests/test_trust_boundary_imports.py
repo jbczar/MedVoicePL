@@ -62,6 +62,8 @@ FORBIDDEN_NAMES = {
     "EnrichedCandidate",
     "DrugCandidate",
     "DrugCandidateList",
+    "AtcLookupResult",
+    "LazyAtcResolver",
 }
 
 # Symbols that MUST be importable from `shared.schemas` for the

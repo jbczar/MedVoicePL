@@ -105,7 +105,15 @@ application/cloud/data/vectorstore/*
 application/cloud/output/
 application/cloud/data/nfz_formulary/raw/
 application/cloud/data/nfz_formulary/index_*.json
+application/cloud/data/nfz_formulary/atc_cache.json
 application/cloud/data/qdrant/
+
+research_and_testing/results/
+
+application/on_premise/audit/
+
+research_and_testing/test_cases/expected_outputs/drug_references/.*.json
+
 
 # ------------------------------------------
 # Jupyter Notebooks — outputs
@@ -138,3 +146,6 @@ htmlcov/
 # ------------------------------------------
 *.log
 logs/
+.env.bak
+.env.bak2
+

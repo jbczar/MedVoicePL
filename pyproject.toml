@@ -75,6 +75,12 @@ ignore = ["E501"]  # line length handled by formatter
 "**/cloud/llm_integration/llm_client.py" = ["TC002"]
 "**/cloud/llm_integration/prompts.py" = ["RUF001", "TC001"]
 "**/cloud/data/nfz_formulary/ingest_nfz.py" = ["B008", "TC003"]
+"**/cloud/data/nfz_formulary/build_atc_map.py" = ["B008", "F541"]
+# Phase 2c.1 — eponym filter strips multiple Unicode apostrophe variants
+# from medical names ("Whipple'a", "Reye'a"); each variant is intentional.
+"**/anonymization/eponym_filter.py" = ["RUF001", "TC002"]
+"**/tests/test_eponym_filter.py" = ["RUF001"]
+"**/cloud/nfz/atc_resolver.py" = ["TC003"]
 "**/cloud/nfz/formulary_search.py" = ["TC003"]
 "**/cloud/rag/chain.py" = ["TC003"]
 # Phase 2c trust gate: en-dash in docstrings (range "100–500 ms"),

@@ -95,7 +95,7 @@ def evaluate_one(
         scenario_id=scenario_id,
         drug_recall=drug_recall(suggestion_atc, expected),
         drug_precision=drug_precision(suggestion_atc, expected),
-        nfz_accuracy=nfz_refund_accuracy(suggestion_pairs),
+        nfz_accuracy=nfz_refund_accuracy(suggestion_pairs, expected=expected),
         empty_list_correct=empty_list_correctness(len(suggestion.drugs), expected),
         provenance_valid=provenance_validity([list(d.provenance) for d in suggestion.drugs]),
         duration_s=float(suggestion.metadata.duration_s) if hasattr(suggestion, "metadata") else 0.0,

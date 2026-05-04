@@ -323,6 +323,7 @@ class PresidioAnonymizer:
     """
 
     registry: RecognizerRegistry = field(default_factory=_RealRegistry)
+    eponym_filter: Any = None  # MedicalEponymFilter | None — see _walk
 
     # Field paths whose value is schema-constrained clinical content
     # (NOT free narrative text) and therefore should bypass the
@@ -407,6 +408,10 @@ class PresidioAnonymizer:
             if path in self._SKIP_PATHS:
                 return node
             results = self.registry.analyze(node, language="pl")
+            # Veto medical-eponym PERSON detections in clinical context
+            # (e.g. "choroba Gravesa-Basedowa" → don't redact "Gravesa").
+            if self.eponym_filter is not None:
+                results = self.eponym_filter.filter(results, text=node)
             redacted, leaf_repls = _splice(node, results, assigner, location_path=path)
             replacements.extend(leaf_repls)
             return redacted

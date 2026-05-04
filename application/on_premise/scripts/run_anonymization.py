@@ -114,7 +114,12 @@ def anonymize(
         f"(seeded from {scenarios_dir if scenarios_dir.is_dir() else 'no scenarios'})…[/dim]"
     )
     registry = default_registry(scenarios_dir=scenarios_dir if scenarios_dir.is_dir() else None)
-    anonymizer = PresidioAnonymizer(registry=registry)
+    from on_premise.anonymization.eponym_filter import load_default
+    eponym_filter = load_default()
+    anonymizer = PresidioAnonymizer(registry=registry, eponym_filter=eponym_filter)
+    console.print(
+        f"[dim]eponym filter: {len(eponym_filter.eponyms)} terms[/dim]"
+    )
     audit = AuditLogger(
         audit_root=audit_dir, retention_days=retention_days, controller=controller
     )

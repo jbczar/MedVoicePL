@@ -138,6 +138,8 @@ class TestHappyPath:
 
 class TestEmptyOutputRule:
     def test_podejrzenie_yields_empty_drugs(self, make_anonymized_soap: Any) -> None:
+        from shared.schemas import AnonymizedPlan
+
         canned = DrugCandidateList(
             candidates=[
                 DrugCandidate(
@@ -153,25 +155,60 @@ class TestEmptyOutputRule:
             assessment=AnonymizedAssessment(
                 primary_diagnosis="podejrzenie POChP",
                 icd10_code="J44",
-            )
+            ),
+            plan=AnonymizedPlan(medications_prescribed=[]),
         )
         suggestion = agent.run(soap)
         assert suggestion.drugs == []
         assert any("wstępna" in n.lower() or "potwierdzenia" in n.lower() for n in suggestion.notes)
 
     def test_wymaga_potwierdzenia_yields_empty(self, make_anonymized_soap: Any) -> None:
+        from shared.schemas import AnonymizedPlan
+
         canned = DrugCandidateList(candidates=[])
         agent = _build_agent(canned)
         soap = make_anonymized_soap(
             assessment=AnonymizedAssessment(
                 primary_diagnosis="akromegalia",
                 clinical_reasoning="rozpoznanie wymaga potwierdzenia laboratoryjnego",
-            )
+            ),
+            plan=AnonymizedPlan(medications_prescribed=[]),
         )
         suggestion = agent.run(soap)
         assert suggestion.drugs == []
 
+    def test_preliminary_with_existing_medication_still_calls_llm(
+        self, make_anonymized_soap: Any
+    ) -> None:
+        """If SLM marks 'podejrzenie' but the plan already has a drug
+        listed, the doctor has clinically committed — agent should run.
+        """
+        from shared.schemas import AnonymizedPlan
+
+        canned = DrugCandidateList(
+            candidates=[
+                DrugCandidate(
+                    name="Propranolol",
+                    atc_code="C07AA05",
+                    rationale="objawowe leczenie tachykardii",
+                    provenance=["assessment.primary_diagnosis"],
+                )
+            ]
+        )
+        agent = _build_agent(canned)
+        soap = make_anonymized_soap(
+            assessment=AnonymizedAssessment(
+                primary_diagnosis="podejrzenie nadczynności tarczycy",
+            ),
+            plan=AnonymizedPlan(medications_prescribed=["Propranolol"]),
+        )
+        suggestion = agent.run(soap)
+        assert len(suggestion.drugs) == 1
+        assert suggestion.drugs[0].atc_code == "C07AA05"
+
     def test_llm_not_called_when_preliminary(self, make_anonymized_soap: Any) -> None:
+        from shared.schemas import AnonymizedPlan
+
         canned = DrugCandidateList(candidates=[])
         llm = _FakeLLM(canned=canned)
         agent = CloudAgent(
@@ -183,7 +220,8 @@ class TestEmptyOutputRule:
         soap = make_anonymized_soap(
             assessment=AnonymizedAssessment(
                 primary_diagnosis="podejrzenie nadczynności tarczycy",
-            )
+            ),
+            plan=AnonymizedPlan(medications_prescribed=[]),
         )
         agent.run(soap)
         assert llm.calls == 0
@@ -192,6 +230,66 @@ class TestEmptyOutputRule:
 # ---------------------------------------------------------------------------
 # NFZ miss
 # ---------------------------------------------------------------------------
+
+
+class TestLazyResolver:
+    """The lazy ATC resolver bridges Gemini's free-text drug names to
+    the NFZ index when the agent's claimed ATC isn't found.
+    """
+
+    def test_resolver_recovers_nfz_miss(self, make_anonymized_soap: Any) -> None:
+        from cloud.nfz.atc_resolver import _FakeAtcResolver
+
+        canned = DrugCandidateList(
+            candidates=[
+                DrugCandidate(
+                    name="Propranolol",
+                    atc_code="X99XX99",  # hallucinated ATC
+                    rationale="leczenie tachykardii",
+                    provenance=["assessment.primary_diagnosis"],
+                )
+            ]
+        )
+        # NFZ index has the real Propranolol entry.
+        agent = CloudAgent(
+            llm=_FakeLLM(canned=canned),
+            nfz=_FakeNFZIndex(
+                entries=(_propranolol(),), snapshot_date=date(2026, 4, 1)
+            ),
+            chain=build_fake_chain(_excerpts()),
+            atc_resolver=_FakeAtcResolver(canned={"Propranolol": "C07AA05"}),
+            agent_version="3a.0-test",
+        )
+        suggestion = agent.run(make_anonymized_soap())
+        assert len(suggestion.drugs) == 1
+        # Resolver-recovered entry → reimbursement comes from NFZ.
+        assert suggestion.drugs[0].reimbursement == ReimbursementLevel.standard
+
+    def test_resolver_miss_falls_through_to_unrefunded(
+        self, make_anonymized_soap: Any
+    ) -> None:
+        from cloud.nfz.atc_resolver import _FakeAtcResolver
+
+        canned = DrugCandidateList(
+            candidates=[
+                DrugCandidate(
+                    name="Krasnoludek",
+                    atc_code="X99XX99",
+                    rationale="syntetyczny",
+                    provenance=["assessment.primary_diagnosis"],
+                )
+            ]
+        )
+        agent = CloudAgent(
+            llm=_FakeLLM(canned=canned),
+            nfz=_FakeNFZIndex(),
+            chain=build_fake_chain([]),
+            atc_resolver=_FakeAtcResolver(canned={"Krasnoludek": None}),
+            agent_version="3a.0-test",
+        )
+        suggestion = agent.run(make_anonymized_soap())
+        assert len(suggestion.drugs) == 1
+        assert suggestion.drugs[0].reimbursement == ReimbursementLevel.none
 
 
 class TestNFZMiss:
@@ -302,10 +400,13 @@ def test_orchestrator_imports_only_shared_types() -> None:
 
 @pytest.mark.parametrize("primary", ["podejrzenie X", "Suspected Y", "do diagnostyki"])
 def test_preliminary_markers_match(primary: str, make_anonymized_soap: Any) -> None:
+    from shared.schemas import AnonymizedPlan
+
     canned = DrugCandidateList(candidates=[])
     agent = _build_agent(canned)
     soap = make_anonymized_soap(
-        assessment=AnonymizedAssessment(primary_diagnosis=primary)
+        assessment=AnonymizedAssessment(primary_diagnosis=primary),
+        plan=AnonymizedPlan(medications_prescribed=[]),
     )
     suggestion = agent.run(soap)
     assert suggestion.drugs == []

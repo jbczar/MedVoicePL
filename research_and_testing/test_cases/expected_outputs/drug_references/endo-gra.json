@@ -1,11 +1,17 @@
 {
   "scenario_id": "endo-gra",
-  "diagnosis_label": "nadczynność tarczycy (Graves)",
+  "diagnosis_label": "Graves: beta-bloker (objawowe) + tyreostatyk (definitywne)",
   "diagnostic_only": false,
   "expected_empty_drug_list": false,
-  "expected_drugs": [
-    {"name": "Propranolol", "atc": "C07AA05", "must_be_refundable": true},
-    {"name": "Tiamazol", "atc": "H03BB02", "must_be_refundable": true}
+  "expected_slots": [
+    {
+      "label": "beta-bloker (kontrola objawów adrenergicznych — bridge therapy)",
+      "acceptable": ["C07AA05", "C07AB02", "C07AB07", "C07AB12", "C07AG02"]
+    },
+    {
+      "label": "tyreostatyk (definitywne leczenie nadczynności)",
+      "acceptable": ["H03BB02", "H03BB01", "H03BA02"]
+    }
   ],
   "expected_referrals": ["endokrynologia"],
   "expected_tests": ["TSH, fT3, fT4", "anty-TRAB", "USG tarczycy"]

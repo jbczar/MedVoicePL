@@ -1,9 +1,33 @@
 {
   "scenario_id": "a9b1c2d3",
-  "diagnosis_label": "podejrzenie POChP",
-  "diagnostic_only": true,
-  "expected_empty_drug_list": true,
-  "expected_drugs": [],
+  "diagnosis_label": "POChP — lekarz przepisał generyczny lek wziewny rozszerzający oskrzela 2× dziennie (regularne dawkowanie → bronchodilator długo działający)",
+  "diagnostic_only": false,
+  "expected_empty_drug_list": false,
+  "expected_slots": [
+    {
+      "label": "inhaled bronchodilator for COPD (SAMA/LAMA or SABA/LABA, mono or combo)",
+      "acceptable": [
+        "R03AC02",
+        "R03AC04",
+        "R03AC12",
+        "R03AC13",
+        "R03AC18",
+        "R03AC19",
+        "R03BB01",
+        "R03BB04",
+        "R03BB05",
+        "R03BB06",
+        "R03BB07",
+        "R03AL03",
+        "R03AL04",
+        "R03AL05",
+        "R03AL06",
+        "R03AL08",
+        "R03AL09",
+        "R03AL11"
+      ]
+    }
+  ],
   "expected_referrals": [],
   "expected_tests": ["spirometria"]
 }

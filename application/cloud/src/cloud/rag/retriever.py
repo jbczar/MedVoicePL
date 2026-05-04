@@ -68,14 +68,17 @@ class _QdrantRetriever:
         from qdrant_client import models as qmodels  # type: ignore[import-untyped]
 
         vector = self.embedder.embed_query(query)
-        results = self._client.search(  # type: ignore[attr-defined]
+        # qdrant-client 1.10+: `.search()` removed in favor of
+        # `.query_points()` which returns a QueryResponse with `.points`.
+        response = self._client.query_points(  # type: ignore[attr-defined]
             collection_name=self.collection,
-            query_vector=vector,
+            query=vector,
             limit=k,
             search_params=qmodels.SearchParams(exact=True),
         )
+        hits = getattr(response, "points", response)
         out: list[ChPLExcerpt] = []
-        for hit in results:
+        for hit in hits:
             payload = hit.payload or {}
             out.append(
                 ChPLExcerpt(
