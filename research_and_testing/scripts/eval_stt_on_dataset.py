@@ -181,6 +181,16 @@ def run(
         help="int8 (CPU, Apple Silicon), int8_float16 (CUDA), float16 (GPU). faster-whisper only.",
     ),
     limit: int | None = typer.Option(None, "--limit", "-n"),
+    reclassify_speakers: bool = typer.Option(
+        False,
+        "--reclassify-speakers",
+        help=(
+            "Phase 2a.1: after pyannote diarization, run Bielik SLM as a "
+            "content-based speaker reclassifier. Recovers DER lost to "
+            "pyannote's clustering collapse on synthetic XTTSv2 voices. "
+            "Only meaningful with --backend=on-premise."
+        ),
+    ),
 ) -> None:
     """Transcribe clean + noisy variants, report per-scenario WER/CER/DER."""
     # Load `.env` so `HUGGINGFACE_TOKEN` and `WHISPER_*` vars are visible to
@@ -214,6 +224,7 @@ def run(
         mlx_model_repo=mlx_model_repo,
         device=device,
         compute_type=compute_type,
+        reclassify_speakers=reclassify_speakers,
     )
 
     rows: list[dict] = []
@@ -343,9 +354,15 @@ class _BareRunner(_Runner):
 
 
 class _OnPremiseRunner(_Runner):
-    """Full Phase 2a pipeline: Whisper + pyannote + Transcript + DER."""
+    """Full Phase 2a pipeline: Whisper + pyannote + Transcript + DER.
 
-    def __init__(self, meta: dict[str, str | None]) -> None:
+    `reclassify_speakers=True` adds the Phase 2a.1 SLM-based content
+    reclassifier as a post-step over pyannote's labels.
+    """
+
+    def __init__(
+        self, meta: dict[str, str | None], *, reclassify_speakers: bool = False
+    ) -> None:
         from on_premise.stt.diarization import build_diarizer
         from on_premise.stt.whisper_engine import build_transcriber
 
@@ -356,6 +373,27 @@ class _OnPremiseRunner(_Runner):
         meta["device"] = self._transcriber.device
         meta["compute_type"] = getattr(self._transcriber, "compute_type", None)
         meta["diarization_model"] = self._diarizer.name
+        meta["reclassify_speakers"] = "yes" if reclassify_speakers else "no"
+
+        self._classifier = None
+        if reclassify_speakers:
+            from on_premise.structuring.slm_engine import (
+                build_extractor,
+                load_slm_config,
+            )
+            from on_premise.stt.speaker_classifier import _BielikReclassifier
+
+            slm_config_path = Path("application/on_premise/configs/slm.yaml")
+            slm_config = load_slm_config(slm_config_path)
+            # Reclassifier produces ~80 tokens per segment × 60+ segments
+            # → 6K+ tokens needed. Hard-override (NOT setdefault) because
+            # `.env` typically sets SLM_MAX_NEW_TOKENS=2048 for SOAP
+            # extraction; 2048 truncates classifier output mid-list and
+            # silently drops late segments.
+            classifier_env = dict(os.environ)
+            classifier_env["SLM_MAX_NEW_TOKENS"] = "8192"
+            extractor = build_extractor(slm_config, env=classifier_env)
+            self._classifier = _BielikReclassifier(extractor=extractor)
         super().__init__(meta)
 
     def __call__(self, wav_path: Path, bundle: dict) -> tuple[str, DERResult | None]:
@@ -366,6 +404,7 @@ class _OnPremiseRunner(_Runner):
             transcriber=self._transcriber,
             diarizer=self._diarizer,
             scenario_id=bundle.get("scenario_id"),
+            speaker_classifier=self._classifier,
         )
         ref = _reference_timeline(bundle)
         hyp = [(seg.start_s, seg.end_s, seg.speaker) for seg in transcript.segments]
@@ -380,9 +419,10 @@ def _make_runner(
     mlx_model_repo: str,
     device: str,
     compute_type: str,
+    reclassify_speakers: bool = False,
 ) -> _Runner:
     if backend == "on-premise":
-        return _OnPremiseRunner(meta={})
+        return _OnPremiseRunner(meta={}, reclassify_speakers=reclassify_speakers)
     try:
         transcriber = _build_bare_transcriber(
             backend=backend,

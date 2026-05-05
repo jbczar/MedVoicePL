@@ -50,8 +50,16 @@ def transcribe_and_diarize(
     diarizer: Diarizer,
     scenario_id: str | None = None,
     role_override: dict[str, SpeakerRole] | None = None,
+    speaker_classifier: object | None = None,
 ) -> Transcript:
-    """Run Whisper + pyannote and return a typed, speaker-labeled transcript."""
+    """Run Whisper + pyannote and return a typed, speaker-labeled transcript.
+
+    `speaker_classifier` is an optional `SpeakerClassifier` (from
+    `on_premise.stt.speaker_classifier`) that runs as a post-step over
+    the diarized transcript. Content-based reclassification recovers
+    most of the DER loss from `pyannote` clustering collapse on
+    synthetic XTTSv2 voices. Default `None` preserves Phase 2a baseline.
+    """
     wav_path = Path(wav_path)
     if not wav_path.exists():
         raise FileNotFoundError(wav_path)
@@ -79,7 +87,7 @@ def transcribe_and_diarize(
         diarization_device=diarizer.device,
         transcribed_at=datetime.now().astimezone(),
     )
-    return Transcript(
+    transcript = Transcript(
         scenario_id=scenario_id,
         audio_path=str(wav_path),
         audio_sha256=audio_sha,
@@ -88,6 +96,12 @@ def transcribe_and_diarize(
         segments=segments,
         metadata=metadata,
     )
+
+    if speaker_classifier is not None:
+        log.info("running SLM speaker reclassifier on %s", wav_path.name)
+        transcript = speaker_classifier.reclassify(transcript)  # type: ignore[attr-defined]
+
+    return transcript
 
 
 # ---------------------------------------------------------------------------
