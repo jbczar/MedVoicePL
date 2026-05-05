@@ -27,6 +27,7 @@ from shared.schemas.anonymized import (
     Specialization,
 )
 from shared.schemas.drug import DrugSuggestion, ReimbursementLevel
+from shared.schemas.visit import VisitStatus, VisitSummary
 
 __all__ = [
     "AgentMetadata",
@@ -44,4 +45,6 @@ __all__ = [
     "Referral",
     "ReimbursementLevel",
     "Specialization",
+    "VisitStatus",
+    "VisitSummary",
 ]

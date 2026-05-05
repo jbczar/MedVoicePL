@@ -149,3 +149,9 @@ logs/
 .env.bak
 .env.bak2
 
+
+application/gateway/output/
+application/gateway/audit/
+
+.claude
+

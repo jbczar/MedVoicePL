@@ -1,0 +1,50 @@
+{
+  "drugs": [
+    {
+      "name": "Tiamazol",
+      "atc_code": "H03BB02",
+      "reimbursement": "nierefundowane",
+      "patient_copay_pln": null,
+      "indication_restrictions": [],
+      "provenance": [
+        "assessment.primary_diagnosis",
+        "subjective.chief_complaint",
+        "objective"
+      ],
+      "rationale": "Lek z wyboru w farmakologicznym leczeniu nadczynności tarczycy w chorobie Gravesa-Basedowa. Hamuje syntezę hormonów tarczycy, działając na przyczynę objawów. Terapia pierwszego rzutu w oczekiwaniu na potwierdzenie diagnozy i uzyskanie eutyreozy. (ChPL: Tiamazol (metymazol/methimazole) — lek przeciwtarczycowy, hamuje)"
+    },
+    {
+      "name": "Propranolol",
+      "atc_code": "C07AA05",
+      "reimbursement": "ryczałt",
+      "patient_copay_pln": "4.91",
+      "indication_restrictions": [
+        "We wszystkich zarejestrowanych wskazaniach na dzień wydania decyzji"
+      ],
+      "provenance": [
+        "plan.medications_proposed",
+        "subjective.chief_complaint",
+        "objective"
+      ],
+      "rationale": "Nieselektywny beta-bloker skutecznie kontrolujący objawy adrenergiczne nadczynności tarczycy (tachykardia, drżenie rąk, niepokój) do czasu uzyskania eutyreozy po włączeniu leku przeciwtarczycowego. Lek zaproponowany już w planie przez lekarza. (ChPL: Propranolol — nieselektywny beta-bloker. W endokrynologii często)"
+    }
+  ],
+  "referrals": [],
+  "tests": [
+    {
+      "name": "badanie krwi (TSH, FT4, anty-TRAB), USG tarczycy",
+      "rationale": "",
+      "urgency": null
+    }
+  ],
+  "notes": [
+    "Tiamazol (H03BB02): brak w wykazie NFZ — pełnopłatne."
+  ],
+  "metadata": {
+    "agent_version": "3a.0",
+    "llm_model": "gemini-2.5-pro",
+    "nfz_snapshot_date": "2026-05-04",
+    "chpl_corpus_size": 13,
+    "duration_s": 20.37
+  }
+}

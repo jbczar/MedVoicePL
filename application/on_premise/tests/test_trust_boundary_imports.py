@@ -135,6 +135,72 @@ def _resolve_subpackage_root(name: str) -> Path | None:
     return Path(pkg_file).parent
 
 
+def test_gateway_does_not_import_cloud_internals() -> None:
+    """Gateway reaches cloud via HTTP — direct module imports forbidden.
+
+    `from cloud.<...> import ...` would bypass the HTTP boundary and
+    couple gateway to cloud's internals (Vertex client, NFZ index,
+    LangGraph orchestrator, etc.). The only sanctioned channel is
+    `gateway.clients.cloud._HttpxCloudClient` talking to
+    `cloud.api.app` via HTTP.
+    """
+    root = _resolve_subpackage_root("gateway")
+    if root is None:
+        return
+    offenders: list[tuple[str, int, str]] = []
+    for py_path in root.rglob("*.py"):
+        try:
+            tree = ast.parse(py_path.read_text(encoding="utf-8"), filename=str(py_path))
+        except SyntaxError:  # pragma: no cover
+            continue
+        for node in ast.walk(tree):
+            if isinstance(node, ast.ImportFrom) and (node.module or "").startswith(
+                "cloud."
+            ):
+                offenders.append((str(py_path), node.lineno, node.module or ""))
+            if isinstance(node, ast.Import):
+                for alias in node.names:
+                    if alias.name == "cloud" or alias.name.startswith("cloud."):
+                        offenders.append((str(py_path), node.lineno, alias.name))
+    assert not offenders, (
+        "gateway must reach cloud via HTTP, not module imports:\n  "
+        + "\n  ".join(f"{p}:{lineno} imports {mod}" for p, lineno, mod in offenders)
+    )
+
+
+def test_outbound_httpx_confined_to_gateway_clients() -> None:
+    """`httpx` outbound usage in gateway must live under `gateway/clients/`.
+
+    Test runners may import `httpx` (the testclient does), but
+    production gateway code outside `clients/` should not — that's how
+    we guarantee the trust boundary is the ONLY channel through which
+    cloud calls leave the gateway process.
+    """
+    root = _resolve_subpackage_root("gateway")
+    if root is None:
+        return
+    offenders: list[tuple[str, int]] = []
+    for py_path in root.rglob("*.py"):
+        # Allow httpx anywhere under clients/.
+        if "clients" in py_path.parts:
+            continue
+        try:
+            tree = ast.parse(py_path.read_text(encoding="utf-8"), filename=str(py_path))
+        except SyntaxError:  # pragma: no cover
+            continue
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Import):
+                for alias in node.names:
+                    if alias.name == "httpx" or alias.name.startswith("httpx."):
+                        offenders.append((str(py_path), node.lineno))
+            if isinstance(node, ast.ImportFrom) and (node.module or "").startswith("httpx"):
+                offenders.append((str(py_path), node.lineno))
+    assert not offenders, (
+        "httpx outside gateway/clients/ — outbound HTTP must be confined:\n  "
+        + "\n  ".join(f"{p}:{lineno}" for p, lineno in offenders)
+    )
+
+
 def test_no_subpackage_imports_from_on_premise() -> None:
     """AST-walk `shared/`, `cloud/`, `gateway/` and fail on any
     `from on_premise.<...> import ...` (or `import on_premise`).

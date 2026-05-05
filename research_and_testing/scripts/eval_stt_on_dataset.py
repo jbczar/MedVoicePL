@@ -385,8 +385,8 @@ class _OnPremiseRunner(_Runner):
 
             slm_config_path = Path("application/on_premise/configs/slm.yaml")
             slm_config = load_slm_config(slm_config_path)
-            # Reclassifier produces ~80 tokens per segment × 60+ segments
-            # → 6K+ tokens needed. Hard-override (NOT setdefault) because
+            # Reclassifier produces ~80 tokens per segment for 60+ segments
+            # = 6K+ tokens needed. Hard-override (NOT setdefault) because
             # `.env` typically sets SLM_MAX_NEW_TOKENS=2048 for SOAP
             # extraction; 2048 truncates classifier output mid-list and
             # silently drops late segments.

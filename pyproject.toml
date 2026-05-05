@@ -82,7 +82,7 @@ ignore = ["E501"]  # line length handled by formatter
 "**/tests/test_eponym_filter.py" = ["RUF001"]
 # Phase 2a.1: Transcript types are runtime-evaluated (Pydantic dataclass);
 # tests use `pytest.raises(Exception)` for ValidationError edge cases.
-"**/stt/speaker_classifier.py" = ["TC001"]
+"**/stt/speaker_classifier.py" = ["TC001", "RUF002", "RUF003"]
 "**/tests/test_speaker_classifier.py" = ["B017"]
 "**/cloud/nfz/atc_resolver.py" = ["TC003"]
 "**/cloud/nfz/formulary_search.py" = ["TC003"]
@@ -96,6 +96,11 @@ ignore = ["E501"]  # line length handled by formatter
 # annotations; TC003 doesn't apply. `Query(...)` in defaults is the
 # canonical FastAPI idiom (B008 same as Typer's `Option(...)`).
 "**/api/app.py" = ["TC003", "B008"]
+# Gateway routers + orchestrator + clients all use Annotated[X, Depends(...)]
+# / Pydantic-validated bodies, where the parameter types must be available
+# at runtime. Same FastAPI/Pydantic exemption as `**/api/app.py`.
+"application/gateway/src/**/*.py" = ["TC001", "TC002", "TC003", "B008"]
+"application/gateway/tests/**/*.py" = ["RUF003"]
 
 [tool.ruff.lint.flake8-type-checking]
 runtime-evaluated-base-classes = ["pydantic.BaseModel"]
@@ -135,3 +140,4 @@ testpaths = [
     "research_and_testing",
 ]
 addopts = "-v --tb=short"
+asyncio_mode = "auto"

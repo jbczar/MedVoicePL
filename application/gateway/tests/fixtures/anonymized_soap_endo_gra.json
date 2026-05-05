@@ -1,0 +1,108 @@
+{
+  "subjective": {
+    "chief_complaint": "strasznie się męczę, serce wali jak szalone, schudłam z pięć kilo, jestem podenerwowana",
+    "history_of_present_illness": "Od kilku miesięcy odczuwa znaczne osłabienie, tachykardię, utratę masy ciała przy zwiększonym apetycie oraz drażliwość. Występują również drżenie rąk, nadmierna potliwość i zaburzenia snu. Zauważono wytrzeszcz oczu, co zwróciło uwagę otoczenia. Pacjentka zgłasza lęk związany z kołataniem serca. Nazywa się <PERSON_1>, mieszka w <LOCATION_1> na <LOCATION_2>, numer telefonu: ",
+    "review_of_systems": [],
+    "medical_history": [],
+    "medications_current": [],
+    "allergies": [],
+    "provenance": [
+      5,
+      6,
+      7,
+      9,
+      13,
+      14,
+      16,
+      21,
+      23,
+      25,
+      30,
+      31,
+      34,
+      39,
+      41,
+      44,
+      49,
+      50,
+      54
+    ]
+  },
+  "objective": {
+    "physical_exam": [
+      "wytrzeszcz oczu (oftalmopatia), drżenie rąk, tachykardia, nadmierna potliwość"
+    ],
+    "vitals": [],
+    "labs_mentioned": [],
+    "provenance": [
+      17,
+      18,
+      28,
+      31,
+      34,
+      38
+    ]
+  },
+  "assessment": {
+    "primary_diagnosis": "podejrzenie nadczynności tarczycy (choroba Gravesa-Basedowa) z objawami ocznymi",
+    "icd10_code": "E05.0",
+    "differential": [
+      "nadczynność tarczycy",
+      "zaburzenia lękowe",
+      "nadciśnienie tętnicze"
+    ],
+    "clinical_reasoning": "Typowe objawy nadczynności tarczycy: tachykardia, utrata masy ciała, drżenie rąk, nadpotliwość, wytrzeszcz oczu. Potwierdzenie wymaga badań laboratoryjnych (TSH, anty-TRAB, przeciwciała przeciwtarczycowe) oraz USG tarczycy. Wstępnie rozpoznano chorobę Gravesa-Basedowa na podstawie obrazu klinicznego i wywiadu",
+    "provenance": [
+      28,
+      29,
+      30,
+      31,
+      34,
+      38
+    ]
+  },
+  "plan": {
+    "medications_prescribed": [
+      "Propranolol (nazwa handlowa: Propranol) w małej dawce, jedna tabletka rano"
+    ],
+    "diagnostic_tests": [
+      "badanie krwi (TSH, FT4, anty-TRAB), USG tarczycy"
+    ],
+    "referrals": [],
+    "follow_up": "wizyta kontrolna za tydzień z wynikami badań",
+    "patient_education": [],
+    "provenance": [
+      34,
+      38,
+      44,
+      51
+    ]
+  },
+  "red_flags": [
+    "utrata masy ciała >5 kg przy zwiększonym apetycie",
+    "wytrzeszcz oczu",
+    "tachykardia spoczynkowa",
+    "drżenie rąk",
+    "nadmierna potliwość"
+  ],
+  "red_flags_provenance": [
+    7,
+    9,
+    13,
+    14,
+    16,
+    28,
+    30,
+    31
+  ],
+  "metadata": {
+    "anonymizer_version": "2c.0",
+    "n_entities_per_type": {
+      "PERSON": 1,
+      "LOCATION": 2
+    },
+    "visit_date": "2026-05-04",
+    "specialization": "endokrynologia",
+    "session_id": "95640faa-35c9-4c26-9aaf-7cbf46bf5996"
+  }
+}
