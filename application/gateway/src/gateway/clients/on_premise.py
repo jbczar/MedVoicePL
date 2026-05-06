@@ -11,8 +11,10 @@ errors. 4xx are not retried (validation failures aren't transient).
 from __future__ import annotations
 
 import asyncio
+import json
 import logging
 from datetime import date
+from pathlib import Path
 from typing import Protocol
 from uuid import UUID
 
@@ -22,7 +24,10 @@ from shared.schemas import AnonymizedSOAPNote, Specialization
 
 log = logging.getLogger(__name__)
 
-DEFAULT_TIMEOUT_S = 60.0
+# SOAP extraction with Bielik can take 60-180 s per visit + STT 30-60 s
+# + analyzer warm. Bumped from the 60 s default so live MLX backends
+# don't trip read timeout on cold starts.
+DEFAULT_TIMEOUT_S = 300.0
 DEFAULT_RETRIES = 3
 
 
@@ -33,6 +38,8 @@ class OnPremiseError(RuntimeError):
 
 
 class OnPremiseClient(Protocol):
+    async def transcribe_audio(self, audio_path: Path) -> str: ...
+
     async def anonymize_visit(
         self,
         *,
@@ -60,6 +67,46 @@ class _HttpxOnPremiseClient:
         self._owns_client = client is None
         self._client = client or httpx.AsyncClient(base_url=base_url, timeout=timeout_s)
         self._retries = retries
+
+    async def transcribe_audio(self, audio_path: Path) -> str:
+        """POST audio to `/v1/transcripts`, return on-prem `transcript_id`.
+
+        Network/5xx → retry 3x with exp backoff (mirrors anonymize_visit).
+        STT is expensive (30-60 s warm, ~1x realtime); the timeout is the
+        constructor's `timeout_s` (default 300 s).
+        """
+        last_exc: Exception | None = None
+        for attempt in range(self._retries):
+            try:
+                with audio_path.open("rb") as fh:
+                    resp = await self._client.post(
+                        "/v1/transcripts",
+                        files={"file": (audio_path.name, fh, "audio/wav")},
+                    )
+            except httpx.HTTPError as exc:
+                last_exc = exc
+                await asyncio.sleep(0.5 * (2**attempt))
+                continue
+            if 500 <= resp.status_code < 600:
+                last_exc = OnPremiseError(
+                    f"on-prem /v1/transcripts {resp.status_code}: {resp.text[:200]}"
+                )
+                await asyncio.sleep(0.5 * (2**attempt))
+                continue
+            if resp.status_code >= 400:
+                raise OnPremiseError(
+                    f"on-prem rejected transcript ({resp.status_code}): {resp.text[:200]}"
+                )
+            try:
+                body = json.loads(resp.content)
+                return str(body["transcript_id"])
+            except (ValueError, KeyError) as exc:
+                raise OnPremiseError(
+                    f"on-prem /v1/transcripts unparsable response: {exc}"
+                ) from exc
+        raise OnPremiseError(
+            f"on-prem /v1/transcripts unreachable after {self._retries} attempts: {last_exc}"
+        )
 
     async def anonymize_visit(
         self,
@@ -131,11 +178,23 @@ class _FakeOnPremiseClient:
         *,
         healthy: bool = True,
         raise_on: set[str] | None = None,
+        canned_transcript_id: str | None = None,
     ) -> None:
         self.responses = responses or {}
         self.healthy = healthy
         self.raise_on = raise_on or set()
+        self.canned_transcript_id = canned_transcript_id
         self.calls: list[dict] = []
+        self.transcribe_calls: list[Path] = []
+
+    async def transcribe_audio(self, audio_path: Path) -> str:
+        self.transcribe_calls.append(audio_path)
+        if self.canned_transcript_id is not None:
+            return self.canned_transcript_id
+        # Deterministic from audio bytes (mirrors real on-prem id derivation).
+        import hashlib
+
+        return hashlib.sha256(audio_path.read_bytes()).hexdigest()[:8]
 
     async def anonymize_visit(
         self,

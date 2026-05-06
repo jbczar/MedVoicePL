@@ -155,3 +155,8 @@ application/gateway/audit/
 
 .claude
 
+
+application/frontend/node_modules
+application/frontend/.next
+application/frontend/out
+application/frontend/coverage

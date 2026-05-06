@@ -91,6 +91,13 @@ def _wav_bytes() -> bytes:
     return header + b"\x00" * data_size
 
 
+def _wav_transcript_id() -> str:
+    """The id `_FakeOnPremiseClient.transcribe_audio` returns for `_wav_bytes()`."""
+    import hashlib
+
+    return hashlib.sha256(_wav_bytes()).hexdigest()[:8]
+
+
 def _setup_uploaded_visit(client: TestClient) -> str:
     visit = client.post(
         "/v1/visits",
@@ -106,19 +113,20 @@ def _setup_uploaded_visit(client: TestClient) -> str:
 def test_finalize_happy_path(authed_client_with_orchestrator) -> None:
     client, on_prem, _cloud, _visits = authed_client_with_orchestrator
     vid = _setup_uploaded_visit(client)
-    transcript_id = vid[:8]
-    on_prem.responses = {transcript_id: _load_soap()}
+    on_prem.responses = {_wav_transcript_id(): _load_soap()}
     resp = client.post(f"/v1/visits/{vid}/finalize")
     assert resp.status_code == 200
     body = resp.json()
     assert body["visit"]["status"] == "completed"
     assert body["suggestion"]["drugs"]
+    assert body["revealed_suggestion"]["drugs"]
+    assert body["unmapped_token_count"] == 0
 
 
 def test_finalize_returns_502_on_on_prem_error(authed_client_with_orchestrator) -> None:
     client, on_prem, _cloud, _visits = authed_client_with_orchestrator
     vid = _setup_uploaded_visit(client)
-    on_prem.raise_on = {vid[:8]}
+    on_prem.raise_on = {_wav_transcript_id()}
     resp = client.post(f"/v1/visits/{vid}/finalize")
     assert resp.status_code == 502
 
@@ -155,7 +163,7 @@ def test_finalize_orchestrator_unconfigured_returns_503(client: TestClient) -> N
 def test_finalize_idempotent_replay(authed_client_with_orchestrator) -> None:
     client, on_prem, cloud, _visits = authed_client_with_orchestrator
     vid = _setup_uploaded_visit(client)
-    on_prem.responses = {vid[:8]: _load_soap()}
+    on_prem.responses = {_wav_transcript_id(): _load_soap()}
 
     a = client.post(f"/v1/visits/{vid}/finalize")
     b = client.post(f"/v1/visits/{vid}/finalize")

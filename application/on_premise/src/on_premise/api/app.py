@@ -37,37 +37,58 @@ fake registries — no spaCy / mlx-lm load needed in CI.
 
 from __future__ import annotations
 
-import hashlib
-import json
-import logging
-import os
-from collections.abc import AsyncIterator
-from contextlib import asynccontextmanager
-from datetime import date
-from pathlib import Path
-from typing import Annotated, Any
-from uuid import UUID
+# Mirror Phase 3b gateway bootstrap — committed `.env` is authoritative.
+# Required for `HUGGINGFACE_TOKEN`, `WHISPER_BACKEND`, `SLM_BACKEND`, etc.
+from dotenv import load_dotenv as _load_dotenv
 
-from fastapi import Depends, FastAPI, HTTPException, Query, Response
-from pydantic import BaseModel
+_load_dotenv(override=True)
 
-from on_premise.anonymization.audit_logger import AuditLogger
-from on_premise.anonymization.presidio_agent import (
+import hashlib  # noqa: E402
+import json  # noqa: E402
+import logging  # noqa: E402
+import os  # noqa: E402
+from collections.abc import AsyncIterator  # noqa: E402
+from contextlib import asynccontextmanager  # noqa: E402
+from datetime import date  # noqa: E402
+from pathlib import Path  # noqa: E402
+from typing import Annotated, Any  # noqa: E402
+from uuid import UUID  # noqa: E402
+
+from fastapi import (  # noqa: E402
+    Depends,
+    FastAPI,
+    File,
+    HTTPException,
+    Query,
+    Response,
+    UploadFile,
+)
+from pydantic import BaseModel  # noqa: E402
+
+from on_premise.anonymization.audit_logger import AuditLogger  # noqa: E402
+from on_premise.anonymization.presidio_agent import (  # noqa: E402
     PresidioAnonymizer,
     default_registry,
     warm_analyzer,
 )
-from on_premise.structuring.pipeline import (
+from on_premise.structuring.pipeline import (  # noqa: E402
     SOAPExtractionError,
     transcript_to_soap,
 )
-from on_premise.stt.schema import Transcript
-from on_premise.trust_gate import (
+from on_premise.stt.diarization import Diarizer, build_diarizer  # noqa: E402
+from on_premise.stt.pipeline import transcribe_and_diarize  # noqa: E402
+from on_premise.stt.schema import Transcript  # noqa: E402
+from on_premise.stt.whisper_engine import (  # noqa: E402
+    Transcriber,
+    build_transcriber,
+    load_whisper_config,
+)
+from on_premise.trust_gate import (  # noqa: E402
     TrustBoundaryViolation,
     validate_outbound,
     violations_to_dicts,
 )
-from shared.schemas import AnonymizedSOAPNote
+from shared.schemas import AnonymizedSOAPNote  # noqa: E402
 
 log = logging.getLogger(__name__)
 
@@ -162,6 +183,29 @@ def get_extractor() -> Any:
     return build_extractor(config, env=os.environ)
 
 
+# Module-level singletons so subsequent requests don't reload weights.
+# Lazy-built on first call; tests override via dependency_overrides.
+_TRANSCRIBER_SINGLETON: Transcriber | None = None
+_DIARIZER_SINGLETON: Diarizer | None = None
+
+
+def get_transcriber() -> Transcriber:
+    """Lazy-build the Whisper transcriber once per process."""
+    global _TRANSCRIBER_SINGLETON
+    if _TRANSCRIBER_SINGLETON is None:
+        config = load_whisper_config(Path("application/on_premise/configs/whisper.yaml"))
+        _TRANSCRIBER_SINGLETON = build_transcriber(config, env=os.environ)
+    return _TRANSCRIBER_SINGLETON
+
+
+def get_diarizer() -> Diarizer:
+    """Lazy-build the pyannote diarizer once per process."""
+    global _DIARIZER_SINGLETON
+    if _DIARIZER_SINGLETON is None:
+        _DIARIZER_SINGLETON = build_diarizer(env=os.environ)
+    return _DIARIZER_SINGLETON
+
+
 # ---------------------------------------------------------------------------
 # Request/response models for OpenAPI docs.
 # ---------------------------------------------------------------------------
@@ -178,6 +222,22 @@ class TrustGateError(BaseModel):
 
     detail: str
     violations: list[dict[str, str]]
+
+
+class TranscribeResponse(BaseModel):
+    """Result of `POST /v1/transcripts` (Phase 3b live extension).
+
+    `transcript_id` is the on-prem-internal identifier the gateway uses
+    in the subsequent `POST /v1/visits/{transcript_id}/anonymized-soap`
+    call. Derived from `audio_sha256[:8]` so re-uploading the same bytes
+    is idempotent.
+    """
+
+    transcript_id: str
+    audio_sha256: str
+    duration_s: float
+    n_segments: int
+    cached: bool
 
 
 # ---------------------------------------------------------------------------
@@ -240,6 +300,91 @@ def create_app() -> FastAPI:
             analyzer_loaded=_analyzer_warm,
             anonymizer_version=_anonymizer_version(),
         )
+
+    @app.post("/v1/transcripts", response_model=TranscribeResponse)
+    async def transcribe_audio(
+        transcriber: Annotated[Transcriber, Depends(get_transcriber)],
+        diarizer: Annotated[Diarizer, Depends(get_diarizer)],
+        file: Annotated[UploadFile, File(description="WAV (mono, 16 kHz preferred)")],
+    ) -> TranscribeResponse:
+        """Run STT + diarization on uploaded audio, persist transcript.
+
+        Phase 3b live extension: the gateway uploads doctor-recorded
+        audio here, gets back a `transcript_id` it can pass to
+        `/v1/visits/{transcript_id}/anonymized-soap`. Idempotent —
+        re-uploading the same audio bytes returns the cached transcript
+        with `cached=true`.
+        """
+        # 1. Stream upload to a temp file and compute SHA.
+        import tempfile
+
+        sha = hashlib.sha256()
+        tmp_audio = Path(tempfile.mkstemp(suffix=".wav", prefix="upload_")[1])
+        try:
+            with tmp_audio.open("wb") as out:
+                while True:
+                    chunk = await file.read(1024 * 1024)
+                    if not chunk:
+                        break
+                    sha.update(chunk)
+                    out.write(chunk)
+            audio_sha = sha.hexdigest()
+            transcript_id = audio_sha[:8]
+
+            target_dir = _transcripts_root() / transcript_id
+            transcript_path = target_dir / "transcript.json"
+            audio_path = target_dir / "audio.wav"
+
+            # 2. Idempotency: same audio SHA → return cached transcript.
+            if transcript_path.is_file():
+                try:
+                    cached = Transcript.model_validate_json(transcript_path.read_text())
+                    if cached.audio_sha256 == audio_sha:
+                        log.info("transcript cache hit for %s", transcript_id)
+                        return TranscribeResponse(
+                            transcript_id=transcript_id,
+                            audio_sha256=audio_sha,
+                            duration_s=cached.duration_s,
+                            n_segments=len(cached.segments),
+                            cached=True,
+                        )
+                except (OSError, ValueError):
+                    log.warning("stale cached transcript at %s — recomputing", transcript_path)
+
+            # 3. Persist audio (the pipeline anchors `audio_path` in the transcript).
+            target_dir.mkdir(parents=True, exist_ok=True)
+            audio_path.write_bytes(tmp_audio.read_bytes())
+
+            # 4. Run STT + diarization.
+            try:
+                transcript = transcribe_and_diarize(
+                    audio_path,
+                    transcriber=transcriber,
+                    diarizer=diarizer,
+                    scenario_id=transcript_id,
+                )
+            except Exception as exc:
+                log.exception("STT/diarization failed for %s", transcript_id)
+                raise HTTPException(
+                    status_code=500,
+                    detail=f"STT/diarization failed: {exc}",
+                ) from exc
+
+            # 5. Persist transcript JSON (atomic).
+            tmp_t = transcript_path.with_suffix(".json.tmp")
+            tmp_t.write_text(transcript.model_dump_json(indent=2), encoding="utf-8")
+            os.replace(tmp_t, transcript_path)
+
+            return TranscribeResponse(
+                transcript_id=transcript_id,
+                audio_sha256=audio_sha,
+                duration_s=transcript.duration_s,
+                n_segments=len(transcript.segments),
+                cached=False,
+            )
+        finally:
+            tmp_audio.unlink(missing_ok=True)
+            await file.close()
 
     @app.post(
         "/v1/visits/{transcript_id}/anonymized-soap",

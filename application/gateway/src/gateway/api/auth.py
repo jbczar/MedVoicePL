@@ -18,9 +18,10 @@ from datetime import UTC, datetime, timedelta
 from typing import Annotated
 from uuid import UUID, uuid4
 
-from fastapi import APIRouter, Cookie, Depends, HTTPException, Response, status
+from fastapi import APIRouter, Cookie, Depends, HTTPException, Request, Response, status
 from pydantic import BaseModel, ConfigDict
 
+from gateway.audit import GatewayAuditLogger
 from gateway.config import GatewayConfig
 from gateway.models import DoctorIdentity, Session
 from gateway.security import verify_password
@@ -56,6 +57,11 @@ def get_session_store() -> SessionStore:
     raise RuntimeError(
         "session store dependency not wired — gateway.api.app must register an override"
     )
+
+
+def get_audit_logger(request: Request) -> GatewayAuditLogger | None:
+    """Return the audit logger if wired (None in tests that don't need it)."""
+    return getattr(request.app.state, "audit", None)
 
 
 # ---------------------------------------------------------------------------
@@ -95,13 +101,20 @@ router = APIRouter(prefix="/v1/auth", tags=["auth"])
 @router.post("/login", status_code=status.HTTP_204_NO_CONTENT)
 def login(
     body: LoginRequest,
+    request: Request,
     response: Response,
     config: Annotated[GatewayConfig, Depends(get_config)],
     store: Annotated[SessionStore, Depends(get_session_store)],
+    audit: Annotated[GatewayAuditLogger | None, Depends(get_audit_logger)],
 ) -> Response:
+    client_ip = request.client.host if request.client else "unknown"
     if body.username != config.doctor_username:
+        if audit is not None:
+            audit.log_login_attempt(username=body.username, ip=client_ip, success=False)
         raise HTTPException(status_code=401, detail="invalid_credentials")
     if not verify_password(body.password, config.doctor_password_hash):
+        if audit is not None:
+            audit.log_login_attempt(username=body.username, ip=client_ip, success=False)
         raise HTTPException(status_code=401, detail="invalid_credentials")
     now = datetime.now(UTC)
     session = Session(
@@ -112,6 +125,8 @@ def login(
         last_seen=now,
     )
     store.save(session)
+    if audit is not None:
+        audit.log_login_attempt(username=body.username, ip=client_ip, success=True)
     response.set_cookie(
         key=SESSION_COOKIE_NAME,
         value=str(session.session_id),

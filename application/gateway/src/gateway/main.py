@@ -2,6 +2,6 @@
 
 from __future__ import annotations
 
-from gateway.api.app import build_app
+from gateway.bootstrap import build_production_app
 
-app = build_app()
+app = build_production_app()

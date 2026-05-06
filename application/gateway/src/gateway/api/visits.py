@@ -32,7 +32,8 @@ from fastapi import (
 )
 from pydantic import BaseModel, ConfigDict
 
-from gateway.api.auth import require_session
+from gateway.api.auth import get_audit_logger, require_session
+from gateway.audit import GatewayAuditLogger
 from gateway.models import Session, Visit
 from gateway.orchestrator import OrchestratorError, VisitOrchestrator
 from gateway.storage import VisitStore
@@ -80,9 +81,20 @@ def _get_orchestrator(request: Request) -> VisitOrchestrator:
 
 
 class FinalizeResponse(BaseModel):
+    """Doctor-facing finalize result.
+
+    `suggestion` holds the raw agent output (placeholder tokens).
+    `revealed_suggestion` is what the UI renders — same shape, but
+    with `<PERSON_n>` etc. replaced from the on-prem token map.
+    `unmapped_token_count` is non-zero only when the SLM emitted
+    a placeholder we couldn't resolve (operational hint).
+    """
+
     model_config = ConfigDict(extra="forbid")
     visit: VisitSummary
     suggestion: AgentSuggestion
+    revealed_suggestion: AgentSuggestion
+    unmapped_token_count: int = 0
 
 
 router = APIRouter(prefix="/v1/visits", tags=["visits"])
@@ -93,6 +105,7 @@ def create_visit(
     body: CreateVisitRequest,
     session: Annotated[Session, Depends(require_session)],
     visits: Annotated[VisitStore, Depends(_get_visit_store)],
+    audit: Annotated[GatewayAuditLogger | None, Depends(get_audit_logger)],
 ) -> CreateVisitResponse:
     visit = Visit(
         visit_id=uuid4(),
@@ -102,6 +115,12 @@ def create_visit(
         visit_date=body.visit_date,
     )
     visits.save(visit)
+    if audit is not None:
+        audit.log_visit_create(
+            visit_id=visit.visit_id,
+            session_id=session.session_id,
+            specialization=body.specialization.value if body.specialization else None,
+        )
     return CreateVisitResponse(visit_id=visit.visit_id, status=visit.status)
 
 
@@ -189,12 +208,17 @@ async def finalize_visit(
             detail=f"cannot_finalize_in_status:{visit.status.value}",
         )
     try:
-        suggestion = await orchestrator.finalize(visit_id)
+        result = await orchestrator.finalize(visit_id)
     except OrchestratorError as exc:
         raise HTTPException(status_code=502, detail=str(exc)) from exc
     refreshed = visits.get(visit_id)
     assert refreshed is not None
-    return FinalizeResponse(visit=refreshed.to_summary(), suggestion=suggestion)
+    return FinalizeResponse(
+        visit=refreshed.to_summary(),
+        suggestion=result.suggestion,
+        revealed_suggestion=result.revealed_suggestion,
+        unmapped_token_count=result.unmapped_token_count,
+    )
 
 
 def _load_owned_visit(

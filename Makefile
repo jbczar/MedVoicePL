@@ -87,6 +87,168 @@ logs: ## Tail logs from all services
 restart: down up ## Restart all services
 
 # ------------------------------------------
+# Gateway (Phase 3b) — native uvicorn, no Docker
+# ------------------------------------------
+GATEWAY_PID := /tmp/medvoicepl-gateway.pid
+GATEWAY_LOG := /tmp/medvoicepl-gateway.log
+
+.PHONY: gateway-up
+gateway-up: ## Start gateway in DEMO mode (background, native uvicorn)
+	@if [ -f $(GATEWAY_PID) ] && kill -0 $$(cat $(GATEWAY_PID)) 2>/dev/null; then \
+		echo "gateway already running (pid $$(cat $(GATEWAY_PID)))"; \
+	else \
+		GATEWAY_DEMO_MODE=true GATEWAY_HOST=127.0.0.1 GATEWAY_PORT=8080 \
+		nohup uv run uvicorn gateway.main:app --host 127.0.0.1 --port 8080 \
+			> $(GATEWAY_LOG) 2>&1 & echo $$! > $(GATEWAY_PID); \
+		echo "gateway started (pid $$(cat $(GATEWAY_PID))), log: $(GATEWAY_LOG)"; \
+	fi
+
+.PHONY: gateway-down
+gateway-down: ## Stop gateway started via gateway-up
+	@if [ -f $(GATEWAY_PID) ]; then \
+		PID=$$(cat $(GATEWAY_PID)); \
+		if kill -0 $$PID 2>/dev/null; then kill $$PID && echo "gateway stopped (pid $$PID)"; \
+		else echo "gateway pid $$PID not running"; fi; \
+		rm -f $(GATEWAY_PID); \
+	else echo "no gateway pid file"; fi
+
+.PHONY: gateway-logs
+gateway-logs: ## Tail the gateway log
+	@tail -f $(GATEWAY_LOG)
+
+.PHONY: gateway-status
+gateway-status: ## Check gateway health endpoint
+	@curl -sf http://127.0.0.1:8080/v1/health | python3 -m json.tool || echo "gateway not reachable"
+
+.PHONY: smoke-3b
+smoke-3b: ## End-to-end smoke against running gateway (login → finalize → logout)
+	uv run python application/gateway/scripts/smoke_e2e.py
+
+# ------------------------------------------
+# Live mode (real on-prem + cloud + gateway, native uvicorn)
+# ------------------------------------------
+ONPREM_PID := /tmp/medvoicepl-onprem.pid
+ONPREM_LOG := /tmp/medvoicepl-onprem.log
+CLOUD_PID := /tmp/medvoicepl-cloud.pid
+CLOUD_LOG := /tmp/medvoicepl-cloud.log
+
+.PHONY: preflight-live
+preflight-live: ## Verify env, weights, NFZ, audio for live mode
+	uv run python application/gateway/scripts/preflight_live.py
+
+.PHONY: onprem-up
+onprem-up: ## Start on-prem service on 127.0.0.1:8001 (real MLX/pyannote/Bielik)
+	@if [ -f $(ONPREM_PID) ] && kill -0 $$(cat $(ONPREM_PID)) 2>/dev/null; then \
+		echo "on-prem already running (pid $$(cat $(ONPREM_PID)))"; \
+	else \
+		nohup uv run uvicorn on_premise.api.app:app --host 127.0.0.1 --port 8001 \
+			> $(ONPREM_LOG) 2>&1 & echo $$! > $(ONPREM_PID); \
+		echo "on-prem started (pid $$(cat $(ONPREM_PID))), log: $(ONPREM_LOG)"; \
+	fi
+
+.PHONY: onprem-down
+onprem-down: ## Stop on-prem service
+	@if [ -f $(ONPREM_PID) ]; then \
+		PID=$$(cat $(ONPREM_PID)); \
+		if kill -0 $$PID 2>/dev/null; then kill $$PID && echo "on-prem stopped (pid $$PID)"; \
+		else echo "on-prem pid $$PID not running"; fi; \
+		rm -f $(ONPREM_PID); \
+	else echo "no on-prem pid file"; fi
+
+.PHONY: cloud-up
+cloud-up: ## Start cloud service on 127.0.0.1:8002 (real Vertex/Qdrant/embedder)
+	@if [ -f $(CLOUD_PID) ] && kill -0 $$(cat $(CLOUD_PID)) 2>/dev/null; then \
+		echo "cloud already running (pid $$(cat $(CLOUD_PID)))"; \
+	else \
+		nohup uv run uvicorn cloud.api.app:app --host 127.0.0.1 --port 8002 \
+			> $(CLOUD_LOG) 2>&1 & echo $$! > $(CLOUD_PID); \
+		echo "cloud started (pid $$(cat $(CLOUD_PID))), log: $(CLOUD_LOG)"; \
+	fi
+
+.PHONY: cloud-down
+cloud-down: ## Stop cloud service
+	@if [ -f $(CLOUD_PID) ]; then \
+		PID=$$(cat $(CLOUD_PID)); \
+		if kill -0 $$PID 2>/dev/null; then kill $$PID && echo "cloud stopped (pid $$PID)"; \
+		else echo "cloud pid $$PID not running"; fi; \
+		rm -f $(CLOUD_PID); \
+	else echo "no cloud pid file"; fi
+
+.PHONY: live-up
+live-up: onprem-up cloud-up ## Start on-prem + cloud (gateway separately, in live mode)
+	@echo "Tail logs: tail -f $(ONPREM_LOG) $(CLOUD_LOG)"
+	@echo "Wait ~30-60 s for cold-start (model loads). Then: make gateway-up-live"
+
+.PHONY: live-down
+live-down: cloud-down onprem-down gateway-down ## Stop all live services
+
+.PHONY: gateway-up-live
+gateway-up-live: ## Start gateway in LIVE mode (talks to real on-prem + cloud)
+	@if [ -f $(GATEWAY_PID) ] && kill -0 $$(cat $(GATEWAY_PID)) 2>/dev/null; then \
+		echo "gateway already running (pid $$(cat $(GATEWAY_PID)))"; \
+	else \
+		GATEWAY_DEMO_MODE=false GATEWAY_HOST=127.0.0.1 GATEWAY_PORT=8080 \
+		nohup uv run uvicorn gateway.main:app --host 127.0.0.1 --port 8080 \
+			> $(GATEWAY_LOG) 2>&1 & echo $$! > $(GATEWAY_PID); \
+		echo "gateway started in LIVE mode (pid $$(cat $(GATEWAY_PID)))"; \
+	fi
+
+# ------------------------------------------
+# Frontend (Phase 3c) — Next.js dev/build/start
+# ------------------------------------------
+FRONTEND_DIR := application/frontend
+FRONTEND_PID := /tmp/medvoicepl-frontend.pid
+FRONTEND_LOG := /tmp/medvoicepl-frontend.log
+
+.PHONY: frontend-install
+frontend-install: ## Install frontend dependencies (npm install in application/frontend)
+	cd $(FRONTEND_DIR) && npm install --no-audit --no-fund
+
+.PHONY: frontend-dev
+frontend-dev: ## Run Next.js dev server (foreground, hot reload)
+	cd $(FRONTEND_DIR) && npm run dev
+
+.PHONY: frontend-build
+frontend-build: ## Build the production frontend bundle
+	cd $(FRONTEND_DIR) && npm run build
+
+.PHONY: frontend-up
+frontend-up: ## Start built frontend on :3000 in background
+	@if [ -f $(FRONTEND_PID) ] && kill -0 $$(cat $(FRONTEND_PID)) 2>/dev/null; then \
+		echo "frontend already running (pid $$(cat $(FRONTEND_PID)))"; \
+	else \
+		cd $(FRONTEND_DIR) && nohup npm start > $(FRONTEND_LOG) 2>&1 & echo $$! > $(FRONTEND_PID); \
+		echo "frontend started (pid $$(cat $(FRONTEND_PID))), log: $(FRONTEND_LOG)"; \
+	fi
+
+.PHONY: frontend-down
+frontend-down: ## Stop frontend started via frontend-up
+	@if [ -f $(FRONTEND_PID) ]; then \
+		PID=$$(cat $(FRONTEND_PID)); \
+		if kill -0 $$PID 2>/dev/null; then kill $$PID && echo "frontend stopped (pid $$PID)"; \
+		else echo "frontend pid $$PID not running"; fi; \
+		rm -f $(FRONTEND_PID); \
+	else echo "no frontend pid file"; fi
+
+.PHONY: frontend-test
+frontend-test: ## Run vitest suite for the frontend
+	cd $(FRONTEND_DIR) && npm test
+
+.PHONY: demo-up
+demo-up: gateway-up frontend-up ## Boot demo stack (gateway in demo mode + frontend on :3000)
+	@echo "Demo ready: open http://localhost:3000 (login demo_doctor / demo_password)"
+
+.PHONY: demo-down
+demo-down: frontend-down gateway-down ## Stop demo stack
+
+.PHONY: smoke-3b-live
+smoke-3b-live: ## E2E smoke with real audio (Graves-Basedow → Tiamazol+Propranolol)
+	uv run python application/gateway/scripts/smoke_e2e.py \
+		--audio-file dataset_pipeline/output/audio/endo-gra/dialogue.wav \
+		--expect-drug Tiamazol --expect-drug Propranolol \
+		--timeout 600
+
+# ------------------------------------------
 # Dataset Pipeline
 # ------------------------------------------
 .PHONY: generate-dataset

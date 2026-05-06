@@ -1,0 +1,63 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    @apply bg-page-bg text-slate-900;
+    font-feature-settings: "cv11", "ss01", "ss03";
+  }
+
+  ::selection {
+    background-color: theme("colors.accent.subtle");
+    color: theme("colors.accent.hover");
+  }
+
+  *:focus-visible {
+    @apply outline-none ring-2 ring-accent ring-offset-2 ring-offset-page-bg;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-md px-4 py-2
+           text-sm font-medium transition-colors disabled:cursor-not-allowed
+           disabled:opacity-50;
+  }
+
+  .btn-primary {
+    @apply btn bg-accent text-accent-fg hover:bg-accent-hover;
+  }
+
+  .btn-secondary {
+    @apply btn border border-slate-300 bg-white text-slate-700 hover:bg-slate-50;
+  }
+
+  .btn-danger {
+    @apply btn border border-danger/30 bg-white text-danger hover:bg-red-50;
+  }
+
+  .card {
+    @apply rounded-lg border border-slate-200 bg-card-bg shadow-card;
+  }
+
+  .input {
+    @apply block w-full rounded-md border border-slate-300 bg-white px-3 py-2
+           text-sm text-slate-900 placeholder:text-slate-400
+           focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent;
+  }
+
+  .label {
+    @apply block text-sm font-medium text-slate-700 mb-1.5;
+  }
+}

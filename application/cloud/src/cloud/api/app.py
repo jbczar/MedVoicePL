@@ -22,20 +22,28 @@ fakes; no Vertex / Qdrant / sentence-transformers load in CI.
 
 from __future__ import annotations
 
-import hashlib
-import json
-import logging
-import os
-from collections.abc import AsyncIterator
-from contextlib import asynccontextmanager
-from pathlib import Path
-from typing import Annotated, Any
+# Load .env at import time so `uvicorn cloud.api.app:app` picks up
+# GOOGLE_CLOUD_PROJECT, VERTEX_AGENT_MODEL, etc. without requiring the
+# launcher to source the file. `override=True`: committed `.env` wins
+# over stale shell vars (mirror Phase 3b gateway bootstrap).
+from dotenv import load_dotenv as _load_dotenv
 
-from fastapi import Depends, FastAPI, HTTPException, Query, Response
-from pydantic import ValidationError
+_load_dotenv(override=True)
 
-from cloud.orchestrator import CloudAgent
-from shared.schemas import AgentSuggestion, AnonymizedSOAPNote
+import hashlib  # noqa: E402
+import json  # noqa: E402
+import logging  # noqa: E402
+import os  # noqa: E402
+from collections.abc import AsyncIterator  # noqa: E402
+from contextlib import asynccontextmanager  # noqa: E402
+from pathlib import Path  # noqa: E402
+from typing import Annotated, Any  # noqa: E402
+
+from fastapi import Depends, FastAPI, HTTPException, Query, Response  # noqa: E402
+from pydantic import ValidationError  # noqa: E402
+
+from cloud.orchestrator import CloudAgent  # noqa: E402
+from shared.schemas import AgentSuggestion, AnonymizedSOAPNote  # noqa: E402
 
 log = logging.getLogger(__name__)
 
