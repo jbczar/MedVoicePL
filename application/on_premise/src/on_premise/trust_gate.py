@@ -94,14 +94,36 @@ _REGEX_CHECKS: tuple[tuple[re.Pattern[str], str], ...] = (
 # fall into the standard charset. SHA-256 hex digests don't appear in
 # `AnonymizedSOAPNote` (stripped from metadata in DD-1).
 _CHARSET_RE = re.compile(
-    # `À-ſ` covers Latin-1 supplement + Latin Extended-A —
-    # safety net for any accented Latin glyphs that escape `\w`.
-    # `<` and `>` are allowed because clinical text routinely uses
-    # them as comparison operators (`>5 kg`, `<100 mmHg`); the
-    # placeholder pattern `<[A-Z_]+_\d+>` is still preferred via
-    # alternation, just no longer the only legal use.
-    # `*` and `+` allowed for "BMI 24+", lab results.
-    "^(?:[\\w\\s\\.,;:?!\\-/()\"'<>+*=]|[À-ſ]|<[A-Z_]+_\\d+>)*$",
+    # Allowed character classes:
+    #
+    # 1. `\w` + `\s` — letters, digits, underscore, whitespace (with re.UNICODE
+    #    covers Polish diacritics ąćęłńóśźż and uppercase).
+    # 2. Basic ASCII punctuation: `. , ; : ? ! - / ( ) " ' < > + * = & # @`
+    #    - `<>` for comparison ops (`>5 kg`, `<100 mmHg`) + placeholder grammar
+    #    - `*+` for "BMI 24+", "*UWAGA*" formatting
+    #    - `&` rare but legit ("kwas&zasada" rare, "A&E" emergency dept)
+    #    - `#` for visit numbers ("wizyta #3"), `@` for emails (regex catches PII shape)
+    # 3. Medical typography (extended in v2 after Bielik live test 2026-05-11):
+    #    - `%` — percentages ("nasycenie tlenem 96%")
+    #    - `°` `±` — degrees, plus-minus (vitals: "37.5°C", "BP 120 ± 10")
+    #    - `—` `–` — em-dash, en-dash (Polish typographic norm)
+    #    - `„` `"` `'` `'` — Polish/typographic quotes
+    #    - `…` — ellipsis
+    #    - `≤` `≥` `≈` `≠` — medical comparisons
+    #    - `µ` `Ω` `α` `β` `γ` `δ` `ε` — common units + clinical Greek letters
+    # 4. `[À-ſ]` — Latin Extended-A safety net for accented glyphs
+    #    `°-ſ` extension covers degree+plus-minus+rest
+    # 5. Placeholder grammar `<[A-Z_]+_\d+>` (PERSON_1, PL_PESEL_2, etc.).
+    #
+    # Rejected characters surface as `kind=charset` violations — that catches
+    # control characters, exotic Unicode (zero-width spaces, RTL marks), and
+    # script-injection vectors. PII patterns are caught separately by regex
+    # check above.
+    "^(?:"
+    r"[\w\s\.,;:?!\-/()\"'<>+*=&#@%°±…≤≥≈≠µΩαβγδε—–„""'']"
+    r"|[°-ſ]"
+    r"|<[A-Z_]+_\d+>"
+    ")*$",
     re.UNICODE,
 )
 

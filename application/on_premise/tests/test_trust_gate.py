@@ -112,6 +112,29 @@ def test_polish_diacritics_pass() -> None:
     assert validate_outbound(note) is None
 
 
+def test_medical_typography_pass() -> None:
+    """Bielik SLM emits real Polish medical text — % ° ± — – „" α β …
+
+    Regression for bug discovered 2026-05-11: trust_gate charset
+    whitelist was too narrow, rejected legitimate medical typography
+    like "Nasycenie tlenem 96%", "37,5°C", "BP 120 ± 10 mmHg",
+    "β-bloker", em-dash, en-dash, Polish typographic quotes.
+    """
+    note = _valid_anonymized_note(
+        assessment=AnonymizedAssessment(
+            primary_diagnosis="Nadczynność tarczycy",
+            clinical_reasoning=(
+                "Pacjent z saturacją 96%, temperaturą 37,5°C i BP 120 ± 10 mmHg. "
+                "Wskazany β-bloker — np. Bisoprolol 5 mg/dobę. "
+                "Czas leczenia: 3–6 miesięcy. "
+                "Limit ≤80 bpm tętna. "
+                'Według wytycznych „PTE 2024", konsultacja endokrynologa…'
+            ),
+        ),
+    )
+    assert validate_outbound(note) is None
+
+
 def test_empty_strings_skipped() -> None:
     """Empty string leaves don't trip the gate."""
     note = _valid_anonymized_note(

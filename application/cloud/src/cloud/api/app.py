@@ -76,14 +76,32 @@ def _api_host() -> str:
 
 
 _AGENT_HOLDER: dict[str, CloudAgent] = {}
+# Lock around _AGENT_HOLDER mutation. FastAPI runs sync endpoints in a
+# threadpool, so two concurrent /v1/health requests can race past the
+# `if "agent" not in _AGENT_HOLDER` check and both try to build a new
+# Qdrant client — the second one fails with `AlreadyLocked` because
+# Qdrant in-process uses an exclusive file lock on the storage dir.
+import threading  # noqa: E402
+
+_AGENT_LOCK = threading.Lock()
 
 
 def get_agent() -> CloudAgent:
     """Production factory — builds a `CloudAgent` from configured deps.
 
     Tests override this with `app.dependency_overrides[get_agent] = ...`.
+
+    Thread-safe: uses `_AGENT_LOCK` to ensure only one thread builds the
+    agent, others wait and reuse it. Critical for /v1/health under load.
     """
-    if "agent" not in _AGENT_HOLDER:
+    if "agent" in _AGENT_HOLDER:
+        return _AGENT_HOLDER["agent"]
+    with _AGENT_LOCK:
+        # Double-checked locking: another thread may have built it
+        # while we waited for the lock.
+        if "agent" in _AGENT_HOLDER:
+            return _AGENT_HOLDER["agent"]
+
         from cloud.llm_integration.llm_client import build_llm_client
         from cloud.nfz.atc_resolver import build_resolver
         from cloud.nfz.formulary_search import latest_index_path, load_nfz_index

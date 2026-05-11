@@ -214,21 +214,31 @@ frontend-build: ## Build the production frontend bundle
 
 .PHONY: frontend-up
 frontend-up: ## Start built frontend on :3000 in background
-	@if [ -f $(FRONTEND_PID) ] && kill -0 $$(cat $(FRONTEND_PID)) 2>/dev/null; then \
-		echo "frontend already running (pid $$(cat $(FRONTEND_PID)))"; \
+	@PORT_PID=$$(lsof -ti :3000 2>/dev/null); \
+	if [ -n "$$PORT_PID" ]; then \
+		echo "port 3000 already in use by pid $$PORT_PID — run 'make frontend-down' first"; \
+		exit 1; \
+	fi; \
+	cd $(FRONTEND_DIR) && nohup npm start > $(FRONTEND_LOG) 2>&1 & \
+	sleep 2; \
+	REAL_PID=$$(lsof -ti :3000 2>/dev/null); \
+	if [ -n "$$REAL_PID" ]; then \
+		echo $$REAL_PID > $(FRONTEND_PID); \
+		echo "frontend started (pid $$REAL_PID on :3000), log: $(FRONTEND_LOG)"; \
 	else \
-		cd $(FRONTEND_DIR) && nohup npm start > $(FRONTEND_LOG) 2>&1 & echo $$! > $(FRONTEND_PID); \
-		echo "frontend started (pid $$(cat $(FRONTEND_PID))), log: $(FRONTEND_LOG)"; \
+		echo "frontend failed to bind :3000 — check $(FRONTEND_LOG)"; \
+		exit 1; \
 	fi
 
 .PHONY: frontend-down
-frontend-down: ## Stop frontend started via frontend-up
-	@if [ -f $(FRONTEND_PID) ]; then \
-		PID=$$(cat $(FRONTEND_PID)); \
-		if kill -0 $$PID 2>/dev/null; then kill $$PID && echo "frontend stopped (pid $$PID)"; \
-		else echo "frontend pid $$PID not running"; fi; \
-		rm -f $(FRONTEND_PID); \
-	else echo "no frontend pid file"; fi
+frontend-down: ## Stop frontend on :3000 (port-aware, not pidfile-dependent)
+	@PORT_PID=$$(lsof -ti :3000 2>/dev/null); \
+	if [ -n "$$PORT_PID" ]; then \
+		kill $$PORT_PID && echo "frontend stopped (pid $$PORT_PID on :3000)"; \
+	else \
+		echo "no process on :3000"; \
+	fi; \
+	rm -f $(FRONTEND_PID)
 
 .PHONY: frontend-test
 frontend-test: ## Run vitest suite for the frontend
