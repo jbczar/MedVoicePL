@@ -29,13 +29,26 @@ ZASADY:
 2. Każda propozycja MUSI zawierać niepustą listę `provenance` — ścieżki \
    do pól w SOAP, które uzasadniają wybór (np. \
    `["assessment.primary_diagnosis", "subjective.chief_complaint"]`).
-3. Jeśli diagnoza jest wstępna (`podejrzenie X`, `wymaga potwierdzenia`, \
-   `do diagnostyki`, `suspected`) ORAZ plan SOAP NIE zawiera żadnych \
-   leków (`Leki zaproponowane` puste), zwróć PUSTĄ listę `candidates` \
-   i dodaj wpis do `notes` typu "Diagnoza wymaga potwierdzenia — nie \
-   zaleca się farmakoterapii pierwszego rzutu". \
-   ALE: jeśli diagnoza jest wstępna a lekarz JUŻ przepisał coś w planie, \
-   ZAWSZE proponuj kandydatów.
+3. **TRYB SUGESTII WARUNKOWYCH** — jeśli diagnoza zawiera marker \
+   wstępny (`podejrzenie X`, `wymaga potwierdzenia`, `do diagnostyki`, \
+   `suspected`), system poda Ci sygnał `[PRELIMINARY_DIAGNOSIS]` na \
+   początku promptu. Wtedy:\
+   (a) Zaproponuj kandydatów dla NAJBARDZIEJ PRAWDOPODOBNEJ konkretnej \
+       diagnozy zawartej w SOAP-ie (z `differential_diagnoses` jeśli są \
+       wymienione, inaczej z `primary_diagnosis`).\
+   (b) Każde `rationale` MUSI rozpoczynać się od ostrzeżenia: \
+       "⚠️ Sugestia warunkowa — wymaga potwierdzenia diagnozy badaniami." \
+       a po nim Twoja standardowa argumentacja kliniczna.\
+   (c) Możesz zaproponować 1-2 alternatywne ścieżki terapeutyczne \
+       dla różnych wariantów diagnozy (np. dla "podejrzenia PCOS vs \
+       niedoczynności tarczycy" → metformina (PCOS) + ewentualnie \
+       lewotyroksyna (hipotyreoza)).\
+   (d) Dodaj odpowiedni wpis do `notes` opisujący że są to sugestie \
+       warunkowe i jakie badania potwierdzą diagnozę.\
+   Cel: lekarz dostaje listę leków pierwszej linii ZANIM wyniki \
+   przyjdą, ale wyraźnie oznaczone jako warunkowe. Nigdy nie zwracaj \
+   pustej listy candidates jeśli diagnoza jest wstępna — zawsze \
+   propozycje warunkowe.
 4. **DYSCYPLINA PIERWSZEJ LINII — KRYTYCZNE**:
    - Maksymalnie **2 leki** na schorzenie. Idealnie 1.
    - Jeśli kilka substancji w tej samej klasie terapeutycznej jest \
@@ -57,14 +70,27 @@ ZASADY:
 7. Polski język. Zwięźle, klinicznie."""
 
 
-def render_candidates_prompt(soap: AnonymizedSOAPNote) -> str:
-    """Serialize an `AnonymizedSOAPNote` as a clinical brief for the LLM."""
+def render_candidates_prompt(
+    soap: AnonymizedSOAPNote, *, preliminary: bool = False
+) -> str:
+    """Serialize an `AnonymizedSOAPNote` as a clinical brief for the LLM.
+
+    `preliminary=True` injects a `[PRELIMINARY_DIAGNOSIS]` signal at the
+    top of the prompt, which together with system prompt rule 3 triggers
+    the conditional-suggestion mode (caveat-prefixed rationales, no
+    empty list).
+    """
     s = soap.subjective
     o = soap.objective
     a = soap.assessment
     p = soap.plan
 
-    lines: list[str] = ["NOTATKA SOAP (zanonimizowana):", ""]
+    lines: list[str] = []
+    if preliminary:
+        lines.append("[PRELIMINARY_DIAGNOSIS] — diagnoza wstępna, wymagana droga warunkowa.")
+        lines.append("")
+    lines.append("NOTATKA SOAP (zanonimizowana):")
+    lines.append("")
     lines.append("## S — Subjective")
     lines.append(f"Główna dolegliwość: {s.chief_complaint}")
     if s.history_of_present_illness:

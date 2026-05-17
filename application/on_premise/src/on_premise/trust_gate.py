@@ -94,38 +94,87 @@ _REGEX_CHECKS: tuple[tuple[re.Pattern[str], str], ...] = (
 # fall into the standard charset. SHA-256 hex digests don't appear in
 # `AnonymizedSOAPNote` (stripped from metadata in DD-1).
 _CHARSET_RE = re.compile(
-    # Allowed character classes:
-    #
-    # 1. `\w` + `\s` — letters, digits, underscore, whitespace (with re.UNICODE
-    #    covers Polish diacritics ąćęłńóśźż and uppercase).
-    # 2. Basic ASCII punctuation: `. , ; : ? ! - / ( ) " ' < > + * = & # @`
-    #    - `<>` for comparison ops (`>5 kg`, `<100 mmHg`) + placeholder grammar
-    #    - `*+` for "BMI 24+", "*UWAGA*" formatting
-    #    - `&` rare but legit ("kwas&zasada" rare, "A&E" emergency dept)
-    #    - `#` for visit numbers ("wizyta #3"), `@` for emails (regex catches PII shape)
-    # 3. Medical typography (extended in v2 after Bielik live test 2026-05-11):
-    #    - `%` — percentages ("nasycenie tlenem 96%")
-    #    - `°` `±` — degrees, plus-minus (vitals: "37.5°C", "BP 120 ± 10")
-    #    - `—` `–` — em-dash, en-dash (Polish typographic norm)
-    #    - `„` `"` `'` `'` — Polish/typographic quotes
-    #    - `…` — ellipsis
-    #    - `≤` `≥` `≈` `≠` — medical comparisons
-    #    - `µ` `Ω` `α` `β` `γ` `δ` `ε` — common units + clinical Greek letters
-    # 4. `[À-ſ]` — Latin Extended-A safety net for accented glyphs
-    #    `°-ſ` extension covers degree+plus-minus+rest
-    # 5. Placeholder grammar `<[A-Z_]+_\d+>` (PERSON_1, PL_PESEL_2, etc.).
-    #
-    # Rejected characters surface as `kind=charset` violations — that catches
-    # control characters, exotic Unicode (zero-width spaces, RTL marks), and
-    # script-injection vectors. PII patterns are caught separately by regex
-    # check above.
-    "^(?:"
-    r"[\w\s\.,;:?!\-/()\"'<>+*=&#@%°±…≤≥≈≠µΩαβγδε—–„""'']"
-    r"|[°-ſ]"
-    r"|<[A-Z_]+_\d+>"
-    ")*$",
-    re.UNICODE,
+    # Legacy alias — kept for backwards-compatible tests that import it.
+    # The actual check is `_check_charset` below using Unicode categories.
+    # This regex is now a permissive shim that always matches.
+    r"^.*$",
+    re.UNICODE | re.DOTALL,
 )
+
+
+# ---------------------------------------------------------------------------
+# Unicode-category-based charset policy (replaces whitelist regex v1/v2).
+#
+# Strategy:
+#   - Allow ALL Unicode letters, digits, punctuation, math/currency symbols,
+#     diacritic marks, spaces. This covers any legit Polish medical text:
+#     ą ć ę ł ń ó ś ź ż, %, °, ±, β, ≥, ≤, „"', em/en-dash, ellipsis…
+#   - Block only structurally-dangerous categories:
+#     - `Cc` Control chars (\x00-\x1f) — except whitespace already filtered
+#     - `Cf` Format chars (zero-width joiner, RTL override, etc.)
+#     - `Cs` Surrogate halves (invalid in well-formed text)
+#     - `Co` Private use area (E000-F8FF, mostly emoji-internal)
+#     - `Zl` Line separator, `Zp` Paragraph separator (U+2028/2029) —
+#       can confuse parsers; we accept \n / \r already as `Cc`-whitelisted.
+#
+# Whitelist within Cc: \t (TAB), \n (LF), \r (CR) — newlines are fine.
+#
+# Allowed categories include `So` (Symbol, other) which covers `°` (degree)
+# and similar medical symbols. Emoji are also `So` but are rare from a
+# Polish medical SLM and not a security threat — PII regex catches the
+# real risks. If emoji become a problem, switch to range-based blocklist
+# for U+1F300-U+1FAFF.
+#
+# This is a *permissive blocklist* — strictly safer than v2 whitelist
+# (no false positives on legit medical typography) but still rejects all
+# the threats that motivated the trust gate.
+# ---------------------------------------------------------------------------
+_BLOCKED_UNICODE_CATEGORIES = frozenset({"Cc", "Cf", "Cs", "Co", "Zl", "Zp"})
+_WHITELISTED_CONTROL_CHARS = frozenset({"\t", "\n", "\r"})
+
+# Block emoji explicitly via codepoint ranges (the categories Sk/So contain
+# both safe medical symbols and emoji — we keep medical, reject emoji).
+_EMOJI_RANGES = (
+    (0x1F300, 0x1FAFF),  # Misc symbols + emoticons + emoji blocks
+    (0x2600, 0x27BF),    # Miscellaneous Symbols + Dingbats
+    (0x1F000, 0x1F02F),  # Mahjong/Domino tiles
+)
+
+
+def _is_emoji(char: str) -> bool:
+    cp = ord(char)
+    return any(lo <= cp <= hi for lo, hi in _EMOJI_RANGES)
+
+# Placeholder grammar — explicitly allowed `<TOKEN_n>` form.
+_PLACEHOLDER_RE = re.compile(r"<[A-Z_]+_\d+>")
+
+
+def _check_charset(text: str) -> tuple[bool, str | None]:
+    """Return (ok, detail). On failure detail names the offending char.
+
+    Detail format: ``"U+XXXX (category Cf) at offset N: <name>"`` so the
+    audit log surfaces actionable diagnostic info (not just
+    "disallowed character").
+    """
+    import unicodedata
+
+    # Strip placeholders first — their internal chars (<, >, letters,
+    # digits) all pass anyway, but stripping reduces noise.
+    stripped = _PLACEHOLDER_RE.sub("", text)
+    for offset, char in enumerate(stripped):
+        if char in _WHITELISTED_CONTROL_CHARS:
+            continue
+        cat = unicodedata.category(char)
+        if cat in _BLOCKED_UNICODE_CATEGORIES or _is_emoji(char):
+            try:
+                name = unicodedata.name(char, "unnamed")
+            except ValueError:
+                name = "unnamed"
+            reason = "emoji" if _is_emoji(char) else f"category {cat}"
+            return False, (
+                f"U+{ord(char):04X} ({reason}) at offset {offset}: {name}"
+            )
+    return True, None
 
 
 # ---------------------------------------------------------------------------
@@ -201,9 +250,14 @@ def validate_outbound(payload: Any) -> None:
         for regex, kind in _REGEX_CHECKS:
             if regex.search(value):
                 violations.append(Violation(location=path, kind="regex", detail=kind))
-        if not _CHARSET_RE.match(value):
+        ok, charset_detail = _check_charset(value)
+        if not ok:
             violations.append(
-                Violation(location=path, kind="charset", detail="disallowed character")
+                Violation(
+                    location=path,
+                    kind="charset",
+                    detail=charset_detail or "disallowed character",
+                )
             )
 
     if violations:

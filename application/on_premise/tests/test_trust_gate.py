@@ -255,17 +255,21 @@ class TestRegexCatch:
 
 
 class TestCharsetCatch:
-    def test_curly_quotes_rejected(self) -> None:
-        """Smart quotes „..." and similar aren't in the allowed set."""
+    def test_curly_quotes_accepted(self) -> None:
+        """Smart quotes „..." are legitimate Polish typography (Pi/Pf
+        Unicode categories) and are ACCEPTED by the v3 charset policy.
+
+        Updated 2026-05-11 after switching from whitelist regex to
+        Unicode-category blocklist. Bielik SLM normally emits Polish
+        curly quotes — rejecting them caused live-mode failures.
+        """
         note = _valid_anonymized_note(
             subjective=AnonymizedSubjective(
-                chief_complaint="Pacjent powiedział „boli mnie głowa”.",
+                chief_complaint='Pacjent powiedział „boli mnie głowa”.',
                 history_of_present_illness="ok",
             ),
         )
-        with pytest.raises(TrustBoundaryViolation) as exc:
-            validate_outbound(note)
-        assert any(v.kind == "charset" for v in exc.value.violations)
+        assert validate_outbound(note) is None
 
     def test_emoji_rejected(self) -> None:
         """Emoji aren't anonymizer output — disallowed character."""

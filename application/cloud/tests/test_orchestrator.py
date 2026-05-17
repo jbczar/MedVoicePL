@@ -137,9 +137,50 @@ class TestHappyPath:
 
 
 class TestEmptyOutputRule:
-    def test_podejrzenie_yields_empty_drugs(self, make_anonymized_soap: Any) -> None:
+    """Hybrid A+B mode (default since 2026-05-12 — see CLAUDE.md / Phase 4 prep):
+
+    - Default `AGENT_EMPTY_OUTPUT_RULE=false` → demo mode: LLM IS called
+      even on preliminary diagnoses, suggestions returned with
+      conditional caveat prefix `⚠️ Sugestia warunkowa …`.
+    - With `AGENT_EMPTY_OUTPUT_RULE=true` → original Phase 3a DD-2.5
+      short-circuit behavior: empty drugs + explanatory note.
+    """
+
+    def test_podejrzenie_yields_conditional_in_demo_mode(
+        self, make_anonymized_soap: Any, monkeypatch: Any
+    ) -> None:
         from shared.schemas import AnonymizedPlan
 
+        monkeypatch.delenv("AGENT_EMPTY_OUTPUT_RULE", raising=False)
+        canned = DrugCandidateList(
+            candidates=[
+                DrugCandidate(
+                    name="Tiotropium",
+                    atc_code="R03BB04",
+                    rationale="LAMA pierwszej linii w POChP.",
+                    provenance=["assessment.primary_diagnosis"],
+                )
+            ]
+        )
+        agent = _build_agent(canned)
+        soap = make_anonymized_soap(
+            assessment=AnonymizedAssessment(
+                primary_diagnosis="podejrzenie POChP",
+                icd10_code="J44",
+            ),
+            plan=AnonymizedPlan(medications_prescribed=[]),
+        )
+        suggestion = agent.run(soap)
+        assert len(suggestion.drugs) == 1
+        assert suggestion.drugs[0].rationale.startswith("⚠️ Sugestia warunkowa")
+        assert any("warunkowe" in n.lower() for n in suggestion.notes)
+
+    def test_podejrzenie_yields_empty_with_production_rule(
+        self, make_anonymized_soap: Any, monkeypatch: Any
+    ) -> None:
+        from shared.schemas import AnonymizedPlan
+
+        monkeypatch.setenv("AGENT_EMPTY_OUTPUT_RULE", "true")
         canned = DrugCandidateList(
             candidates=[
                 DrugCandidate(
@@ -160,11 +201,17 @@ class TestEmptyOutputRule:
         )
         suggestion = agent.run(soap)
         assert suggestion.drugs == []
-        assert any("wstępna" in n.lower() or "potwierdzenia" in n.lower() for n in suggestion.notes)
+        assert any(
+            "wstępna" in n.lower() or "potwierdzenia" in n.lower()
+            for n in suggestion.notes
+        )
 
-    def test_wymaga_potwierdzenia_yields_empty(self, make_anonymized_soap: Any) -> None:
+    def test_wymaga_potwierdzenia_yields_empty_with_production_rule(
+        self, make_anonymized_soap: Any, monkeypatch: Any
+    ) -> None:
         from shared.schemas import AnonymizedPlan
 
+        monkeypatch.setenv("AGENT_EMPTY_OUTPUT_RULE", "true")
         canned = DrugCandidateList(candidates=[])
         agent = _build_agent(canned)
         soap = make_anonymized_soap(
@@ -206,9 +253,12 @@ class TestEmptyOutputRule:
         assert len(suggestion.drugs) == 1
         assert suggestion.drugs[0].atc_code == "C07AA05"
 
-    def test_llm_not_called_when_preliminary(self, make_anonymized_soap: Any) -> None:
+    def test_llm_not_called_when_production_rule_enabled(
+        self, make_anonymized_soap: Any, monkeypatch: Any
+    ) -> None:
         from shared.schemas import AnonymizedPlan
 
+        monkeypatch.setenv("AGENT_EMPTY_OUTPUT_RULE", "true")
         canned = DrugCandidateList(candidates=[])
         llm = _FakeLLM(canned=canned)
         agent = CloudAgent(
@@ -225,6 +275,29 @@ class TestEmptyOutputRule:
         )
         agent.run(soap)
         assert llm.calls == 0
+
+    def test_llm_called_in_demo_mode_even_when_preliminary(
+        self, make_anonymized_soap: Any, monkeypatch: Any
+    ) -> None:
+        from shared.schemas import AnonymizedPlan
+
+        monkeypatch.delenv("AGENT_EMPTY_OUTPUT_RULE", raising=False)
+        canned = DrugCandidateList(candidates=[])
+        llm = _FakeLLM(canned=canned)
+        agent = CloudAgent(
+            llm=llm,
+            nfz=_FakeNFZIndex(),
+            chain=build_fake_chain([]),
+            agent_version="3a.0-test",
+        )
+        soap = make_anonymized_soap(
+            assessment=AnonymizedAssessment(
+                primary_diagnosis="podejrzenie nadczynności tarczycy",
+            ),
+            plan=AnonymizedPlan(medications_prescribed=[]),
+        )
+        agent.run(soap)
+        assert llm.calls == 1
 
 
 # ---------------------------------------------------------------------------

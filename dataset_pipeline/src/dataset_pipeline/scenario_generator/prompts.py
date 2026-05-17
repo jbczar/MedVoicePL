@@ -365,12 +365,195 @@ def _example_neurologia() -> ScenarioModel:
     )
 
 
+def _example_gastrologia() -> ScenarioModel:
+    """Phase 4 stub — short 8-turn example. Step 3 will expand to ~35 turns."""
+    return ScenarioModel(
+        id="example-gastro-01",
+        specialization=Specialization.gastrologia,
+        patient_age=52,
+        patient_sex="M",
+        patient_full_name="Marek Kowalczyk",
+        patient_pesel="73101512345",
+        chief_complaint="Pieczenie w nadbrzuszu po posiłkach od 3 miesięcy",
+        expected_diagnosis="Refluks żołądkowo-przełykowy (GERD)",
+        icd10_code="K21.0",
+        turns=[
+            DialogueTurn(
+                speaker=SpeakerRole.doctor,
+                text="Dzień dobry panie Marku. Co pana sprowadza?",
+            ),
+            DialogueTurn(
+                speaker=SpeakerRole.patient,
+                text=(
+                    "Od trzech miesięcy mam pieczenie w żołądku, szczególnie "
+                    "po obiedzie i kiedy się kładę spać."
+                ),
+            ),
+            DialogueTurn(
+                speaker=SpeakerRole.doctor,
+                text="Czy występuje kwaśny smak w ustach, odbijanie?",
+            ),
+            DialogueTurn(
+                speaker=SpeakerRole.patient,
+                text="Tak, ciągle, zwłaszcza w nocy. Czasem budzę się z kaszlem.",
+            ),
+            DialogueTurn(
+                speaker=SpeakerRole.doctor,
+                text="Pije pan kawę, alkohol? Pali papierosy?",
+            ),
+            DialogueTurn(
+                speaker=SpeakerRole.patient,
+                text=(
+                    "Kawa codziennie, ze trzy filiżanki. Piwo czasem. Nie palę "
+                    "od dziesięciu lat."
+                ),
+            ),
+            DialogueTurn(
+                speaker=SpeakerRole.doctor,
+                text=(
+                    "Włączymy panu inhibitor pompy protonowej, np. omeprazol. "
+                    "Proszę unikać posiłków na 3 godziny przed snem."
+                ),
+            ),
+            DialogueTurn(
+                speaker=SpeakerRole.patient,
+                text="Dobrze, postaram się. Dziękuję, panie doktorze.",
+            ),
+        ],
+        model="example",
+        seed=None,
+    )
+
+
+def _example_ginekologia() -> ScenarioModel:
+    """Phase 4 stub — short 8-turn example. Step 3 will expand to ~35 turns."""
+    return ScenarioModel(
+        id="example-gineko-01",
+        specialization=Specialization.ginekologia,
+        patient_age=29,
+        patient_sex="F",
+        patient_full_name="Aleksandra Nowak",
+        patient_pesel="96041598765",
+        chief_complaint="Nieregularne miesiączki i przybranie masy ciała",
+        expected_diagnosis="Podejrzenie zespołu policystycznych jajników (PCOS)",
+        icd10_code="E28.2",
+        turns=[
+            DialogueTurn(
+                speaker=SpeakerRole.doctor,
+                text="Dzień dobry pani Aleksandro. Proszę powiedzieć co panią niepokoi.",
+            ),
+            DialogueTurn(
+                speaker=SpeakerRole.patient,
+                text=(
+                    "Od pół roku miesiączki są nieregularne, czasem brak ich "
+                    "przez dwa miesiące. Przybrałam też pięć kilogramów."
+                ),
+            ),
+            DialogueTurn(
+                speaker=SpeakerRole.doctor,
+                text="Czy pojawił się trądzik, nadmierne owłosienie na twarzy?",
+            ),
+            DialogueTurn(
+                speaker=SpeakerRole.patient,
+                text="Tak, mam pryszcze na brodzie. I włoski nad ustami pojawiły się.",
+            ),
+            DialogueTurn(
+                speaker=SpeakerRole.doctor,
+                text="Stara się pani zajść w ciążę? Były próby?",
+            ),
+            DialogueTurn(
+                speaker=SpeakerRole.patient,
+                text="Tak, od roku z mężem próbujemy, bez efektu.",
+            ),
+            DialogueTurn(
+                speaker=SpeakerRole.doctor,
+                text=(
+                    "Zlecam USG przezpochwowe i badania hormonalne: testosteron, "
+                    "LH, FSH, prolaktyna, glukoza na czczo. Po wynikach wróci pani na kontrolę."
+                ),
+            ),
+            DialogueTurn(
+                speaker=SpeakerRole.patient,
+                text="Dobrze, umówię się jutro. Dziękuję bardzo.",
+            ),
+        ],
+        model="example",
+        seed=None,
+    )
+
+
+def _example_pediatria() -> ScenarioModel:
+    """Phase 4 stub — short 8-turn example. Step 3 will expand to ~35 turns.
+
+    Pediatric visits: dialogue may involve parent or older child depending
+    on patient_age. This example shows an 8-year-old speaking with parent
+    backup; voice mapping uses `patient_child_*` profile.
+    """
+    return ScenarioModel(
+        id="example-pediatria-01",
+        specialization=Specialization.pediatria,
+        patient_age=8,
+        patient_sex="M",
+        patient_full_name="Kacper Wiśniewski",
+        patient_pesel="17061212345",
+        chief_complaint="Gorączka 39 stopni od dwóch dni i ból gardła",
+        expected_diagnosis="Ostre zapalenie gardła paciorkowcowe",
+        icd10_code="J02.0",
+        turns=[
+            DialogueTurn(
+                speaker=SpeakerRole.doctor,
+                text="Dzień dobry Kacper. Co cię boli?",
+            ),
+            DialogueTurn(
+                speaker=SpeakerRole.patient,
+                text="Mama, boli mnie gardło i ciepło mi cały czas.",
+            ),
+            DialogueTurn(
+                speaker=SpeakerRole.doctor,
+                text="A od kiedy ta gorączka? Mierzyła pani?",
+            ),
+            DialogueTurn(
+                speaker=SpeakerRole.patient,
+                text=(
+                    "Od przedwczoraj wieczorem. Rano miał 39, dałam paracetamol, "
+                    "spadła do 37,5, ale wraca."
+                ),
+            ),
+            DialogueTurn(
+                speaker=SpeakerRole.doctor,
+                text="Otwórz buzię szeroko, Kacper. Zobaczę co tam masz.",
+            ),
+            DialogueTurn(
+                speaker=SpeakerRole.patient,
+                text="Aaaa…",
+            ),
+            DialogueTurn(
+                speaker=SpeakerRole.doctor,
+                text=(
+                    "Migdałki bardzo czerwone, są naloty. Zlecę szybki test "
+                    "paciorkowcowy. Jeśli dodatni, włączymy amoksycylinę przez "
+                    "10 dni."
+                ),
+            ),
+            DialogueTurn(
+                speaker=SpeakerRole.patient,
+                text="Dobrze, panie doktorze. Czekamy na wynik.",
+            ),
+        ],
+        model="example",
+        seed=None,
+    )
+
+
 FEW_SHOT_EXAMPLES: dict[Specialization, ScenarioModel] = {
     Specialization.kardiologia: _example_kardiologia(),
     Specialization.pulmonologia: _example_pulmonologia(),
     Specialization.medycyna_rodzinna: _example_medycyna_rodzinna(),
     Specialization.endokrynologia: _example_endokrynologia(),
     Specialization.neurologia: _example_neurologia(),
+    Specialization.gastrologia: _example_gastrologia(),
+    Specialization.ginekologia: _example_ginekologia(),
+    Specialization.pediatria: _example_pediatria(),
 }
 
 

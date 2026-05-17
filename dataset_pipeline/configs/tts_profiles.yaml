@@ -1,5 +1,76 @@
-# XTTSv2 voice profiles
+# XTTSv2 voice profiles — Phase 4 (12 profiles for benchmark diversity)
+#
+# Naming: <role>_<sex>_<age_bucket>
+#   role: doctor | patient
+#   sex:  male | female
+#   age_bucket: young | middle | senior | child (child is sex-only, no middle)
+#
+# Doctor profiles (4): young + senior, both sexes.
+# Patient profiles (8): young + middle + senior for adults + child for both sexes.
+#
+# Pre-Phase 4 generic keys (`doctor_male`, `patient_female`, etc.) are kept
+# as aliases below to preserve compatibility with the 8 legacy bundles.
 profiles:
+  # --- Doctor profiles (4) ---------------------------------------------------
+  doctor_male_young:
+    reference_audio: "reference_voices/doctor_male_young_01.wav"
+    language: "pl"
+    speed: 1.0
+  doctor_male_senior:
+    reference_audio: "reference_voices/doctor_male_senior_01.wav"
+    language: "pl"
+    speed: 0.97
+  doctor_female_young:
+    reference_audio: "reference_voices/doctor_female_young_01.wav"
+    language: "pl"
+    speed: 1.0
+  doctor_female_senior:
+    reference_audio: "reference_voices/doctor_female_senior_01.wav"
+    language: "pl"
+    speed: 0.97
+
+  # --- Patient adult profiles (6) --------------------------------------------
+  patient_male_young:
+    reference_audio: "reference_voices/patient_male_young_01.wav"
+    language: "pl"
+    speed: 1.0
+  patient_male_middle:
+    reference_audio: "reference_voices/patient_male_middle_01.wav"
+    language: "pl"
+    speed: 0.95
+  patient_male_senior:
+    reference_audio: "reference_voices/patient_male_senior_01.wav"
+    language: "pl"
+    speed: 0.92
+  patient_female_young:
+    reference_audio: "reference_voices/patient_female_young_01.wav"
+    language: "pl"
+    speed: 1.0
+  patient_female_middle:
+    reference_audio: "reference_voices/patient_female_middle_01.wav"
+    language: "pl"
+    speed: 0.95
+  patient_female_senior:
+    reference_audio: "reference_voices/patient_female_senior_01.wav"
+    language: "pl"
+    speed: 0.92
+
+  # --- Patient child profiles (2) --------------------------------------------
+  # Mozilla Common Voice doesn't have <13 voices; "teens" bucket maps here.
+  # For patient_age < 6 the scenario generator emits parent speech (adult
+  # voice via young/middle bucket); these profiles serve ages 6-17.
+  patient_child_male:
+    reference_audio: "reference_voices/patient_child_male_01.wav"
+    language: "pl"
+    speed: 1.05
+  patient_child_female:
+    reference_audio: "reference_voices/patient_child_female_01.wav"
+    language: "pl"
+    speed: 1.05
+
+  # --- Legacy aliases (pre-Phase 4) ------------------------------------------
+  # Kept so the 8 existing bundles continue to render bit-identically.
+  # New scenarios go through the Phase 4 keys above.
   doctor_male:
     reference_audio: "reference_voices/doctor_male_01.wav"
     language: "pl"

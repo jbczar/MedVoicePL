@@ -7,100 +7,230 @@
 
 \section{Motywacja}\label{sec:motywacja}
 
-% TREŚĆ DO NAPISANIA — punkty do rozwinięcia w akapity:
-%
-% 1. Obciążenie administracyjne lekarzy w Polsce:
-%    - Raport NIK / ZUS / Naczelna Izba Lekarska: lekarze POZ spędzają
-%      ~40–50\% czasu pracy na dokumentacji, a nie na pacjencie.
-%    - Wypalenie zawodowe lekarzy w Polsce (statystyki, ankiety).
-%    - Problem szczególnie dotkliwy w POZ, gdzie wizyty trwają 10–20 minut,
-%      a dokumentacja wymaga pełnych wpisów SOAP.
-%
-% 2. Wymogi regulacyjne w Polsce:
-%    - Rozporządzenie MZ w sprawie rodzajów i zakresu dokumentacji medycznej
-%      (Dz.U. 2020 poz. 666) — obowiązek prowadzenia dokumentacji.
-%    - RODO (GDPR) — art. 9 (dane wrażliwe), art. 25 (privacy by design).
-%    - Wymagania Narodowego Funduszu Zdrowia dotyczące kodowania procedur
-%      i leków refundowanych.
-%
-% 3. Luka na rynku polskim:
-%    - Istniejące rozwiązania (Nuance DAX, Abridge, Suki) — wyłącznie
-%      anglojęzyczne, brak wsparcia dla polskiego systemu ochrony zdrowia.
-%    - Brak zintegrowanego systemu CDSS dla języka polskiego z natywnym
-%      wsparciem NFZ.
-%    - Potencjał AI (STT, LLM, RAG) do odciążenia lekarzy.
-%
-% 4. Dlaczego teraz?
-%    - Dojrzałość modeli STT dla języka polskiego (Whisper large-v3, WER <10\%).
-%    - Dostępność lokalnych SLM (Phi, Llama, Bielik) z kwantyzacją na GPU
-%      konsumenckie.
-%    - Microsoft Presidio jako framework anonimizacji z możliwością
-%      rozszerzenia o polskie recognizery (PESEL, NIP, imiona).
+Współczesna praktyka medyczna w~Polsce charakteryzuje się istotną
+asymetrią pomiędzy czasem poświęcanym pacjentowi a~czasem przeznaczanym
+na~prowadzenie dokumentacji. Wykonywanie obowiązków administracyjnych
+stanowi jeden z~głównych czynników wypalenia zawodowego lekarzy
+oraz ograniczenia dostępności świadczeń podstawowej opieki zdrowotnej
+(POZ).
+% [POTRZEBNE ŹRÓDŁO: raport NIL/NIK lub publikacja recenzowana
+%  dokumentująca proporcję czasu lekarzy POZ poświęcanego na dokumentację
+%  oraz skalę wypalenia zawodowego w Polsce — np. raport NIL „Lekarze
+%  w Polsce” lub artykuł w czasopiśmie „Zdrowie Publiczne i Zarządzanie”]
+W~realiach polskiej POZ, gdzie pojedyncza wizyta trwa zwykle
+kilkanaście minut, wymóg sporządzenia pełnego wpisu zgodnego ze~standardem
+\emph{Subjective, Objective, Assessment, Plan} (SOAP) \parencite{weed1968soap}
+prowadzi do~kompresji wywiadu lub do~odraczania dokumentacji poza wizytę,
+co negatywnie wpływa zarówno na~jakość zapisów, jak i~na~komfort pracy
+zespołów medycznych.
+
+Niezależnie od~obciążenia administracyjnego, świadczeniodawcy
+funkcjonują w~złożonym otoczeniu regulacyjnym. Rozporządzenie Ministra
+Zdrowia w~sprawie rodzajów, zakresu i~wzorów dokumentacji medycznej
+oraz sposobu jej przetwarzania
+% [POTRZEBNE ŹRÓDŁO: precyzyjne wskazanie Dz.U. — wstępnie
+%  Dz.U. 2020 poz. 666 z późn. zm.; zweryfikować aktualną wersję
+%  na isap.sejm.gov.pl przed wstawieniem \cite{}]
+formalizuje obowiązek prowadzenia pełnej dokumentacji medycznej
+w~postaci elektronicznej. Równolegle ogólne rozporządzenie o~ochronie
+danych osobowych \parencite{gdpr2016} kwalifikuje dane dotyczące zdrowia
+jako szczególną kategorię danych (art.~9) oraz nakłada na~administratorów
+obowiązek wdrożenia mechanizmów \emph{privacy by design} i~\emph{privacy
+by default} (art.~25). Dodatkowo system refundacji prowadzony przez
+Narodowy Fundusz Zdrowia (NFZ) wymaga precyzyjnego wskazania nazwy
+substancji czynnej, kodu Anatomiczno-Terapeutyczno-Chemicznego (ATC)
+oraz grupy limitowej, co w~praktyce klinicznej oznacza konieczność
+manualnego porównywania zaleceń z~aktualnym obwieszczeniem refundacyjnym.
+
+W~ostatnich latach pojawiła się klasa systemów określanych mianem
+\emph{ambient clinical intelligence}, których celem jest automatyczne
+generowanie dokumentacji medycznej na~podstawie nagrania wizyty.
+Komercyjne rozwiązania takie jak Nuance DAX \parencite{nuancedax2024}
+osiągnęły dojrzałość operacyjną, jednak ich zastosowanie w~polskim
+systemie ochrony zdrowia napotyka trzy zasadnicze ograniczenia.
+Po~pierwsze, modele językowe stanowiące rdzeń tych systemów są
+optymalizowane dla języka angielskiego, co skutkuje istotnie wyższym
+współczynnikiem błędów rozpoznawania mowy (\emph{Word Error Rate}, WER)
+dla języka polskiego. Po~drugie, brak integracji z~polskim wykazem
+refundacyjnym uniemożliwia generowanie sugestii dopasowanych do~kontekstu
+ekonomicznego pacjenta. Po~trzecie, model wdrożeniowy oparty
+na~przetwarzaniu nagrań w~chmurze dostawcy jest trudno pogodzić
+z~restrykcyjną interpretacją RODO przyjmowaną przez polskie podmioty
+lecznicze, w~szczególności w~kontekście transferu danych poza
+Europejski Obszar Gospodarczy.
+
+Jednocześnie w~ciągu ostatnich dwóch lat dokonał się znaczący postęp
+technologiczny umożliwiający rozwiązanie powyższych ograniczeń bez
+konieczności przekazywania surowego nagrania poza infrastrukturę
+podmiotu leczniczego. Modele rozpoznawania mowy z~rodziny Whisper
+\parencite{radford2023whisper}, trenowane na~zbiorze 680~000 godzin
+nagrań wielojęzycznych, osiągają na~języku polskim WER pozwalający
+na~praktyczne zastosowania kliniczne. Małe modele językowe (\emph{Small
+Language Models}, SLM) typu Phi-3 \parencite{abdin2024phi3} oraz lokalnie
+dostrajany model Bielik \parencite{bielik2024} mogą być uruchamiane
+na~sprzęcie konsumenckim, w~szczególności po~kwantyzacji do~precyzji
+4-bitowej. Microsoft Presidio \parencite{presidio-docs} dostarcza
+rozszerzalny framework do~deidentyfikacji danych osobowych, który
+można uzupełnić o~rozpoznawacze charakterystyczne dla języka polskiego
+(numer~PESEL, NIP, polskie imiona i~nazwiska, adresy). Połączenie
+wymienionych komponentów z~paradygmatem \emph{retrieval-augmented
+generation} \parencite{lewis2020rag} oraz architekturą wieloagentową
+\parencite{langgraph2024} tworzy podstawę dla systemu wspomagania decyzji
+klinicznych \parencite{sutton2020cdss}, który respektuje granicę
+zaufania pomiędzy strefą \emph{on-premise} a~chmurą obliczeniową.
 
 \section{Cel pracy}\label{sec:cel-pracy}
 
-% TREŚĆ DO NAPISANIA — sformułowanie celu głównego + lista celów szczegółowych:
-%
-% CEL GŁÓWNY (1 zdanie):
-%   Zaprojektowanie, implementacja i ewaluacja multimodalnego, wieloagentowego
-%   systemu hybrydowego (CDSS), który automatyzuje tworzenie notatek SOAP
-%   z nagrań wizyt lekarskich w języku polskim, z zachowaniem prywatności
-%   danych (RODO) i integracją z bazą refundacji NFZ.
-%
-% CELE SZCZEGÓŁOWE (lista numerowana C1–C6):
-%   C1. Opracowanie pipeline'u generacji syntetycznego datasetu dialogów
-%       medycznych (scenariusze LLM + synteza mowy XTTSv2).
-%   C2. Implementacja modułu transkrypcji (STT) z diaryzacją mówców
-%       dla języka polskiego i ewaluacja jakości (WER/CER).
-%   C3. Implementacja modułu strukturyzacji transkrypcji do formatu SOAP
-%       przy użyciu lokalnego SLM.
-%   C4. Implementacja modułu anonimizacji danych osobowych (Microsoft
-%       Presidio + custom PL recognizery) z programistycznie wymuszaną
-%       granicą zaufania (trust gate).
-%   C5. Implementacja modułu chmurowego: analiza kliniczna LLM, RAG
-%       i dopasowanie refundacji NFZ.
-%   C6. Ewaluacja systemu end-to-end: jakość STT, poprawność SOAP,
-%       skuteczność anonimizacji, trafność sugestii RAG.
+Celem głównym niniejszej pracy jest \textit{zaprojektowanie,
+implementacja i~ewaluacja multimodalnego, wieloagentowego systemu
+hybrydowego wspomagania decyzji klinicznych, który automatyzuje
+tworzenie notatek SOAP z~nagrań wizyt lekarskich w~języku polskim,
+zachowuje zgodność z~rozporządzeniem RODO oraz integruje się z~bazą
+refundacji Narodowego Funduszu Zdrowia.} System, oznaczony nazwą
+roboczą \emph{MedVoicePL}, ma~stanowić demonstrację wykonalności
+takiego rozwiązania w~realiach polskiego systemu ochrony zdrowia
+oraz dostarczyć ilościowych przesłanek do~dalszych prac wdrożeniowych.
+
+Realizacji celu głównego podporządkowano sześć celów szczegółowych:
+
+\begin{enumerate}[label=\textbf{C\arabic*.}, leftmargin=*, itemsep=2pt]
+  \item Opracowanie powtarzalnego pipeline'u generacji syntetycznego
+        zbioru danych dialogów medycznych w~języku polskim, obejmującego
+        scenariusze wizyt wygenerowane przez duży model językowy oraz
+        ich syntezę mowy z~wykorzystaniem modelu XTTSv2
+        \parencite{coqui-tts}, wraz z~kontrolowanym wprowadzaniem szumu
+        i~augmentacji akustycznych.
+  \item Implementacja modułu transkrypcji mowy na~tekst (STT) z~równoczesną
+        diaryzacją mówców dla scenariusza dwumówcowego
+        (lekarz–pacjent), opartego na~modelu Whisper
+        \parencite{radford2023whisper} oraz na~pipeline'ie
+        \texttt{pyannote.audio} \parencite{bredin2023pyannote}, a~także
+        ewaluacja jakości transkrypcji za~pomocą metryk WER i~CER
+        oraz jakości diaryzacji za~pomocą metryki \emph{Diarization
+        Error Rate} (DER).
+  \item Implementacja modułu strukturyzacji transkrypcji do~formatu
+        SOAP \parencite{weed1968soap} przy użyciu lokalnie uruchamianego
+        SLM (Bielik~11B w~kwantyzacji 4-bitowej, \cite{bielik2024})
+        z~wymuszaniem zgodności wyjścia ze~schematem przez
+        gramatyczne ograniczenia dekodowania.
+  \item Implementacja modułu anonimizacji danych osobowych opartego
+        na~frameworku Microsoft Presidio \parencite{presidio-docs},
+        rozszerzonego o~rozpoznawacze charakterystyczne dla języka
+        polskiego, oraz wymuszenie programistycznej granicy zaufania
+        (\emph{trust gate}) pomiędzy strefą \emph{on-premise}
+        a~chmurową, zgodnie z~art.~25 RODO \parencite{gdpr2016}.
+  \item Implementacja modułu chmurowego realizującego analizę kliniczną,
+        wyszukiwanie semantyczne w~bazie wiedzy farmakologicznej
+        z~zastosowaniem paradygmatu RAG \parencite{lewis2020rag}
+        oraz dopasowanie zaleceń terapeutycznych do~aktualnego
+        wykazu refundacyjnego NFZ, z~orkiestracją agentów
+        zrealizowaną w~bibliotece LangGraph \parencite{langgraph2024}.
+  \item Ewaluacja systemu w~ujęciu \emph{end-to-end} na~zbiorze
+        syntetycznym, obejmująca pomiar jakości STT (WER, CER, DER),
+        zgodności notatki SOAP ze~schematem oraz z~ekspercką prawdą
+        odniesienia, skuteczności anonimizacji (precyzja oraz
+        czułość detekcji jednostek wrażliwych) i~trafności sugestii
+        farmakologicznych (\emph{recall}, \emph{precision},
+        zgodność z~poziomem refundacji NFZ).
+\end{enumerate}
+
+Tak zdefiniowany cel pracy oraz lista celów szczegółowych implikują
+konieczność zintegrowanego podejścia, łączącego inżynierię systemów
+rozproszonych, uczenie maszynowe stosowane do~przetwarzania mowy
+i~języka naturalnego oraz wiedzę domenową z~zakresu informatyki
+medycznej i~prawa ochrony danych.
 
 \section{Zakres pracy}\label{sec:zakres}
 
-% TREŚĆ DO NAPISANIA — co praca obejmuje vs. czego nie:
-%
-% OBEJMUJE:
-%   - Projekt architektury wieloagentowej z podziałem on-premise/cloud.
-%   - Implementacja prototypu (MVP) obejmującego pięć specjalizacji
-%     medycznych: kardiologia, endokrynologia, neurologia, psychiatria,
-%     ortopedia.
-%   - Generacja syntetycznego datasetu (8 scenariuszy) jako ground truth.
-%   - Ewaluacja na zbiorze syntetycznym z metrykami WER, CER, jakość SOAP
-%     (ekspert kliniczny), precyzja/czułość anonimizacji, Recall@k RAG.
-%   - Pulpit lekarza (frontend) jako interfejs akceptacji sugestii.
-%
-% NIE OBEJMUJE:
-%   - Walidacja na prawdziwych danych klinicznych (wymaga zgody komisji
-%     bioetycznej / IRB — poza zakresem czasowym pracy).
-%   - Integracja z systemami HIS/EHR (np. mMedica, Asseco, Kamsoft).
-%   - Certyfikacja jako wyrób medyczny (MDR).
-%   - Pełna skalowalność produkcyjna (load balancing, HA, replikacja).
-%   - Specjalizacje medyczne poza wymienionymi pięcioma.
+Zakres pracy ograniczono do~elementów, których realizacja w~horyzoncie
+czasowym pracy magisterskiej jest osiągalna bez angażowania zasobów
+wykraczających poza możliwości pojedynczego badacza dysponującego
+sprzętem klasy konsumenckiej.
+
+Praca \textbf{obejmuje} następujące zagadnienia:
+
+\begin{itemize}[leftmargin=*, itemsep=2pt]
+  \item projekt architektoniczny systemu wieloagentowego z~jawnym
+        podziałem na~strefę \emph{on-premise} (przetwarzanie surowego
+        nagrania, transkrypcja, strukturyzacja SOAP, anonimizacja)
+        oraz strefę chmurową (analiza kliniczna, RAG, dopasowanie NFZ);
+  \item implementację prototypu w~architekturze monorepo, obejmującego
+        moduły:
+        \code{dataset\_pipeline} (generacja danych syntetycznych),
+        \code{application} (system docelowy podzielony na~podmoduły
+        \code{on\_premise}, \code{cloud}, \code{gateway} oraz
+        \code{frontend}) oraz \code{research\_and\_testing} (ewaluacja);
+  \item generację syntetycznego zbioru danych o~objętości
+        ośmiu pełnych scenariuszy wizyt lekarskich, obejmujących pięć
+        specjalizacji medycznych: kardiologia, endokrynologia,
+        neurologia, psychiatria oraz ortopedia, w~dwóch wariantach
+        akustycznych (czysty i~z~symulowanym szumem klinicznym);
+  \item ewaluację ilościową systemu z~zastosowaniem metryk
+        zdefiniowanych w~celu szczegółowym~C6, przeprowadzoną
+        na~zbiorze syntetycznym;
+  \item implementację interfejsu lekarza w~postaci aplikacji webowej,
+        umożliwiającej nagrywanie wizyty oraz akceptację, modyfikację
+        lub odrzucenie wygenerowanych sugestii klinicznych.
+\end{itemize}
+
+Praca \textbf{nie obejmuje} natomiast następujących zagadnień,
+istotnych z~perspektywy ewentualnego wdrożenia produkcyjnego, lecz
+wykraczających poza ramy projektu magisterskiego:
+
+\begin{itemize}[leftmargin=*, itemsep=2pt]
+  \item walidacji systemu na~rzeczywistych danych klinicznych --- proces
+        ten wymaga zgody właściwej komisji bioetycznej oraz spełnienia
+        wymogów wynikających z~ustawy o~zawodach lekarza i~lekarza
+        dentysty, których uzyskanie wykracza poza horyzont czasowy
+        pracy;
+  \item integracji z~istniejącymi systemami informatycznymi szpitali
+        i~przychodni (HIS, EHR), takimi jak \emph{mMedica}, Asseco AMMS
+        czy Kamsoft KS-SOMED;
+  \item certyfikacji systemu jako wyrobu medycznego w~rozumieniu
+        rozporządzenia Parlamentu Europejskiego i~Rady (UE) 2017/745
+        (MDR);
+        % [POTRZEBNE ŹRÓDŁO: pełna referencja do MDR 2017/745 — dodać
+        %  do bibliografii analogicznie jak gdpr2016]
+  \item zapewnienia produkcyjnej skalowalności rozwiązania, w~tym
+        \emph{load balancingu}, replikacji bazy danych oraz wysokiej
+        dostępności;
+  \item obsługi specjalizacji medycznych innych niż~pięć wymienionych
+        powyżej.
+\end{itemize}
+
+Ograniczenia powyższe zostały przyjęte świadomie i~stanowią one element
+metody badawczej, nie zaś jej niedoskonałość. Walidacja na~zbiorze
+syntetycznym, w~którym prawda odniesienia jest znana z~konstrukcji,
+pozwala na~rzetelne porównanie kolejnych wariantów systemu oraz
+na~wyizolowanie wpływu poszczególnych komponentów na~jakość
+wyjściową --- co~na~rzeczywistych danych klinicznych byłoby
+trudniejsze do~osiągnięcia.
 
 \section{Struktura pracy}\label{sec:struktura}
 
-% TREŚĆ DO NAPISANIA — przegląd rozdziałów, 1–2 zdania na rozdział:
 Praca składa się z~siedmiu rozdziałów. W~rozdziale~\ref{ch:stan-wiedzy}
-przedstawiono przegląd stanu wiedzy w~obszarach istotnych dla systemu
-(rozpoznawanie mowy, modele językowe, anonimizacja PII). Rozdział~%
+przedstawiono przegląd stanu wiedzy w~obszarach istotnych dla
+projektowanego systemu, obejmujący automatyczne rozpoznawanie mowy,
+modele językowe (w~szczególności modele wielojęzyczne oraz lokalne
+modele dla języka polskiego), techniki deidentyfikacji informacji
+medycznej oraz systemy wspomagania decyzji klinicznych. Rozdział~%
 \ref{ch:wymagania} formalizuje wymagania funkcjonalne i~niefunkcjonalne
-systemu. W~rozdziale~\ref{ch:architektura} opisano architekturę
-wieloagentową z~podziałem na~strefę lokalną i~chmurową. Rozdział~%
-\ref{ch:implementacja} omawia szczegóły implementacyjne poszczególnych
-modułów. Rozdział~\ref{ch:ewaluacja} prezentuje wyniki ewaluacji systemu.
-Rozdział~\ref{ch:wnioski} podsumowuje pracę i~wskazuje kierunki dalszego
-rozwoju.
+systemu, w~tym wymagania wynikające z~RODO oraz z~przepisów
+sektorowych dotyczących dokumentacji medycznej. W~rozdziale~%
+\ref{ch:architektura} opisano architekturę wieloagentową z~podziałem
+na~strefę lokalną i~chmurową, granicę zaufania oraz przepływ danych
+pomiędzy modułami. Rozdział~\ref{ch:implementacja} omawia szczegóły
+implementacyjne poszczególnych modułów oraz kluczowe decyzje
+projektowe podjęte w~trakcie prac. Rozdział~\ref{ch:ewaluacja}
+prezentuje metodykę oraz wyniki ewaluacji systemu, z~zachowaniem
+podziału na~metryki dotyczące poszczególnych modułów oraz metryki
+systemowe. Rozdział~\ref{ch:wnioski} podsumowuje pracę, weryfikuje
+realizację celów szczegółowych oraz wskazuje kierunki dalszego
+rozwoju, w~szczególności w~kontekście walidacji klinicznej oraz
+ewentualnej certyfikacji jako wyrobu medycznego.
 
 \section{Konwencje typograficzne}\label{sec:konwencje}
 
-% Konwencje przejęte z szablonu PJATK:
 W~tekście pracy stosowane są następujące konwencje:
 \begin{itemize}
   \item \emph{kursywą} oznaczono terminy obcojęzyczne oraz nazwy własne;

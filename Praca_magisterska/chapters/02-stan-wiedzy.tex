@@ -5,119 +5,545 @@
 % Struktura sekcji: stan aktualny → ograniczenia → luka badawcza.
 % ═══════════════════════════════════════════════════════════════════════════════
 
+Niniejszy rozdział przedstawia przegląd literatury oraz rozwiązań
+technologicznych istotnych dla projektowanego systemu \emph{MedVoicePL}.
+Kolejne sekcje obejmują automatyczne rozpoznawanie mowy wraz
+z~diaryzacją mówców (sekcja~\ref{sec:stt}), małe modele językowe
+i~strukturyzację notatek klinicznych (sekcja~\ref{sec:slm}),
+deidentyfikację danych osobowych (sekcja~\ref{sec:anonimizacja}),
+paradygmat wyszukiwania wzbogaconego generacją (sekcja~\ref{sec:rag}),
+systemy wspomagania decyzji klinicznych (sekcja~\ref{sec:cdss-stan})
+oraz architektury wieloagentowe (sekcja~\ref{sec:multi-agent}).
+Rozdział zamyka synteza zidentyfikowanych luk badawczych
+(sekcja~\ref{sec:stan-wiedzy-podsumowanie}), uzasadniająca przyjęcie
+hipotezy badawczej oraz zakres projektu opisanego w~kolejnych
+rozdziałach.
+
 \section{Rozpoznawanie mowy (Speech-to-Text)}\label{sec:stt}
 
-% TREŚĆ DO NAPISANIA:
-%
-% 1. Architektura modeli STT:
-%    - Ewolucja: HMM → DNN-HMM → end-to-end (CTC, Attention).
-%    - Whisper (Radford 2023): encoder-decoder, 680k h danych, wielojęzyczność.
-%    - Warianty: openai/whisper, faster-whisper (CTranslate2), mlx-whisper.
-%
-% 2. STT dla języka polskiego:
-%    - Wyzwania: fleksja, grupy spółgłoskowe, terminologia medyczna.
-%    - Benchmarki: Common Voice PL. Brak datasetu dialogów medycznych PL.
-%    - Whisper large-v3 WER na polskim.
-%
-% 3. Diaryzacja mówców:
-%    - pyannote.audio: VAD + embedding + clustering.
-%    - Dialog 2-osobowy w gabinecie — specyfika kliniczna.
-%
-% 4. Metryki: WER, CER, RTF. Normalizacja tekstu.
-%
-% CYTOWAĆ: Radford2023whisper, faster-whisper, bredin2023pyannote
+\subsection{Architektury współczesnych modeli ASR}
+
+Rozwój systemów automatycznego rozpoznawania mowy (\emph{Automatic
+Speech Recognition}, ASR) przebiegał przez kolejne paradygmaty:
+od~ukrytych modeli Markowa (HMM) sprzężonych z~modelami mieszanin
+gaussowskich (GMM), przez modele hybrydowe DNN-HMM, aż po~współczesne
+architektury \emph{end-to-end} oparte na~mechanizmie uwagi.
+W~ostatnich latach dominującym rozwiązaniem stała się architektura
+typu \emph{encoder-decoder} z~mechanizmem \emph{cross-attention},
+której najbardziej rozpowszechnioną reprezentacją jest rodzina modeli
+Whisper opracowana przez OpenAI \parencite{radford2023whisper}. Model
+ten został wytrenowany na~zbiorze obejmującym 680~000 godzin nagrań
+w~96~językach, co~zapewnia mu istotną odporność na~szum, akcent oraz
+zmienność warunków akustycznych --- właściwość kluczową w~kontekście
+nagrań gabinetowych, charakteryzujących się obecnością dźwięków tła
+(klawiatura, klimatyzacja, rozmowy w~korytarzu).
+
+W~praktyce inżynierskiej oryginalna implementacja Whisper jest
+uzupełniana przez warianty zoptymalizowane wydajnościowo: faster-whisper
+\parencite{faster-whisper}, oparty na~bibliotece CTranslate2 i~oferujący
+kilkukrotne przyspieszenie inferencji dzięki kwantyzacji wag oraz
+fuzji operatorów, a~także \texttt{mlx-whisper} dla platformy Apple
+Silicon, wykorzystujący jednolitą pamięć systemu oraz GPU Metal.
+Wybór wariantu modelu wpływa nie tylko na~przepustowość, lecz również
+na~jakość transkrypcji --- precyzja zmiennoprzecinkowa fp16 powoduje
+niestabilność numeryczną na~CPU, dlatego w~typowych zastosowaniach
+on-premise stosuje się kwantyzację całkowitoliczbową int8.
+
+\subsection{Specyfika języka polskiego w~zadaniu ASR}
+
+Język polski stwarza dla systemów ASR szereg wyzwań, które nie
+występują w~takiej skali w~języku angielskim. Bogata fleksja
+nominalna i~werbalna powoduje, że~ten sam leksem może występować
+w~kilkunastu formach gramatycznych; rozbudowane zbitki spółgłoskowe
+(np.~\emph{trzcina, wstrząs}) zwiększają wrażliwość systemu
+na~zniekształcenia akustyczne; wreszcie terminologia medyczna,
+zawierająca zarówno latynizmy (np.~\emph{nadciśnienie tętnicze
+samoistne}), jak i~skróty kliniczne (np.~POChP, GERD), wykracza poza
+typowy korpus treningowy modeli ogólnoprzeznaczeniowych.
+
+Badania empiryczne nad praktyczną stosowalnością systemów ASR dla
+języka polskiego w~kontekście medycznym wskazują, że~komercyjne
+rozwiązania chmurowe oferowane przez Google, Microsoft oraz Techmo
+różnią się istotnie nie tylko jakością transkrypcji, lecz również
+gotowością do~pracy w~trybie offline, co~ma fundamentalne znaczenie
+dla zachowania zgodności z~RODO \parencite{kuligowska2023asr}.
+Równolegle prowadzone są prace nad porównaniem otwartych modeli
+\emph{end-to-end} na~rzeczywistych nagraniach rozmów lekarz--pacjent
+w~języku polskim, uwzględniające zmienność warunków akustycznych
+w~gabinetach lekarskich \parencite{polishclinicalasr}. Krytycznym
+ograniczeniem rozwoju w~tym obszarze pozostaje brak publicznie
+dostępnych, anotowanych zbiorów danych --- pierwsze próby utworzenia
+kompleksowego polskiego korpusu mowy medycznej zostały podjęte
+stosunkowo niedawno \parencite{polishmedicalspeechdataset}, a~ich
+dostępność dla społeczności badawczej jest ograniczona z~uwagi
+na~wymogi ochrony danych pacjentów. Stan ten kontrastuje z~sytuacją
+w~języku angielskim, gdzie korpusy takie jak Common Voice
+\parencite{commonvoice} oraz zbiory dialogów medycznych stanowią
+ustabilizowaną podstawę benchmarków.
+
+\subsection{Diaryzacja mówców}
+
+Zadanie diaryzacji mówców (\emph{speaker diarization}) polega
+na~przypisaniu segmentów nagrania do~poszczególnych mówców --- bez
+konieczności ich uprzedniej identyfikacji. W~kontekście wizyty
+lekarskiej zadanie sprowadza się zwykle do~scenariusza dwumówcowego
+(lekarz, pacjent), w~którym dodatkowo istotne jest poprawne
+przypisanie roli, nie zaś jedynie rozróżnienie głosów. Współczesnym
+standardem w~obszarze otwartoźródłowym jest pipeline
+\texttt{pyannote.audio} \parencite{bredin2023pyannote}, łączący trzy
+komponenty: detekcję aktywności głosu (\emph{voice activity
+detection}, VAD), ekstrakcję embeddingów mówców oraz klastrowanie.
+
+W~literaturze podejmowane są również próby diaryzacji opartej
+na~innych modalnościach niż~uczenie głębokie. Wykorzystanie
+akustycznych czujników wektorowych (\emph{Acoustic Vector Sensors},
+AVS) wraz z~analizą natężenia dźwięku w~przestrzeni pozwala
+na~rozdzielenie wypowiedzi w~dialogu dwumówcowym bez zastosowania
+sieci neuronowych, co~może stanowić atrakcyjne uzupełnienie systemów
+gabinetowych w~sytuacjach, w~których obciążenie obliczeniowe
+modeli głębokich jest niepożądane \parencite{avsdiarization}. Z~kolei
+prace nad zintegrowanymi systemami ASR i~diaryzacji dla rozmów
+medycznych w~językach o~ograniczonych zasobach --- na~przykład dla
+przełączania kodu między hindi a~angielskim (\emph{Hinglish}) ---
+demonstrują, że~jednoczesne uczenie obu zadań pozwala na~istotną
+poprawę ekstrakcji informacji o~jednostkach chorobowych
+\parencite{hinglishdoctorpatient}. Spostrzeżenie to~jest szczególnie
+istotne dla języka polskiego, w~którym praktyka kliniczna nierzadko
+obejmuje przełączanie pomiędzy rejestrem potocznym a~latynizmami
+terminologicznymi.
+
+\subsection{Metryki i~ich ograniczenia}
+
+Standardową metryką jakości transkrypcji jest współczynnik błędów
+słownych (\emph{Word Error Rate}, WER), będący sumą podstawień,
+wstawień i~usunięć w~stosunku do~liczby słów referencyjnych.
+Dla języków fleksyjnych metryka ta~jest jednak ograniczona ---
+zmiana końcówki przypadka liczona jest jako pełne podstawienie, mimo
+że~znaczenie kliniczne wypowiedzi pozostaje niezmienione. Z~tego
+powodu w~zastosowaniach medycznych stosuje się również współczynnik
+błędów znakowych (\emph{Character Error Rate}, CER), bardziej
+odporny na~drobne różnice fleksyjne, oraz metryki uwzględniające
+poprawność ekstrakcji nazwanych encji medycznych. Dla diaryzacji
+najpowszechniejszą metryką jest \emph{Diarization Error Rate} (DER),
+sumująca błędy fałszywej detekcji mowy, ominięcia mowy oraz
+mylnego przypisania mówcy.
 
 \section{Małe modele językowe (Small Language Models)}\label{sec:slm}
 
-% TREŚĆ DO NAPISANIA:
-%
-% 1. Definicja SLM (<13B params), motywacja: prywatność + niska latencja.
-%
-% 2. Przegląd SLM: Phi-3/4, Llama 3.x (8B), Bielik (PL), Gemma.
-%
-% 3. Kwantyzacja: GGUF, GPTQ, AWQ. Runtime: Ollama, vLLM, llama.cpp, MLX.
-%    Wpływ kwantyzacji na jakość w zadaniach medycznych.
-%
-% 4. Zastosowania w medycynie: strukturyzacja SOAP, ekstrakcja encji.
-%
-% 5. Format SOAP: S/O/A/P. Specyfika PL: kody ICD-10, procedury ICD-9-CM.
-%
-% CYTOWAĆ: microsoft2024phi3, meta2024llama3, bielik2024, weed1968soap
+\subsection{Definicja i~motywacja}
+
+Pod pojęciem małego modelu językowego (\emph{Small Language Model},
+SLM) rozumie się model języka naturalnego o~liczbie parametrów
+nieprzekraczającej kilkunastu miliardów, możliwy do~uruchomienia
+na~sprzęcie konsumenckim po~zastosowaniu technik kwantyzacji.
+Motywacja stojąca za~rozwojem tej klasy modeli jest dwojaka.
+Po~pierwsze, lokalne uruchomienie modelu eliminuje potrzebę
+przesyłania danych wrażliwych do~zewnętrznego dostawcy chmury, co~jest
+istotnym wymogiem w~zastosowaniach medycznych objętych
+art.~9~RODO \parencite{gdpr2016}. Po~drugie, zmniejszenie skali
+modelu obniża latencję inferencji oraz koszty operacyjne, co~jest
+warunkiem rozsądnej ekonomiki wdrożenia w~placówce medycznej.
+
+Reprezentatywnymi przykładami współczesnych SLM są: rodzina Phi
+opracowana przez Microsoft \parencite{abdin2024phi3}, demonstrująca,
+że~staranny dobór danych treningowych pozwala na~osiągnięcie jakości
+porównywalnej z~modelami o~rząd wielkości większymi; modele Llama~3
+firmy Meta \parencite{dubey2024llama3}, dostępne na~liberalnej
+licencji i~stanowiące podstawę licznych pochodnych; a~także
+specyficzne dla danego języka modele rozwijane przez społeczności
+akademickie.
+
+\subsection{Modele językowe dla języka polskiego}
+
+Dla języka polskiego najistotniejszą inicjatywą jest projekt Bielik
+prowadzony przez konsorcjum SpeakLeash \parencite{bielik2024}.
+Najnowsze wersje rodziny --- Bielik~v3 w~wariantach 7~mld oraz
+11~mld parametrów --- wprowadzają tokenizator zoptymalizowany pod~kątem
+morfologii języka polskiego, co~przekłada się na~istotne zmniejszenie
+liczby tokenów reprezentujących typowy polski tekst, a~w~konsekwencji
+na~niższe koszty inferencji oraz dokładniejszą reprezentację
+fleksji \parencite{bielikv3report}. Optymalizacja tokenizatora jest
+zagadnieniem szczególnie istotnym dla modeli przeznaczonych
+do~strukturyzacji tekstów klinicznych, gdzie pojedyncze błędy
+w~zapisie jednostek miary, dawkowania leków bądź wartości
+laboratoryjnych mogą mieć bezpośrednie konsekwencje kliniczne.
+
+Niezależnie od~SpeakLeash, prowadzone są również prace nad
+optymalizacją SLM pod~kątem działania całkowicie offline na~sprzęcie
+końcowym. Demonstracją wykonalności takiego podejścia są rozwiązania,
+w~których model Llama~3.2~1B w~postaci skwantyzowanej wykonuje
+transkrypcję medyczną bezpośrednio w~przeglądarce użytkownika, bez
+nawiązywania połączenia z~serwerem zewnętrznym \parencite{ondeviceasrllama}.
+Architektura taka pozwala na~całkowite wyeliminowanie ryzyka wycieku
+danych przez warstwę sieciową, co~stanowi atrakcyjną alternatywę dla
+systemów chmurowych w~kontekście podstawowej opieki zdrowotnej.
+
+\subsection{Strukturyzacja notatek SOAP}
+
+Format SOAP, zaproponowany pierwotnie przez Weeda
+\parencite{weed1968soap} jako element \emph{Problem-Oriented Medical
+Record}, jest do~dziś najpowszechniejszym standardem strukturyzacji
+wpisów medycznych. Obejmuje on~cztery komponenty: \emph{Subjective}
+(wywiad podmiotowy), \emph{Objective} (wywiad przedmiotowy oraz
+wyniki badań), \emph{Assessment} (rozpoznanie wraz z~uzasadnieniem)
+oraz \emph{Plan} (zalecenia terapeutyczne, badania dodatkowe,
+skierowania). W~polskiej praktyce klinicznej format ten jest
+uzupełniany o~kodowanie zgodne z~Międzynarodową Klasyfikacją Chorób
+ICD-10 oraz Międzynarodową Klasyfikacją Procedur Medycznych
+ICD-9-CM, co~stanowi wymóg sprawozdawczości NFZ.
+
+Współczesne podejście do~automatycznej generacji notatek SOAP
+wykorzystuje duże modele językowe wzbogacone o~mechanizmy
+strukturyzacji wyjścia. Framework SpecialtyScribe demonstruje,
+że~staranne dostosowanie pipeline'u do~konkretnej specjalizacji
+medycznej --- z~uwzględnieniem etapów ekstrakcji informacji,
+weryfikacji kontekstu transkrypcji oraz generacji notatki ---
+pozwala na~uzyskanie wysokiej jakości wpisów dla specjalizacji
+takich jak onkologia \parencite{specialtyscribe2025}. Podejście to~jest
+spójne z~obserwacją, że~ogólne modele językowe, bez~specjalizacji
+domenowej, mają tendencję do~halucynacji wartości liczbowych oraz
+do~pomijania istotnych elementów wywiadu.
+
+W~projekcie \emph{MedVoicePL} przyjęto wymuszanie zgodności wyjścia
+modelu ze~schematem JSON przez ograniczenia gramatyczne dekodowania
+(\emph{grammar-constrained decoding}). Mechanizm ten, realizowany
+za~pomocą biblioteki lm-format-enforcer, ogranicza zbiór dopuszczalnych
+tokenów w~każdym kroku dekodowania do~tych, które prowadzą
+do~poprawnego dokumentu JSON zgodnego z~zadanym schematem Pydantic.
+Eksperymenty przeprowadzone w~ramach niniejszej pracy wykazały,
+że~zastosowanie tego mechanizmu zwiększa zgodność schematową
+wyjścia z~75\% (tryb tekstowy) do~100\% (tryb z~wymuszeniem
+gramatyki) dla modelu Bielik-11B-v3.0; wyniki te~są przedstawione
+w~rozdziale~\ref{ch:ewaluacja}.
 
 \section{Anonimizacja danych osobowych}\label{sec:anonimizacja}
 
-% TREŚĆ DO NAPISANIA:
-%
-% 1. Kontekst prawny: RODO art. 9, 25, 35. Ustawa o prawach pacjenta.
-%
-% 2. Kategorie PII w kontekście PL: PESEL, NIP, REGON, tel. (+48),
-%    kody pocztowe, numery dowodu, numery recept.
-%
-% 3. Microsoft Presidio: Analyzer + Anonymizer, custom recognizery,
-%    strategie: replace, redact, hash, mask.
-%
-% 4. Wyzwania PL: leki vs. nazwy własne, deklinacja imion, fałszywe alarmy.
-%
-% 5. Alternatywy: spaCy NER, flair, transformer NER. Dlaczego Presidio.
-%
-% CYTOWAĆ: presidio-docs, gdpr2016, dernoncourt2017
+\subsection{Kontekst prawny}
+
+Rozporządzenie Parlamentu Europejskiego i~Rady (UE) 2016/679, znane
+pod~akronimem RODO (GDPR), \parencite{gdpr2016} stanowi podstawowy
+akt prawny regulujący przetwarzanie danych osobowych w~Unii
+Europejskiej. W~kontekście medycznym kluczowe znaczenie mają trzy
+przepisy: art.~9, kwalifikujący dane dotyczące zdrowia jako
+szczególną kategorię danych i~co~do~zasady zakazujący ich
+przetwarzania bez wyraźnej podstawy (w~tym zgody pacjenta lub
+przesłanki świadczenia opieki zdrowotnej); art.~25, nakładający
+obowiązek wdrożenia środków technicznych i~organizacyjnych
+zapewniających ochronę danych z~zasady (\emph{privacy by design})
+oraz domyślnie (\emph{privacy by default}); a~także art.~35,
+wymagający przeprowadzenia oceny skutków dla ochrony danych
+(\emph{Data Protection Impact Assessment}, DPIA) dla operacji
+przetwarzania na~dużą skalę. Implikacją powyższych przepisów dla
+systemu wspomagania decyzji klinicznych jest konieczność architektury,
+w~której dane osobowe pacjenta nie są przekazywane poza strefę
+bezpośredniej kontroli administratora bez ich uprzedniej
+deidentyfikacji.
+
+\subsection{Frameworki deidentyfikacji}
+
+Pionierską pracą w~zakresie automatycznej deidentyfikacji not
+medycznych z~wykorzystaniem uczenia głębokiego jest praca
+Dernoncourta i~współautorów \parencite{dernoncourt2017}, w~której
+wykazano przewagę architektur rekurencyjnych nad regułowymi systemami
+ekstrakcji informacji wrażliwych. Współczesne rozwiązania bazują
+na~znacznie bogatszej palecie technik, łącząc reguły, słowniki oraz
+modele typu \emph{transformer}.
+
+W~ekosystemie otwartoźródłowym dominującym frameworkiem jest Microsoft
+Presidio \parencite{presidio-docs}, oferujący modułową architekturę
+złożoną z~komponentu rozpoznawania (\emph{Analyzer}) oraz komponentu
+zamiany lub usunięcia (\emph{Anonymizer}). Presidio dostarcza
+predefiniowane rozpoznawacze dla typowych kategorii informacji
+wrażliwych: adresy e-mail, numery telefonów, numery kart kredytowych
+oraz numery dokumentów tożsamości właściwe dla wybranych jurysdykcji
+(USA, Wielka Brytania). Dla języka polskiego konieczne jest jednak
+rozszerzenie domyślnego zbioru rozpoznawaczy o~jednostki specyficzne
+dla polskiej administracji publicznej oraz systemu ochrony zdrowia:
+numer PESEL, numer identyfikacji podatkowej NIP, numer dowodu
+osobistego, numery telefonów w~formacie polskim, polskie kody
+pocztowe oraz polskie imiona i~nazwiska w~różnych formach fleksyjnych.
+Realizacja takiego rozszerzenia w~ramach niniejszej pracy została
+opisana w~rozdziale~\ref{ch:implementacja}.
+
+\subsection{Wyzwania specyficzne dla języka polskiego}
+
+Deidentyfikacja w~języku polskim napotyka na~trzy istotne trudności
+o~charakterze lingwistycznym. Po~pierwsze, fleksja powoduje,
+że~to~samo nazwisko może występować w~siedmiu formach przypadkowych,
+a~rozpoznawacz oparty na~dopasowaniu dosłownym musi je~uwzględniać.
+Po~drugie, granica pomiędzy nazwiskiem własnym a~eponimem medycznym
+nie zawsze jest oczywista --- frazy takie jak~,,choroba Gravesa''
+czy ,,zespół Parkinsona'' zawierają nazwiska osobowe, lecz odnoszą
+się do~jednostek chorobowych i~nie powinny być anonimizowane jako
+dane osobowe pacjenta. Po~trzecie, polskie nazwiska mają strukturę,
+która często pokrywa się z~częściami nazw leków lub jednostek
+chorobowych, co~zwiększa ryzyko fałszywych alarmów. Rozwiązanie
+wymienionych problemów wymaga zastosowania kontekstowo świadomych
+mechanizmów weta, omówionych szczegółowo w~rozdziale~\ref{ch:implementacja}.
 
 \section{Retrieval-Augmented Generation}\label{sec:rag}
 
-% TREŚĆ DO NAPISANIA:
-%
-% 1. Architektura RAG (Lewis 2020): query → embed → retrieve → generate.
-%
-% 2. Embeddingi PL: mE5, BGE-M3, Herbert, SpeakLeash embeddings.
-%
-% 3. Bazy wektorowe: ChromaDB vs Qdrant vs Milvus. Dlaczego ChromaDB w MVP.
-%
-% 4. Hybrydowe wyszukiwanie: dense + BM25, reranking, RRF.
-%
-% 5. RAG w medycynie: baza leków NFZ, ChPL, wytyczne. Chunkowanie. Grounding.
-%
-% CYTOWAĆ: lewis2020rag, chromadb, karpukhin2020dpr
+\subsection{Paradygmat RAG}
+
+Paradygmat wyszukiwania wzbogaconego generacją (\emph{Retrieval-Augmented
+Generation}, RAG), zaproponowany przez Lewisa i~współautorów
+\parencite{lewis2020rag}, łączy parametryczną wiedzę zawartą w~wagach
+modelu językowego z~nieparametryczną wiedzą pobieraną z~zewnętrznej
+bazy w~czasie inferencji. Architektura kanoniczna obejmuje cztery
+fazy: kodowanie zapytania do~przestrzeni embeddingów, wyszukanie
+najbardziej podobnych dokumentów w~bazie wektorowej, konkatenację
+pobranych fragmentów z~zapytaniem oraz wygenerowanie odpowiedzi
+przez model generatywny.
+
+Kluczową rolę w~jakości systemu RAG odgrywa jakość embeddingów.
+Karpukhin i~współautorzy \parencite{karpukhin2020dpr} wykazali,
+że~specjalnie wytrenowane modele dwuwieżowe (\emph{dual-encoder})
+osiągają wyniki istotnie lepsze niż~tradycyjne metody oparte
+na~podobieństwie leksykalnym (BM25, TF-IDF) w~zadaniach wyszukiwania
+otwartych pytań i~odpowiedzi.
+
+\subsection{Embeddingi dla języka polskiego}
+
+W~kontekście języka polskiego stosowane są zarówno modele
+wielojęzyczne (mE5, BGE-M3), jak i~modele dedykowane (HerBERT, mmlw).
+W~projekcie \emph{MedVoicePL} przyjęto model \texttt{sdadas/mmlw-roberta-large}
+o~wymiarze embeddingu 1024, dostępny bez konieczności uwierzytelnienia
+i~wykazujący się dobrymi wynikami w~zadaniach semantycznego
+podobieństwa dla języka polskiego. Wybór wymiaru embeddingu wpływa
+zarówno na~jakość wyszukiwania, jak i~na~wymagania pamięciowe
+bazy wektorowej.
+
+\subsection{Bazy wektorowe i~specyfika domeny medycznej}
+
+W~ekosystemie otwartoźródłowym dominującymi bazami wektorowymi są
+ChromaDB \parencite{chromadb} oraz Qdrant. W~ramach niniejszej pracy
+wybrano Qdrant w~trybie wbudowanym (\emph{in-process}) z~uwagi
+na~brak kompatybilności ChromaDB z~Pythonem~3.13 oraz obserwowane
+problemy stabilności na~platformie Apple Silicon. Decyzja ta~jest
+omówiona szczegółowo w~rozdziale~\ref{ch:implementacja}.
+
+Zastosowanie RAG w~domenie medycznej charakteryzuje się szeregiem
+specyficznych wymagań. Po~pierwsze, baza wiedzy powinna obejmować
+aktualne charakterystyki produktów leczniczych (ChPL) oraz wykaz
+leków refundowanych przez NFZ. Po~drugie, fragmentacja dokumentów
+(\emph{chunking}) musi uwzględniać strukturę dokumentów medycznych
+--- punkty ChPL nie powinny być dzielone w~połowie zdania, gdyż
+informacje o~dawkowaniu, przeciwwskazaniach oraz interakcjach są
+ściśle powiązane semantycznie. Po~trzecie, system musi dostarczać
+prowenancję (\emph{provenance}) każdego pobranego fragmentu, aby
+lekarz mógł zweryfikować źródło sugestii --- wymóg ten~jest
+zarówno deontologiczny, jak i~prawny.
 
 \section{Systemy wspomagania decyzji klinicznych}\label{sec:cdss-stan}
 
-% TREŚĆ DO NAPISANIA:
-%
-% 1. Klasyfikacja CDSS: knowledge-based, rule-based, ML-based, hybrid.
-%
-% 2. Rozwiązania komercyjne: Nuance DAX, Abridge, Suki, Nabla, DeepScribe.
-%    Wszystkie anglojęzyczne. Brak wsparcia PL/NFZ.
-%
-% 3. Open-source i akademickie: ClinicalBERT, BioGPT, community STT+LLM.
-%
-% 4. Sytuacja w Polsce: brak CDSS PL, systemy HIS bez AI, bariery
-%    (język, regulacje, brak datasetów).
-%
-% CYTOWAĆ: sutton2020cdss, nuancedax2024, abridge2024
+\subsection{Klasyfikacja i~funkcje CDSS}
+
+Systemy wspomagania decyzji klinicznych (\emph{Clinical Decision
+Support Systems}, CDSS) stanowią klasę narzędzi informatycznych,
+których celem jest dostarczenie personelowi medycznemu informacji
+istotnych dla podejmowania decyzji w~konkretnym kontekście klinicznym.
+Sutton i~współautorzy \parencite{sutton2020cdss} dokonują podziału
+CDSS na~dwie zasadnicze klasy: systemy oparte na~wiedzy
+(\emph{knowledge-based}), wykorzystujące reguły, drzewa decyzyjne
+oraz formalnie reprezentowane wytyczne kliniczne, oraz systemy oparte
+na~uczeniu maszynowym (\emph{non-knowledge-based}), wykorzystujące
+modele statystyczne uczone na~historycznych danych klinicznych.
+Współczesne systemy CDSS mają charakter hybrydowy, łącząc oba
+podejścia. W~tej samej pracy autorzy zwracają uwagę na~istotne
+ryzyka związane z~wdrażaniem CDSS, w~tym na~zjawisko zmęczenia
+alarmami (\emph{alert fatigue}) oraz na~niebezpieczeństwo
+nieuzasadnionego zawierzenia rekomendacji systemu (\emph{automation
+bias}).
+
+\subsection{Asystenci dokumentacji klinicznej --- rozwiązania komercyjne}
+
+Szczególną podklasę CDSS stanowią systemy określane mianem
+\emph{ambient clinical intelligence}, których funkcją jest pasywne
+nagrywanie wizyty oraz generowanie projektu dokumentacji do~akceptacji
+lekarza. Wiodącym rozwiązaniem komercyjnym jest Nuance DAX
+\parencite{nuancedax2024}, zintegrowane z~ekosystemem Microsoft po~przejęciu
+firmy Nuance Communications w~2022~roku. Inne istotne rozwiązania
+to~Abridge, Suki AI, Nabla Copilot oraz DeepScribe. Wszystkie
+wymienione systemy zostały zaprojektowane pierwotnie dla języka
+angielskiego, a~wsparcie dla innych języków --- w~szczególności
+dla języka polskiego --- pozostaje bądź szczątkowe, bądź wcale
+niedostępne.
+
+\subsection{Ewaluacja praktyczna asystentów AI w~POZ}
+
+Badania empiryczne nad rzeczywistym wpływem asystentów dokumentacji
+opartych na~sztucznej inteligencji w~praktyce klinicznej wykazują
+wymierne korzyści. Badanie typu \emph{proof-of-concept} przeprowadzone
+w~hiszpańskiej podstawowej opiece zdrowotnej wykazało zarówno
+istotną redukcję czasu poświęcanego na~dokumentację, jak
+i~wzrost satysfakcji zarówno lekarzy, jak i~pacjentów
+\parencite{jmiraispanishscribe}. Wyniki te~są zgodne
+z~obserwacjami zarejestrowanymi w~innych systemach opieki zdrowotnej
+w~Europie, gdzie wdrożenie asystenta AI prowadziło do~mierzalnej
+poprawy efektywności pracy lekarza oraz do~zmniejszenia obciążenia
+administracyjnego \parencite{aiscribeurope}.
+
+Należy jednak podkreślić, że~przywołane badania zostały przeprowadzone
+w~systemach językowych innych niż~polski, a~bezpośrednia ekstrapolacja
+ich wyników na~polską POZ wymaga zachowania ostrożności. Polska
+podstawowa opieka zdrowotna ulega obecnie istotnym przemianom,
+w~szczególności po~wprowadzeniu w~2022~roku modelu opieki
+koordynowanej, który rozszerza zakres odpowiedzialności lekarzy
+rodzinnych oraz pielęgniarek \parencite{coordinatedcarepoland}.
+Reforma ta~zwiększa zarówno obciążenie dokumentacyjne, jak
+i~wymagania dotyczące jakości wpisów medycznych, co~tworzy
+potencjalną przestrzeń dla wdrożenia asystentów dokumentacji
+dostosowanych do~polskich realiów. Jednocześnie badania nad
+jakością życia zawodowego polskich lekarzy wskazują, że~poziom
+satysfakcji z~pracy zależy w~istotnym stopniu od~czynników
+strukturalnych, w~tym od~obciążenia administracyjnego
+\parencite{workqualitypolishphysicians}, co~stanowi dodatkowy
+argument za~rozwojem narzędzi odciążających lekarzy w~zakresie
+dokumentacji.
 
 \section{Architektury wieloagentowe}\label{sec:multi-agent}
 
-% TREŚĆ DO NAPISANIA:
-%
-% 1. Paradygmat agentowy: percepcja → reasoning → działanie.
-%    ReAct, Chain-of-Thought, Tool-Use.
-%
-% 2. Frameworki: LangGraph (graf stanów), LangChain, CrewAI, AutoGen.
-%    Dlaczego LangGraph pasuje do pipeline'u CDSS.
-%
-% 3. Wzorce: Orchestrator, Pipeline, Supervisor.
-%
-% 4. Trust boundary w multi-agent: podział na strefy, Pydantic jako kontrakt,
-%    izolacja sieciowa Docker.
-%
-% CYTOWAĆ: langgraph2024, yao2023react, xi2023agents
+\subsection{Paradygmat agentowy}
 
-\section{Podsumowanie}\label{sec:stan-wiedzy-podsumowanie}
+Paradygmat agentowy w~kontekście modeli językowych odnosi się
+do~systemów, w~których model nie jest jedynie biernym generatorem
+tekstu, lecz aktywnym podmiotem zdolnym do~obserwacji, rozumowania
+oraz wykonywania działań w~swoim środowisku. Kanonicznym wzorcem
+realizacji takiego cyklu jest schemat ReAct \parencite{yao2023react},
+naprzemiennie łączący kroki rozumowania (\emph{reasoning})
+i~działania (\emph{action}). Przegląd literatury w~obszarze agentów
+opartych na~LLM \parencite{xi2023agents} wskazuje na~rosnącą
+różnorodność architektur, obejmującą zarówno pojedyncze agenty
+uzbrojone w~narzędzia (\emph{tool use}), jak i~zespoły agentów
+o~zróżnicowanych rolach.
 
-% TREŚĆ DO NAPISANIA — synteza luk:
-%
-% 1. BRAK zintegrowanego CDSS dla języka polskiego.
-% 2. BRAK polskiego datasetu dialogów medycznych.
-% 3. BRAK integracji z polskim systemem refundacji NFZ.
-% 4. BRAK architektury hybrydowej on-premise/cloud z trust boundary.
-%
-% Tabela porównawcza: cecha × (DAX, Abridge, Suki, MedVoicePL).
+\subsection{Frameworki orkiestracji}
+
+Spośród frameworków orkiestracji systemów wieloagentowych szczególne
+miejsce zajmuje LangGraph \parencite{langgraph2024}, który modeluje
+przepływ pracy jako graf stanów, w~którym każdy węzeł reprezentuje
+operację (wywołanie modelu, narzędzie, transformację danych),
+a~krawędzie warunki przejścia. Architektura ta~jest szczególnie
+dobrze dopasowana do~zastosowań, w~których pipeline ma~charakter
+deterministyczny, a~niedeterministyczność wprowadzają jedynie wybrane
+węzły (typowo: wywołania modelu językowego). Przeciwieństwem tego
+podejścia są frameworki typu \emph{open-ended} (CrewAI, AutoGen),
+w~których agenty komunikują się ad~hoc, co~zwiększa ekspresywność
+kosztem powtarzalności i~audytowalności.
+
+W~kontekście systemów wspomagania decyzji klinicznych powtarzalność
+oraz audytowalność są wymaganiami pierwszorzędnymi --- każda decyzja
+systemu musi być możliwa do~odtworzenia oraz powiązana z~jednoznaczną
+ścieżką danych. Z~tego powodu w~niniejszej pracy przyjęto LangGraph
+jako framework orkiestracji modułu chmurowego, modelując pipeline
+analizy klinicznej jako trzywęzłowy graf stanów (zaproponuj kandydatów,
+wzbogać o~dane NFZ, skomponuj sugestie).
+
+\subsection{Granica zaufania w~architekturach hybrydowych}
+
+Specyfiką systemów medycznych jest konieczność jawnego rozdzielenia
+strefy o~podwyższonym poziomie zaufania (zwykle: infrastruktura
+lokalna podmiotu leczniczego) od~strefy o~ograniczonym zaufaniu
+(zwykle: chmura obliczeniowa zewnętrznego dostawcy). Granicę tę,
+określaną w~literaturze inżynierii bezpieczeństwa mianem \emph{trust
+boundary}, należy egzekwować nie tylko organizacyjnie, lecz również
+programistycznie --- przez kontrakty danych wymuszające schemat
+zanonimizowanego ładunku, przez kontrolę statyczną importów modułów
+oraz przez warstwę uwierzytelniającą każdy ładunek przekazywany
+przez granicę. W~projekcie \emph{MedVoicePL} mechanizm taki
+zaimplementowano w~postaci komponentu \code{trust\_gate},
+omówionego szczegółowo w~rozdziale~\ref{ch:implementacja}.
+
+\section{Podsumowanie i~identyfikacja luki badawczej}%
+\label{sec:stan-wiedzy-podsumowanie}
+
+Przeprowadzony przegląd literatury i~rozwiązań technologicznych
+pozwala na~sformułowanie czterech zasadniczych obserwacji, które
+wspólnie konstytuują lukę badawczą wypełnianą przez niniejszą pracę.
+
+Po~pierwsze, dla języka polskiego nie istnieje zintegrowany system
+wspomagania decyzji klinicznych klasy \emph{ambient clinical
+intelligence}, łączący transkrypcję mowy, strukturyzację notatek
+SOAP, anonimizację danych osobowych oraz dopasowanie zaleceń
+terapeutycznych do~lokalnego systemu refundacji.
+Komercyjne rozwiązania anglojęzyczne, takie jak Nuance DAX
+\parencite{nuancedax2024}, oferują częściowo zbliżoną funkcjonalność,
+lecz ich adaptacja do~polskiego kontekstu jest ograniczona zarówno
+przez warstwę językową, jak i~przez model wdrożenia oparty
+na~przetwarzaniu nagrań w~chmurze dostawcy.
+
+Po~drugie, dostępność publicznych, anotowanych zbiorów danych
+dialogów medycznych w~języku polskim jest istotnie ograniczona.
+Pierwsze inicjatywy w~tym zakresie \parencite{polishmedicalspeechdataset,
+polishclinicalasr} stanowią obiecującą podstawę, jednak ich pełna
+dostępność dla społeczności badawczej --- w~szczególności w~kontekście
+zachowania zgodności z~RODO --- pozostaje nierozwiązanym problemem.
+Sytuacja ta~uzasadnia wykorzystanie syntetycznych zbiorów danych
+generowanych przez modele językowe wraz z~syntezą mowy, jako
+zastępnika dla danych klinicznych w~fazie prototypowania i~ewaluacji
+porównawczej kolejnych wariantów systemu.
+
+Po~trzecie, integracja systemów wspomagania decyzji klinicznych
+z~polskim wykazem leków refundowanych przez NFZ stanowi obszar
+dotąd niezagospodarowany w~literaturze recenzowanej. Tymczasem
+informacja o~poziomie refundacji jest dla pacjenta i~lekarza
+informacją o~znaczeniu zarówno klinicznym, jak i~ekonomicznym ---
+substytucja leku oryginalnego na~refundowany odpowiednik generyczny
+może istotnie wpłynąć na~przestrzeganie zaleceń (\emph{compliance}).
+
+Po~czwarte, w~publikacjach poświęconych asystentom dokumentacji AI
+zagadnienie programistycznej granicy zaufania pomiędzy strefą
+lokalną a~chmurową jest na~ogół podejmowane jedynie na~poziomie
+deklaratywnym. Praktyczna implementacja takiej granicy --- obejmująca
+kontrakt schematyczny zanonimizowanego ładunku, deterministyczny
+mechanizm walidacji wyjścia oraz audytowalny dziennik anonimizacji
+zgodny z~art.~30~RODO --- wymaga inżynierskiego rozwinięcia,
+którego niniejsza praca dostarcza w~rozdziałach~\ref{ch:architektura}
+i~\ref{ch:implementacja}.
+
+Tabela~\ref{tab:porownanie-rozwiazan} podsumowuje porównanie
+projektowanego systemu \emph{MedVoicePL} z~najistotniejszymi
+rozwiązaniami komercyjnymi z~obszaru \emph{ambient clinical
+intelligence} w~siedmiu wymiarach: wsparcie dla języka polskiego,
+integracja z~NFZ, model wdrożeniowy, dostępność kodu źródłowego,
+zgodność z~RODO, generowanie notatki SOAP oraz sugestia leków
+refundowanych.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Porównanie projektowanego systemu \emph{MedVoicePL}
+           z~wiodącymi rozwiązaniami komercyjnymi z~obszaru
+           \emph{ambient clinical intelligence}.}
+  \label{tab:porownanie-rozwiazan}
+  \small
+  \begin{tabular}{@{}lcccc@{}}
+    \toprule
+    Cecha & DAX & Abridge & Suki & \textbf{MedVoicePL} \\
+    \midrule
+    Wsparcie języka polskiego        & --- & --- & --- & \checkmark \\
+    Integracja z~wykazem NFZ         & --- & --- & --- & \checkmark \\
+    Wdrożenie on-premise             & --- & --- & --- & \checkmark \\
+    Otwarty kod źródłowy             & --- & --- & --- & \checkmark \\
+    Zgodność z~art.~25~RODO          & cz.  & cz.  & cz.  & \checkmark \\
+    Generowanie notatki SOAP         & \checkmark & \checkmark & \checkmark & \checkmark \\
+    Sugestia leków refundowanych     & --- & --- & --- & \checkmark \\
+    \bottomrule
+  \end{tabular}
+
+  \vspace{2pt}
+  \footnotesize \emph{Legenda:} \checkmark{} --- pełne wsparcie;
+  \emph{cz.} --- wsparcie częściowe lub uzależnione od~konfiguracji
+  klienta; --- brak wsparcia. Stan na~podstawie publicznie dostępnej
+  dokumentacji w~maju~2026~r.
+  % [POTRZEBNE ŹRÓDŁO: aktualne karty produktowe Abridge i Suki AI
+  %  do uzupełnienia pełnej dokumentacji porównania]
+\end{table}
+
+Reasumując, niniejsza praca podejmuje próbę wypełnienia
+zidentyfikowanej luki przez zaprojektowanie, implementację oraz
+ewaluację systemu, który łączy zaawansowane modele rozpoznawania
+mowy i~języka naturalnego z~architekturą respektującą wymogi prawa
+ochrony danych w~Unii Europejskiej oraz ze~specyfiką polskiego
+systemu refundacji leków. Szczegółowe wymagania funkcjonalne
+i~niefunkcjonalne, formalizujące powyższe założenia, zostały
+przedstawione w~kolejnym rozdziale.

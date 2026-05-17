@@ -73,15 +73,48 @@ MDC_DOWNLOAD_ENDPOINT = (
 REFERENCE_DIR_DEFAULT = Path("dataset_pipeline/reference_voices")
 ARCHIVE_CACHE_DEFAULT = Path("~/.cache/medvoicepl/cv-corpus-25.0-pl.tar.gz")
 
-PROFILES: list[tuple[str, str, str]] = [
-    # (profile name, gender column value, target file)
-    ("doctor_male", "male_masculine", "doctor_male_01.wav"),
-    ("doctor_female", "female_feminine", "doctor_female_01.wav"),
-    ("patient_male", "male_masculine", "patient_male_01.wav"),
-    ("patient_female", "female_feminine", "patient_female_01.wav"),
+# Phase 4: 12 age-stratified profiles. Each tuple is
+# (profile_name, gender_value, target_file, age_cascade), where the cascade
+# is a tuple of age-sets tried in order. The first set is the target bucket;
+# subsequent ones are degradation fallbacks for cases where Common Voice PL
+# has too few speakers in the target bucket (notably female seniors and any
+# teen voices).
+#
+# Note: Mozilla Common Voice uses "fourties" (sic) — keep both spellings.
+AGES_YOUNG = frozenset({"twenties", "thirties"})
+AGES_MIDDLE = frozenset({"fourties", "forties", "fifties"})
+AGES_SENIOR = frozenset({"sixties", "seventies", "eighties", "nineties"})
+AGES_CHILD = frozenset({"teens"})
+
+# Fallback cascades — primary bucket first, then closest neighbour. Empty
+# tuple = exhausted, give up. Senior falls back to middle (we'd rather have
+# any voice than crash); child falls back to young (teens are scarce in CV-PL).
+SENIOR_CASCADE = (AGES_SENIOR, AGES_MIDDLE)
+YOUNG_CASCADE = (AGES_YOUNG, AGES_MIDDLE)
+MIDDLE_CASCADE = (AGES_MIDDLE, AGES_YOUNG)
+CHILD_CASCADE = (AGES_CHILD, AGES_YOUNG)
+
+PROFILES: list[tuple[str, str, str, tuple[frozenset[str], ...]]] = [
+    # --- Doctor profiles (4) — young + senior, both sexes -----------------
+    ("doctor_male_young", "male_masculine", "doctor_male_young_01.wav", YOUNG_CASCADE),
+    ("doctor_male_senior", "male_masculine", "doctor_male_senior_01.wav", SENIOR_CASCADE),
+    ("doctor_female_young", "female_feminine", "doctor_female_young_01.wav", YOUNG_CASCADE),
+    ("doctor_female_senior", "female_feminine", "doctor_female_senior_01.wav", SENIOR_CASCADE),
+    # --- Patient adult profiles (6) — young + middle + senior -------------
+    ("patient_male_young", "male_masculine", "patient_male_young_01.wav", YOUNG_CASCADE),
+    ("patient_male_middle", "male_masculine", "patient_male_middle_01.wav", MIDDLE_CASCADE),
+    ("patient_male_senior", "male_masculine", "patient_male_senior_01.wav", SENIOR_CASCADE),
+    ("patient_female_young", "female_feminine", "patient_female_young_01.wav", YOUNG_CASCADE),
+    ("patient_female_middle", "female_feminine", "patient_female_middle_01.wav", MIDDLE_CASCADE),
+    ("patient_female_senior", "female_feminine", "patient_female_senior_01.wav", SENIOR_CASCADE),
+    # --- Patient child profiles (2) — teens bucket with fallback ----------
+    ("patient_child_male", "male_masculine", "patient_child_male_01.wav", CHILD_CASCADE),
+    ("patient_child_female", "female_feminine", "patient_child_female_01.wav", CHILD_CASCADE),
 ]
 
-ACCEPTABLE_AGES = {"thirties", "forties", "fourties", "fifties"}
+# Legacy global — kept for backward-compat callers; unused in the main loop
+# now that age filtering is per-profile.
+ACCEPTABLE_AGES = AGES_YOUNG | AGES_MIDDLE
 
 # Sentence-length window used as a proxy for clip duration. Common Voice
 # `validated.tsv` doesn't carry durations (those live in a separate
@@ -114,11 +147,14 @@ class ChosenClip:
 
 def _print_manual_spec() -> None:
     console.print(
-        "\n[yellow]Provide reference voices manually:[/yellow] drop 4 WAV files "
-        "into [bold]dataset_pipeline/reference_voices/[/bold]:"
+        f"\n[yellow]Provide reference voices manually:[/yellow] drop "
+        f"{len(PROFILES)} WAV files into "
+        "[bold]dataset_pipeline/reference_voices/[/bold]:"
     )
-    for profile, _gender, filename in PROFILES:
-        console.print(f"  - [cyan]{filename}[/cyan]   ({profile})")
+    for profile, _gender, filename, cascade in PROFILES:
+        primary_ages = cascade[0]
+        ages_str = "/".join(sorted(primary_ages))
+        console.print(f"  - [cyan]{filename}[/cyan]   ({profile}, ages: {ages_str})")
     console.print(
         "Specs: mono WAV, 22050 Hz (or close), 10-20 s, clean single speaker, "
         "no music/background, speaking Polish."
@@ -236,15 +272,18 @@ def _filter_rows(
     rows: Iterable[dict[str, str]],
     *,
     gender: str,
+    acceptable_ages: frozenset[str] | set[str] | None = None,
     min_chars: int = MIN_SENTENCE_CHARS,
     max_chars: int = MAX_SENTENCE_CHARS,
 ) -> list[dict[str, str]]:
+    if acceptable_ages is None:
+        acceptable_ages = ACCEPTABLE_AGES  # legacy fallback
     filtered = []
     for row in rows:
         row_gender = (row.get("gender") or "").strip().lower()
         if row_gender != gender:
             continue
-        if row.get("age") and row["age"] not in ACCEPTABLE_AGES:
+        if row.get("age") and row["age"] not in acceptable_ages:
             continue
         if not row.get("path"):
             continue
@@ -364,7 +403,11 @@ def fetch(
     ),
     verbose: bool = typer.Option(False, "--verbose", "-v"),
 ) -> None:
-    """Fetch 4 reference clips from Common Voice PL (or print manual spec)."""
+    """Fetch reference clips from Common Voice PL (or print manual spec).
+
+    Phase 4: 12 age-stratified profiles by default. Already-present files are
+    skipped (idempotent).
+    """
     logging.basicConfig(
         level=logging.DEBUG if verbose else logging.INFO,
         format="%(asctime)s %(levelname)s %(name)s: %(message)s",
@@ -377,15 +420,22 @@ def fetch(
 
     # Skip profiles already on disk (idempotent).
     pending = [
-        (profile, gender, filename)
-        for profile, gender, filename in PROFILES
+        (profile, gender, filename, cascade)
+        for profile, gender, filename, cascade in PROFILES
         if not (reference_dir / filename).exists()
     ]
+    total_profiles = len(PROFILES)
+    already_present = total_profiles - len(pending)
     if not pending:
         console.print(
-            "[green]All 4 reference voices already present. Nothing to do.[/green]"
+            f"[green]All {total_profiles} reference voices already present. "
+            "Nothing to do.[/green]"
         )
         raise typer.Exit(code=0)
+    console.print(
+        f"[cyan]Fetching {len(pending)} / {total_profiles} reference voices "
+        f"({already_present} already on disk).[/cyan]"
+    )
 
     # ------------------------------------------------------------------
     # Step 1: Obtain or locate the archive (cached across runs)
@@ -437,45 +487,80 @@ def fetch(
     selections: list[tuple[str, str, str, dict[str, str]]] = []
     clip_names_needed: set[str] = set()
 
-    for profile, gender, filename in pending:
-        plain_gender = gender.split("_")[0]
-        # Try progressively looser filters: full gender + target window, then
-        # plain gender + target window, then both with a relaxed lower bound.
-        # We never drop the upper bound — overly long refs (>25 s) stress the
-        # speaker encoder for little gain.
-        candidates: list[dict[str, str]] = []
-        for g in (gender, plain_gender):
-            for lo in (MIN_SENTENCE_CHARS, 90, 60):
-                candidates = _filter_rows(
-                    rows, gender=g, min_chars=lo, max_chars=MAX_SENTENCE_CHARS
-                )
+    # Phase 4: explicit overall progress bar across the (up to) 12 profiles —
+    # useful when fetching a fresh dataset where each profile has its own
+    # age-filtered candidate pool.
+    with Progress(
+        SpinnerColumn(),
+        TextColumn("[progress.description]{task.description}"),
+        BarColumn(),
+        TextColumn("[bold]{task.completed}/{task.total}[/bold]"),
+        console=console,
+    ) as overall:
+        select_task = overall.add_task(
+            "Selecting candidates…", total=len(pending)
+        )
+        for profile, gender, filename, cascade in pending:
+            overall.update(
+                select_task, description=f"Selecting [cyan]{profile}[/cyan]"
+            )
+            plain_gender = gender.split("_")[0]
+            # Phase 4 cascade: try primary age bucket first, then fall back
+            # to adjacent buckets (e.g. senior→middle when CV-PL has too few
+            # female seniors). Within each bucket we still apply the
+            # length-relaxation ladder MIN→90→60→40.
+            candidates: list[dict[str, str]] = []
+            for ages_tier_idx, acceptable_ages in enumerate(cascade):
+                for g in (gender, plain_gender):
+                    for lo in (MIN_SENTENCE_CHARS, 90, 60, 40):
+                        candidates = _filter_rows(
+                            rows,
+                            gender=g,
+                            acceptable_ages=acceptable_ages,
+                            min_chars=lo,
+                            max_chars=MAX_SENTENCE_CHARS,
+                        )
+                        if candidates:
+                            if lo < MIN_SENTENCE_CHARS:
+                                log.info(
+                                    "relaxed min sentence length to %d chars for %s",
+                                    lo,
+                                    profile,
+                                )
+                            break
+                    if candidates:
+                        break
                 if candidates:
-                    if lo < MIN_SENTENCE_CHARS:
-                        log.info(
-                            "relaxed min sentence length to %d chars for %s",
-                            lo,
-                            profile,
+                    if ages_tier_idx > 0:
+                        primary_str = "/".join(sorted(cascade[0]))
+                        used_str = "/".join(sorted(acceptable_ages))
+                        console.print(
+                            f"[yellow]WARN {profile}: target ages {primary_str} "
+                            f"exhausted, falling back to {used_str}[/yellow]"
                         )
                     break
-            if candidates:
-                break
-        if not candidates:
-            console.print(
-                f"[red]No candidates for {profile} (gender={gender})[/red]"
+            if not candidates:
+                cascade_str = " → ".join(
+                    "/".join(sorted(a)) for a in cascade
+                )
+                console.print(
+                    f"[red]No candidates for {profile} "
+                    f"(gender={gender}, cascade={cascade_str})[/red]"
+                )
+                _print_manual_spec()
+                raise typer.Exit(code=1)
+            pick = candidates[0]
+            _used_client_ids.add(pick.get("client_id", ""))
+            clip_name = pick["path"]
+            clip_names_needed.add(clip_name)
+            selections.append((profile, filename, clip_name, pick))
+            log.info(
+                "selected clip %s for %s (client_id=%s)",
+                clip_name,
+                profile,
+                pick.get("client_id", "")[:16],
             )
-            _print_manual_spec()
-            raise typer.Exit(code=1)
-        pick = candidates[0]
-        _used_client_ids.add(pick.get("client_id", ""))
-        clip_name = pick["path"]
-        clip_names_needed.add(clip_name)
-        selections.append((profile, filename, clip_name, pick))
-        log.info(
-            "selected clip %s for %s (client_id=%s)",
-            clip_name,
-            profile,
-            pick.get("client_id", "")[:16],
-        )
+            overall.advance(select_task)
 
     # ------------------------------------------------------------------
     # Step 4: Extract only the needed MP3 clips from the archive
@@ -505,11 +590,18 @@ def fetch(
         with Progress(
             SpinnerColumn(),
             TextColumn("[progress.description]{task.description}"),
+            BarColumn(),
+            TextColumn("[bold]{task.completed}/{task.total}[/bold]"),
             console=console,
-            transient=True,
         ) as progress:
+            convert_task = progress.add_task(
+                "Converting clips…", total=len(selections)
+            )
             for profile, filename, clip_name, row in selections:
-                task = progress.add_task(f"Converting {profile}…", total=None)
+                progress.update(
+                    convert_task,
+                    description=f"Converting [cyan]{profile}[/cyan]",
+                )
                 mp3_path = extracted[clip_name]
                 wav_target = reference_dir / filename
                 _convert_mp3_to_wav(mp3_path, wav_target)
@@ -527,7 +619,7 @@ def fetch(
                         ),
                     )
                 )
-                progress.update(task, completed=1)
+                progress.advance(convert_task)
 
     # ------------------------------------------------------------------
     # Step 6: Write README

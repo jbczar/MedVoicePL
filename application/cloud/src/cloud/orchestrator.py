@@ -17,6 +17,7 @@ the graph without touching Vertex/Qdrant.
 from __future__ import annotations
 
 import logging
+import os
 import re
 import time
 from dataclasses import dataclass, field
@@ -78,6 +79,10 @@ class AgentState(TypedDict, total=False):
     notes: list[str]
     suggestion: AgentSuggestion
     started_at: float
+    # Set by `_propose_candidates_node` when SOAP diagnosis has a
+    # preliminary marker. Read by `_compose_suggestions_node` to prefix
+    # every rationale with a conditional-suggestion caveat.
+    preliminary: bool
     # Deps injected via state — LangGraph nodes read them per-call.
     llm: LLMClient
     nfz: NFZIndex
@@ -91,19 +96,50 @@ class AgentState(TypedDict, total=False):
 # ---------------------------------------------------------------------------
 
 
+def _empty_output_rule_enabled() -> bool:
+    """Check `AGENT_EMPTY_OUTPUT_RULE` env flag (default False for demo).
+
+    Set to ``true`` for production-safe behavior — withholds suggestions
+    on preliminary diagnoses with empty SOAP plan. Default ``false`` is
+    the **demo mode**: always call Vertex Gemini, even for preliminary
+    diagnoses; the prompt instructs the LLM to surface conditional
+    suggestions with explicit caveats (see SYSTEM_PROMPT_PL rule 3).
+
+    Trade-off documented in CLAUDE.md Phase 3a DD-2.5 + Phase 4 prep:
+    relaxing the rule maximizes demo / thesis-defense value (every
+    visit produces drug + NFZ refund tier badges) at the cost of
+    clinical-conservatism. Caveat text in `rationale` keeps the
+    deployment-time safety story intact.
+    """
+    return os.environ.get("AGENT_EMPTY_OUTPUT_RULE", "false").lower() == "true"
+
+
 def _propose_candidates_node(state: AgentState) -> dict[str, Any]:
     soap: AnonymizedSOAPNote = state["soap"]
     notes: list[str] = list(state.get("notes", []))
+    preliminary = _is_preliminary(soap)
 
-    if _is_preliminary(soap):
-        log.info("preliminary diagnosis detected — skipping LLM, returning empty drugs")
+    if preliminary and _empty_output_rule_enabled():
+        log.info(
+            "preliminary diagnosis + AGENT_EMPTY_OUTPUT_RULE=true — skipping LLM"
+        )
         notes.append(
             "Diagnoza wstępna — wymaga potwierdzenia przed farmakoterapią."
         )
-        return {"candidates": [], "notes": notes}
+        return {"candidates": [], "notes": notes, "preliminary": True}
+
+    if preliminary:
+        # Demo mode: continue to LLM but flag in state so the prompt /
+        # downstream nodes can mark suggestions as conditional.
+        log.info(
+            "preliminary diagnosis detected — calling Vertex for conditional suggestions"
+        )
+        notes.append(
+            "⚠️ Sugestie warunkowe — wymagają potwierdzenia diagnozy badaniami."
+        )
 
     llm: LLMClient = state["llm"]
-    prompt = render_candidates_prompt(soap)
+    prompt = render_candidates_prompt(soap, preliminary=preliminary)
 
     try:
         result = llm.generate(
@@ -134,7 +170,11 @@ def _propose_candidates_node(state: AgentState) -> dict[str, Any]:
             return {"candidates": [], "notes": notes}
 
     notes.extend(result.notes)
-    return {"candidates": list(result.candidates), "notes": notes}
+    return {
+        "candidates": list(result.candidates),
+        "notes": notes,
+        "preliminary": preliminary,
+    }
 
 
 def _is_preliminary(soap: AnonymizedSOAPNote) -> bool:
@@ -212,6 +252,9 @@ def _enrich_from_nfz_node(state: AgentState) -> dict[str, Any]:
 # ---------------------------------------------------------------------------
 
 
+_CONDITIONAL_CAVEAT = "⚠️ Sugestia warunkowa — wymaga potwierdzenia diagnozy badaniami. "
+
+
 def _compose_suggestions_node(state: AgentState) -> dict[str, Any]:
     soap: AnonymizedSOAPNote = state["soap"]
     enriched: list[EnrichedCandidate] = state.get("enriched", [])
@@ -220,6 +263,7 @@ def _compose_suggestions_node(state: AgentState) -> dict[str, Any]:
     started_at: float = state.get("started_at", time.time())
     agent_version: str = state["agent_version"]
     llm: LLMClient = state["llm"]
+    preliminary: bool = bool(state.get("preliminary", False))
 
     drug_suggestions: list[DrugSuggestion] = []
     for enr in enriched:
@@ -234,6 +278,8 @@ def _compose_suggestions_node(state: AgentState) -> dict[str, Any]:
         rationale = cand.rationale
         if excerpts:
             rationale = _augment_rationale(rationale, excerpts[0])
+        if preliminary and not rationale.startswith("⚠️"):
+            rationale = _CONDITIONAL_CAVEAT + rationale
 
         drug_suggestions.append(
             DrugSuggestion(

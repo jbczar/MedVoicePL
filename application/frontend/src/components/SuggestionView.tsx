@@ -21,8 +21,35 @@ interface Props {
 export function SuggestionView({ suggestion, unmappedTokenCount }: Props) {
   const [highlightPaths, setHighlightPaths] = useState<string[]>([]);
 
+  // Conditional-suggestion mode (Hybrid A+B): when the cloud agent
+  // ran on a preliminary diagnosis, each rationale is prefixed with
+  // "⚠️ Sugestia warunkowa …". Render a banner so the doctor knows
+  // the suggestions assume diagnosis confirmation.
+  const isConditional = suggestion.drugs.some((d) =>
+    d.rationale.startsWith("⚠️"),
+  );
+
   return (
     <div className="space-y-6">
+      {isConditional && (
+        <div
+          role="status"
+          className="rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900"
+        >
+          <div className="flex items-start gap-2">
+            <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
+            <div>
+              <div className="font-medium">Wizyta diagnostyczna — sugestie warunkowe</div>
+              <p className="mt-1 text-xs leading-relaxed">
+                Diagnoza w SOAP nie jest jeszcze potwierdzona. Poniższe propozycje
+                farmakoterapii zakładają konkretną diagnozę. <strong>Wymagają weryfikacji</strong>
+                {" "}po wynikach zleconych badań.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       <SectionHeader
         icon={<Pill className="h-4 w-4" />}
         title="Sugerowane leki"

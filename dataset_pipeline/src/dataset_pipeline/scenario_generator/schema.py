@@ -22,6 +22,10 @@ class Specialization(StrEnum):
     medycyna_rodzinna = "medycyna_rodzinna"
     endokrynologia = "endokrynologia"
     neurologia = "neurologia"
+    # Phase 4 — added for benchmark expansion (40 scenarios target)
+    gastrologia = "gastrologia"
+    ginekologia = "ginekologia"
+    pediatria = "pediatria"
 
 
 class SpeakerRole(StrEnum):
@@ -29,10 +33,18 @@ class SpeakerRole(StrEnum):
     patient = "patient"
 
 
+# Phase 4: bumped MAX_TURNS 20 → 50 (5-min dialogs target ~30-40 turns).
+# MIN_AGE lowered 18 → 0 for pediatric scenarios (0-17 patient_age).
 MIN_TURNS = 6
-MAX_TURNS = 20
-MIN_AGE = 18
+MAX_TURNS = 50
+MIN_AGE = 0
 MAX_AGE = 95
+
+# Phase 4: target dialog duration in seconds. Used by scenario generator
+# prompt to instruct LLM on conversation length (~30-40 turns ≈ 5 min).
+DEFAULT_TARGET_DURATION_S = 300
+MIN_TARGET_DURATION_S = 60
+MAX_TARGET_DURATION_S = 600
 
 
 class DialogueTurn(BaseModel):
@@ -55,6 +67,11 @@ class ScenarioModel(BaseModel):
     expected_diagnosis: str = Field(min_length=3)
     icd10_code: str | None = Field(default=None)
     turns: list[DialogueTurn] = Field(min_length=MIN_TURNS, max_length=MAX_TURNS)
+    target_duration_seconds: int = Field(
+        default=DEFAULT_TARGET_DURATION_S,
+        ge=MIN_TARGET_DURATION_S,
+        le=MAX_TARGET_DURATION_S,
+    )
     generated_at: datetime = Field(default_factory=lambda: datetime.now().astimezone())
     model: str
     seed: int | None = None
