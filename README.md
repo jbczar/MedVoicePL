@@ -84,7 +84,6 @@ make eval              # Benchmarki ewaluacyjne
 ## Dokumentacja
 
 - [GUIDEBOOK.md](GUIDEBOOK.md) — przewodnik operacyjny (architektura, demo/live, codzienne workflowy, troubleshooting)
-- [CLAUDE.md](CLAUDE.md) — decyzje projektowe i pełna historia zmian per faza
 - [docs/phase4_report.md](docs/phase4_report.md) — raport końcowy z benchmarków
 - [docs/trust_boundary.md](docs/trust_boundary.md) — kontrakt granicy zaufania on-prem ↔ cloud
 

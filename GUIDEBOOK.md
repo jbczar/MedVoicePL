@@ -674,8 +674,6 @@ MedVoicePL/
 │   ├── evaluation/{stt_eval,slm_eval,rag_eval}/
 │   └── scripts/eval_*.py
 │
-├── .claude/plans/             # Plan files (per phase)
-├── CLAUDE.md                  # Pełna historia decyzji + zmian (~1000 linii)
 ├── GUIDEBOOK.md               # Ten plik
 ├── Makefile                   # ~30 targetów: install, test, gateway-up, demo-up, ...
 ├── pyproject.toml             # uv workspace root + lint config
@@ -749,15 +747,10 @@ MedVoicePL/
 
 | Co | Gdzie |
 |---|---|
-| Pełna historia decyzji + changelog | [CLAUDE.md](CLAUDE.md) |
-| Plan Phase 3b (gateway) | [.claude/plans/phase-3b-gateway.md](.claude/plans/phase-3b-gateway.md) |
+| Raport końcowy benchmark (Phase 4) | [docs/phase4_report.md](docs/phase4_report.md) |
+| Trust boundary contract | [docs/trust_boundary.md](docs/trust_boundary.md) |
 | Schematy cross-tier (Pydantic) | [application/shared/src/shared/schemas/](application/shared/src/shared/schemas/) |
 | Frontend README (skeleton) | [application/frontend/README.md](application/frontend/README.md) |
-| Phase 1a/1b decyzje (dataset) | sekcja "Phase 1a — decyzje projektowe" w CLAUDE.md |
-| Phase 2a-c (on-prem) | sekcje "Phase 2a/2b/2c — decyzje projektowe" w CLAUDE.md |
-| Phase 3a (cloud) | sekcja "Phase 3a — decyzje projektowe" w CLAUDE.md |
-| Phase 3b (gateway) | sekcja "Phase 3b — decyzje projektowe" w CLAUDE.md |
-| Phase 3c (frontend) | sekcja "Phase 3c — decyzje projektowe" w CLAUDE.md |
 | Trust boundary lint | [application/on_premise/tests/test_trust_boundary_imports.py](application/on_premise/tests/test_trust_boundary_imports.py) |
 
 

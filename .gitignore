@@ -146,10 +146,13 @@ htmlcov/
 logs/
 
 # ------------------------------------------
-# Claude Code workspace
+# Claude Code workspace (worktrees + per-project context)
 # ------------------------------------------
 .claude/
+CLAUDE.md
 
-
+# ------------------------------------------
+# Master's thesis — kept local, NOT a part of the open-source repo.
+# ------------------------------------------
 Praca_magisterska/
 
