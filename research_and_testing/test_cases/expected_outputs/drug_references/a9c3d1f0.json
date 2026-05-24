@@ -1,0 +1,33 @@
+{
+  "scenario_id": "a9c3d1f0",
+  "diagnosis_label": "Ospa wietrzna",
+  "diagnostic_only": false,
+  "expected_empty_drug_list": false,
+  "expected_slots": [
+    {
+      "label": "Lek przeciwgorączkowy",
+      "acceptable": [
+        "N02BE01"
+      ]
+    },
+    {
+      "label": "Lek przeciwhistaminowy (doustny)",
+      "acceptable": [
+        "R06AB03",
+        "R06AE07",
+        "R06AE09",
+        "R06AX13",
+        "R06AX27"
+      ]
+    },
+    {
+      "label": "Preparat odkażający do stosowania na skórę",
+      "acceptable": [
+        "D08AJ57",
+        "D08AX06"
+      ]
+    }
+  ],
+  "expected_referrals": [],
+  "expected_tests": []
+}

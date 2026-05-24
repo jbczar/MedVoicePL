@@ -1,0 +1,22 @@
+{
+  "scenario_id": "a9e8f7c6",
+  "diagnosis_label": "Przewlekłe zmęczenie i ból głowy - diagnostyka różnicowa",
+  "diagnostic_only": true,
+  "expected_empty_drug_list": true,
+  "expected_slots": [],
+  "expected_referrals": [],
+  "expected_tests": [
+    "Morfologia krwi obwodowej",
+    "Ferrytyna",
+    "Żelazo",
+    "Witamina B12",
+    "Kwas foliowy",
+    "TSH",
+    "FT4",
+    "ALT",
+    "AST",
+    "GGTP",
+    "Kreatynina",
+    "Glukoza"
+  ]
+}

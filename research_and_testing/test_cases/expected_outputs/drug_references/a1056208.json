@@ -1,0 +1,14 @@
+{
+  "scenario_id": "a1056208",
+  "diagnosis_label": "Podejrzenie gruczolaka przysadki (prolactinoma)",
+  "diagnostic_only": true,
+  "expected_empty_drug_list": true,
+  "expected_slots": [],
+  "expected_referrals": [],
+  "expected_tests": [
+    "Kreatynina",
+    "Prolaktyna",
+    "Rezonans magnetyczny (MRI) przysadki z kontrastem",
+    "TSH"
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "scenario_id": "pulmo-co",
+  "diagnosis_label": "Przewlekła obturacyjna choroba płuc (POChP)",
+  "diagnostic_only": false,
+  "expected_empty_drug_list": false,
+  "expected_slots": [
+    {
+      "label": "Długo działający lek antycholinergiczny (LAMA) w leczeniu podtrzymującym POChP",
+      "acceptable": [
+        "R03BB04",
+        "R03BB06",
+        "R03BB07"
+      ]
+    },
+    {
+      "label": "Długo działający beta-agonista (LABA) w leczeniu podtrzymującym POChP",
+      "acceptable": [
+        "R03AC12",
+        "R03AC13",
+        "R03AC18",
+        "R03AC19"
+      ]
+    },
+    {
+      "label": "Krótko działający beta-agonista (SABA) do stosowania doraźnego",
+      "acceptable": [
+        "R03AC02",
+        "R03AC04"
+      ]
+    }
+  ],
+  "expected_referrals": [
+    "poradnia antynikotynowa"
+  ],
+  "expected_tests": [
+    "spirometria"
+  ]
+}

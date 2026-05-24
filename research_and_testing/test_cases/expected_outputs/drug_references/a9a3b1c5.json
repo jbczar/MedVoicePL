@@ -1,0 +1,33 @@
+{
+  "scenario_id": "a9a3b1c5",
+  "diagnosis_label": "Zespół jelita drażliwego (postać biegunkowa) z diagnostyką różnicową w kierunku celiakii i IBD",
+  "diagnostic_only": false,
+  "expected_empty_drug_list": false,
+  "expected_slots": [
+    {
+      "label": "Lek rozkurczowy",
+      "acceptable": [
+        "A03AA04",
+        "A03AA05",
+        "A03AD02",
+        "A03BB01"
+      ]
+    },
+    {
+      "label": "Probiotyk o udokumentowanej skuteczności w IBS",
+      "acceptable": [
+        "A07FA01",
+        "A07FA02"
+      ]
+    }
+  ],
+  "expected_referrals": [],
+  "expected_tests": [
+    "Morfologia krwi obwodowej",
+    "Białko C-reaktywne (CRP)",
+    "Tyreotropina (TSH)",
+    "Przeciwciała w kierunku celiakii (IgA tTG)",
+    "Badanie ogólne kału",
+    "Kalprotektyna w kale"
+  ]
+}

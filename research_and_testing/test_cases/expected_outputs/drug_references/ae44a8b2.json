@@ -1,0 +1,15 @@
+{
+  "scenario_id": "ae44a8b2",
+  "diagnosis_label": "Podejrzenie raka endometrium z powodu krwawienia pomenopauzalnego",
+  "diagnostic_only": true,
+  "expected_empty_drug_list": true,
+  "expected_slots": [],
+  "expected_referrals": [
+    "szpital - oddział ginekologii"
+  ],
+  "expected_tests": [
+    "histeroskopia z biopsją endometrium",
+    "badanie histopatologiczne",
+    "cytologia"
+  ]
+}

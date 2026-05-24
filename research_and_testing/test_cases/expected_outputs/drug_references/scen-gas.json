@@ -1,0 +1,26 @@
+{
+  "scenario_id": "scen-gas",
+  "diagnosis_label": "Zespół jelita drażliwego (postać mieszana)",
+  "diagnostic_only": false,
+  "expected_empty_drug_list": false,
+  "expected_slots": [
+    {
+      "label": "Lek spazmolityczny",
+      "acceptable": [
+        "A03AA04",
+        "A03AA05",
+        "A03AD02",
+        "A03AX08",
+        "A03BB01"
+      ]
+    }
+  ],
+  "expected_referrals": [],
+  "expected_tests": [
+    "Morfologia krwi obwodowej",
+    "CRP",
+    "Przeciwciała przeciw transglutaminazie tkankowej (anty-tTG) w klasie IgA",
+    "Całkowite stężenie IgA",
+    "Kalprotektyna w kale"
+  ]
+}

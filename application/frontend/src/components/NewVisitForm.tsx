@@ -8,12 +8,17 @@ import * as api from "@/lib/api";
 import type { Specialization } from "@/lib/types";
 import { useVisitStore } from "@/lib/visitStore";
 
+// Alphabetical order for the dropdown; keep value strings in sync with
+// `application/shared/src/shared/schemas/anonymized.py::Specialization`.
 const SPECIALIZATIONS: { value: Specialization; label: string }[] = [
-  { value: "kardiologia", label: "Kardiologia" },
   { value: "endokrynologia", label: "Endokrynologia" },
-  { value: "pulmonologia", label: "Pulmonologia" },
+  { value: "gastrologia", label: "Gastrologia" },
+  { value: "ginekologia", label: "Ginekologia" },
+  { value: "kardiologia", label: "Kardiologia" },
+  { value: "medycyna_rodzinna", label: "Medycyna rodzinna" },
   { value: "neurologia", label: "Neurologia" },
-  { value: "urologia", label: "Urologia" },
+  { value: "pediatria", label: "Pediatria" },
+  { value: "pulmonologia", label: "Pulmonologia" },
 ];
 
 function todayISO(): string {

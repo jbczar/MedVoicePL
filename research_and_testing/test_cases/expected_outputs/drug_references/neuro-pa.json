@@ -1,0 +1,18 @@
+{
+  "scenario_id": "neuro-pa",
+  "diagnosis_label": "Choroba Parkinsona",
+  "diagnostic_only": false,
+  "expected_empty_drug_list": false,
+  "expected_slots": [
+    {
+      "label": "Lek dopaminergiczny (lewodopa z inhibitorem dekarboksylazy)",
+      "acceptable": [
+        "N04BA02"
+      ]
+    }
+  ],
+  "expected_referrals": [],
+  "expected_tests": [
+    "Rezonans magnetyczny głowy"
+  ]
+}

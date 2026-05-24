@@ -1,0 +1,16 @@
+{
+  "scenario_id": "180b7e4d",
+  "diagnosis_label": "Ostre podgłośniowe zapalenie krtani (krup)",
+  "diagnostic_only": false,
+  "expected_empty_drug_list": false,
+  "expected_slots": [
+    {
+      "label": "Glikokortykosteroid wziewny (nebulizacja)",
+      "acceptable": [
+        "R03BA02"
+      ]
+    }
+  ],
+  "expected_referrals": [],
+  "expected_tests": []
+}

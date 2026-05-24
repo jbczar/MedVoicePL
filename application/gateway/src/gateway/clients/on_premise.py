@@ -15,7 +15,7 @@ import json
 import logging
 from datetime import date
 from pathlib import Path
-from typing import Protocol
+from typing import Any, Protocol
 from uuid import UUID
 
 import httpx
@@ -39,6 +39,8 @@ class OnPremiseError(RuntimeError):
 
 class OnPremiseClient(Protocol):
     async def transcribe_audio(self, audio_path: Path) -> str: ...
+
+    async def get_transcript(self, transcript_id: str) -> dict[str, Any]: ...
 
     async def anonymize_visit(
         self,
@@ -106,6 +108,42 @@ class _HttpxOnPremiseClient:
                 ) from exc
         raise OnPremiseError(
             f"on-prem /v1/transcripts unreachable after {self._retries} attempts: {last_exc}"
+        )
+
+    async def get_transcript(self, transcript_id: str) -> dict[str, Any]:
+        """GET cached transcript JSON for the doctor's view.
+
+        Read-only — on-prem persisted it during `transcribe_audio`. The
+        gateway proxies this for the frontend's TranscriptViewer.
+        """
+        last_exc: Exception | None = None
+        for attempt in range(self._retries):
+            try:
+                resp = await self._client.get(f"/v1/transcripts/{transcript_id}")
+            except httpx.HTTPError as exc:
+                last_exc = exc
+                await asyncio.sleep(0.5 * (2**attempt))
+                continue
+            if resp.status_code == 404:
+                raise OnPremiseError(f"transcript {transcript_id} not found on-prem")
+            if 500 <= resp.status_code < 600:
+                last_exc = OnPremiseError(
+                    f"on-prem /v1/transcripts/{{id}} {resp.status_code}: {resp.text[:200]}"
+                )
+                await asyncio.sleep(0.5 * (2**attempt))
+                continue
+            if resp.status_code >= 400:
+                raise OnPremiseError(
+                    f"on-prem rejected GET transcript ({resp.status_code}): {resp.text[:200]}"
+                )
+            try:
+                return json.loads(resp.content)
+            except ValueError as exc:
+                raise OnPremiseError(
+                    f"on-prem /v1/transcripts/{{id}} unparsable: {exc}"
+                ) from exc
+        raise OnPremiseError(
+            f"on-prem GET transcript unreachable after {self._retries} attempts: {last_exc}"
         )
 
     async def anonymize_visit(
@@ -179,13 +217,16 @@ class _FakeOnPremiseClient:
         healthy: bool = True,
         raise_on: set[str] | None = None,
         canned_transcript_id: str | None = None,
+        canned_transcripts: dict[str, dict[str, Any]] | None = None,
     ) -> None:
         self.responses = responses or {}
         self.healthy = healthy
         self.raise_on = raise_on or set()
         self.canned_transcript_id = canned_transcript_id
+        self.canned_transcripts = canned_transcripts or {}
         self.calls: list[dict] = []
         self.transcribe_calls: list[Path] = []
+        self.get_transcript_calls: list[str] = []
 
     async def transcribe_audio(self, audio_path: Path) -> str:
         self.transcribe_calls.append(audio_path)
@@ -195,6 +236,20 @@ class _FakeOnPremiseClient:
         import hashlib
 
         return hashlib.sha256(audio_path.read_bytes()).hexdigest()[:8]
+
+    async def get_transcript(self, transcript_id: str) -> dict[str, Any]:
+        self.get_transcript_calls.append(transcript_id)
+        if transcript_id in self.canned_transcripts:
+            return self.canned_transcripts[transcript_id]
+        # Minimal canned shape — matches `Transcript` schema enough for UI.
+        return {
+            "scenario_id": transcript_id,
+            "audio_path": f"<fake>/{transcript_id}.wav",
+            "audio_sha256": "0" * 64,
+            "duration_s": 0.0,
+            "segments": [],
+            "metadata": {"engine": "fake", "model": "fake"},
+        }
 
     async def anonymize_visit(
         self,

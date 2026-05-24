@@ -94,17 +94,17 @@ def reveal_text(text: str, token_map: dict[str, str]) -> tuple[str, int]:
     return _TOKEN_RE.sub(_sub, text), unmapped
 
 
-def reveal_for_doctor(
-    suggestion: AgentSuggestion,
+def reveal_dict(
+    data: object,
     *,
     token_map: dict[str, str],
-) -> tuple[AgentSuggestion, int]:
-    """Walk an `AgentSuggestion`, replace placeholders, return new instance.
+) -> tuple[object, int]:
+    """Generic tree-walk reveal — operates on plain dict/list/str.
 
-    Returns the revealed suggestion and the total count of unmapped
-    placeholders (zero is the happy path; non-zero is logged at WARN).
+    Used by SOAP and transcript endpoints which don't have a Pydantic
+    type to validate against on the gateway side (they pass through
+    as-is to the frontend).
     """
-    dumped = suggestion.model_dump(mode="json")
     total_unmapped = 0
 
     def _walk(node: object) -> object:
@@ -119,7 +119,21 @@ def reveal_for_doctor(
             return {key: _walk(value) for key, value in node.items()}
         return node
 
-    revealed_dump = _walk(dumped)
+    return _walk(data), total_unmapped
+
+
+def reveal_for_doctor(
+    suggestion: AgentSuggestion,
+    *,
+    token_map: dict[str, str],
+) -> tuple[AgentSuggestion, int]:
+    """Walk an `AgentSuggestion`, replace placeholders, return new instance.
+
+    Returns the revealed suggestion and the total count of unmapped
+    placeholders (zero is the happy path; non-zero is logged at WARN).
+    """
+    dumped = suggestion.model_dump(mode="json")
+    revealed_dump, total_unmapped = reveal_dict(dumped, token_map=token_map)
     revealed = AgentSuggestion.model_validate(revealed_dump)
     if total_unmapped:
         log.warning("reverse_map: %d unmapped placeholders remained", total_unmapped)
@@ -129,6 +143,7 @@ def reveal_for_doctor(
 __all__ = [
     "TokenMapNotFoundError",
     "load_token_map",
+    "reveal_dict",
     "reveal_for_doctor",
     "reveal_text",
 ]

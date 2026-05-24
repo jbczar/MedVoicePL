@@ -386,6 +386,28 @@ def create_app() -> FastAPI:
             tmp_audio.unlink(missing_ok=True)
             await file.close()
 
+    @app.get("/v1/transcripts/{transcript_id}", response_model=Transcript)
+    async def get_transcript(transcript_id: str) -> Transcript:
+        """Return the cached un-anonymized transcript for a given id.
+
+        Read-only — the file was persisted by `POST /v1/transcripts`.
+        Gateway uses this for the doctor's view (reverse-mapped to original
+        names downstream). On-prem only — never reaches the cloud zone.
+        """
+        path = _transcripts_root() / transcript_id / "transcript.json"
+        if not path.is_file():
+            raise HTTPException(
+                status_code=404,
+                detail=f"transcript {transcript_id} not found",
+            )
+        try:
+            return Transcript.model_validate_json(path.read_text(encoding="utf-8"))
+        except ValueError as exc:
+            raise HTTPException(
+                status_code=500,
+                detail=f"corrupt transcript file: {exc}",
+            ) from exc
+
     @app.post(
         "/v1/visits/{transcript_id}/anonymized-soap",
         response_model=AnonymizedSOAPNote,

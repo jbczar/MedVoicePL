@@ -16,7 +16,9 @@ import type {
   DoctorIdentity,
   FinalizeResponse,
   HealthResponse,
+  SOAPNote,
   Specialization,
+  Transcript,
   VisitSummary,
 } from "./types";
 
@@ -116,6 +118,14 @@ export async function finalizeVisit(visitId: string): Promise<FinalizeResponse> 
   });
 }
 
+export async function getVisitSoap(visitId: string): Promise<SOAPNote> {
+  return request<SOAPNote>(`/v1/visits/${visitId}/soap`);
+}
+
+export async function getVisitTranscript(visitId: string): Promise<Transcript> {
+  return request<Transcript>(`/v1/visits/${visitId}/transcript`);
+}
+
 // --- Health ---
 
 export async function health(): Promise<HealthResponse> {
@@ -130,6 +140,8 @@ export type {
   DoctorIdentity,
   FinalizeResponse,
   HealthResponse,
+  SOAPNote,
   Specialization,
+  Transcript,
   VisitSummary,
 };

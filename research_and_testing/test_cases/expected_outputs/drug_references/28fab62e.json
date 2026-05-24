@@ -1,0 +1,13 @@
+{
+  "scenario_id": "28fab62e",
+  "diagnosis_label": "Podejrzenie zespołu Cushinga",
+  "diagnostic_only": true,
+  "expected_empty_drug_list": true,
+  "expected_slots": [],
+  "expected_referrals": [],
+  "expected_tests": [
+    "Dobowa zbiórka moczu na wolny kortyzol",
+    "Test hamowania 1 mg deksametazonu",
+    "Stężenie kortyzolu w ślinie o północy"
+  ]
+}

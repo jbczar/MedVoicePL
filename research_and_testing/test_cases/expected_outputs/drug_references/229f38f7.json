@@ -1,0 +1,32 @@
+{
+  "scenario_id": "229f38f7",
+  "diagnosis_label": "Zespół jelita drażliwego (IBS)",
+  "diagnostic_only": false,
+  "expected_empty_drug_list": false,
+  "expected_slots": [
+    {
+      "label": "Lek rozkurczowy (spasmolityk)",
+      "acceptable": [
+        "A03AA04",
+        "A03AA05",
+        "A03AD02",
+        "A03AX03"
+      ]
+    },
+    {
+      "label": "Probiotyk o udowodnionym działaniu w IBS",
+      "acceptable": [
+        "A07FA01",
+        "A07FA02"
+      ]
+    }
+  ],
+  "expected_referrals": [],
+  "expected_tests": [
+    "Morfologia krwi",
+    "CRP",
+    "TSH",
+    "Badanie w kierunku celiakii",
+    "Kalprotektyna w kale"
+  ]
+}

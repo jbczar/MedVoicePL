@@ -1,0 +1,26 @@
+{
+  "scenario_id": "aaff717f",
+  "diagnosis_label": "Zespół jelita drażliwego (IBS)",
+  "diagnostic_only": false,
+  "expected_empty_drug_list": false,
+  "expected_slots": [
+    {
+      "label": "Regulator motoryki przewodu pokarmowego / lek spazmolityczny",
+      "acceptable": [
+        "A03AA04",
+        "A03AA05",
+        "A03AD02"
+      ]
+    }
+  ],
+  "expected_referrals": [
+    "dietetyk"
+  ],
+  "expected_tests": [
+    "Morfologia krwi obwodowej",
+    "Białko C-reaktywne (CRP)",
+    "Tyreotropina (TSH)",
+    "Badanie kału na krew utajoną",
+    "Kalprotektyna w kale"
+  ]
+}

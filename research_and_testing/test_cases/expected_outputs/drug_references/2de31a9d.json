@@ -1,0 +1,50 @@
+{
+  "scenario_id": "2de31a9d",
+  "diagnosis_label": "Zaostrzenie POChP (przewlekłej obturacyjnej choroby płuc)",
+  "diagnostic_only": false,
+  "expected_empty_drug_list": false,
+  "expected_slots": [
+    {
+      "label": "Antybiotyk (infekcyjne zaostrzenie POChP)",
+      "acceptable": [
+        "J01AA02",
+        "J01CA04",
+        "J01CR02",
+        "J01FA09",
+        "J01FA10"
+      ]
+    },
+    {
+      "label": "Glikokortykosteroid systemowy",
+      "acceptable": [
+        "H02AB06",
+        "H02AB07"
+      ]
+    },
+    {
+      "label": "Krótkodziałający lek rozszerzający oskrzela (SABA) do stosowania doraźnego",
+      "acceptable": [
+        "R03AC02",
+        "R03AC04"
+      ]
+    },
+    {
+      "label": "Leczenie podtrzymujące (wziewny GKS + LABA)",
+      "acceptable": [
+        "R03AK06",
+        "R03AK07",
+        "R03AK08",
+        "R03AK10",
+        "R03AK11"
+      ]
+    }
+  ],
+  "expected_referrals": [
+    "poradnia antynikotynowa"
+  ],
+  "expected_tests": [
+    "RTG klatki piersiowej",
+    "CRP",
+    "Morfologia krwi obwodowej"
+  ]
+}

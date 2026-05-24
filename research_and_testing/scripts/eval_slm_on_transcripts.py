@@ -49,6 +49,7 @@ DEFAULT_TRANSCRIPTS_DIR = Path("application/on_premise/output/transcripts")
 DEFAULT_SCENARIOS_DIR = Path("dataset_pipeline/output/scenarios")
 DEFAULT_RESULTS_DIR = Path("research_and_testing/results")
 DEFAULT_SLM_CONFIG = Path("application/on_premise/configs/slm.yaml")
+DEFAULT_SOAP_OUTPUT_DIR = Path("application/on_premise/output/soap_notes")
 
 
 @app.command()
@@ -69,6 +70,19 @@ def run(
         help="mlx-lm | llama-cpp. Overrides $SLM_BACKEND.",
     ),
     limit: int | None = typer.Option(None, "--limit", "-n"),
+    soap_output_dir: Path = typer.Option(
+        DEFAULT_SOAP_OUTPUT_DIR,
+        "--soap-output-dir",
+        help=(
+            "Persist generated SOAP notes here (Phase 4: needed for downstream "
+            "anonymization + agent eval). Pass empty string to skip persistence."
+        ),
+    ),
+    no_semantic_dx: bool = typer.Option(
+        False,
+        "--no-semantic-dx",
+        help="Skip semantic diagnosis_match metric (saves embedder load).",
+    ),
     verbose: bool = typer.Option(False, "--verbose", "-v"),
 ) -> None:
     """Run SOAP extraction over transcripts and score against scenarios."""
@@ -101,6 +115,20 @@ def run(
     config = load_slm_config(slm_config)
     extractor = build_extractor(config, env)
 
+    # Phase 4: load the same mmlw embedder used for ChPL RAG, for
+    # semantic diagnosis_match. ~700 MB model, one-time ~10-20 s load,
+    # then ~10 ms per pair.
+    embedder = None
+    if not no_semantic_dx:
+        from cloud.rag.embedder import _RealEmbedder
+
+        console.log(
+            "Loading semantic embedder (sdadas/mmlw-roberta-large) for "
+            "diagnosis_match_semantic..."
+        )
+        embedder = _RealEmbedder()
+        _ = embedder.embed_query("warmup")  # force lazy model load
+
     variants_to_run = ["clean", "noisy"] if variant == "both" else [variant]
     fname = {"clean": "transcript.json", "noisy": "transcript_noisy.json"}
 
@@ -116,11 +144,27 @@ def run(
                 log.warning("no matching scenario for %s; skipping", sid)
                 continue
             scenario = scenarios[sid]
-            row = evaluate_one(scenario, transcript, extractor=extractor, variant=v)
+            # Phase 4: persist SOAP for downstream (anonymization + agent).
+            persist_path: Path | None = None
+            if str(soap_output_dir):
+                soap_filename = (
+                    "soap_note.json" if v == "clean" else "soap_note_noisy.json"
+                )
+                persist_path = soap_output_dir / sid[:8] / soap_filename
+            row = evaluate_one(
+                scenario,
+                transcript,
+                extractor=extractor,
+                variant=v,
+                embedder=embedder,
+                soap_persist_path=persist_path,
+            )
             rows.append(row)
             console.log(
                 f"[{v}] {sid[:8]}: schema={row.schema_ok} "
                 f"cc={row.cc_recall:.2f} dx={row.diag_match} "
+                f"dx_sem={row.diag_match_semantic} "
+                f"cos={row.diag_cos_sim:.2f} "
                 f"icd={row.icd10_match} plan={row.plan_nonempty} "
                 f"({row.duration_s:.1f}s)"
             )
@@ -137,7 +181,14 @@ def run(
     table.add_row("n", str(summary.n))
     table.add_row("schema compliance", f"{summary.schema_compliance_rate * 100:.1f}%")
     table.add_row("mean CC recall", f"{summary.mean_cc_recall:.3f}")
-    table.add_row("diagnosis match", f"{summary.diagnosis_match_rate * 100:.1f}%")
+    table.add_row(
+        "diagnosis match (lexical)", f"{summary.diagnosis_match_rate * 100:.1f}%"
+    )
+    table.add_row(
+        "diagnosis match (semantic)",
+        f"{summary.diagnosis_match_semantic_rate * 100:.1f}%",
+    )
+    table.add_row("mean cos similarity", f"{summary.mean_diag_cos_sim:.3f}")
     table.add_row("ICD-10 match", f"{summary.icd10_match_rate * 100:.1f}%")
     table.add_row("plan non-empty", f"{summary.plan_nonempty_rate * 100:.1f}%")
     table.add_row("mean duration", f"{summary.mean_duration_s:.1f}s")
@@ -157,6 +208,8 @@ def run(
                     "schema_compliance_rate": summary.schema_compliance_rate,
                     "mean_cc_recall": summary.mean_cc_recall,
                     "diagnosis_match_rate": summary.diagnosis_match_rate,
+                    "diagnosis_match_semantic_rate": summary.diagnosis_match_semantic_rate,
+                    "mean_diag_cos_sim": summary.mean_diag_cos_sim,
                     "icd10_match_rate": summary.icd10_match_rate,
                     "plan_nonempty_rate": summary.plan_nonempty_rate,
                     "mean_duration_s": summary.mean_duration_s,

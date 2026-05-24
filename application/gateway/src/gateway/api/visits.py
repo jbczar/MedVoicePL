@@ -15,6 +15,7 @@ reads someone else's visit even if they guess the visit_id.
 from __future__ import annotations
 
 import hashlib
+import json
 import logging
 from datetime import date
 from pathlib import Path
@@ -34,8 +35,10 @@ from pydantic import BaseModel, ConfigDict
 
 from gateway.api.auth import get_audit_logger, require_session
 from gateway.audit import GatewayAuditLogger
+from gateway.clients.on_premise import OnPremiseClient, OnPremiseError
 from gateway.models import Session, Visit
 from gateway.orchestrator import OrchestratorError, VisitOrchestrator
+from gateway.reverse_map import TokenMapNotFoundError, load_token_map, reveal_dict
 from gateway.storage import VisitStore
 from shared.schemas import AgentSuggestion, Specialization, VisitStatus, VisitSummary
 
@@ -78,6 +81,22 @@ def _get_orchestrator(request: Request) -> VisitOrchestrator:
             detail="orchestrator_not_configured",
         )
     return orch
+
+
+def _get_on_premise_client(request: Request) -> OnPremiseClient:
+    client = getattr(request.app.state, "on_premise_client", None)
+    if client is None:
+        raise HTTPException(
+            status_code=503,
+            detail="on_premise_client_not_configured",
+        )
+    return client
+
+
+def _get_on_premise_audit_dir(request: Request) -> Path | None:
+    """Audit dir lives on the orchestrator; expose it for direct routes."""
+    orch = getattr(request.app.state, "orchestrator", None)
+    return getattr(orch, "on_premise_audit_dir", None) if orch else None
 
 
 class FinalizeResponse(BaseModel):
@@ -219,6 +238,73 @@ async def finalize_visit(
         revealed_suggestion=result.revealed_suggestion,
         unmapped_token_count=result.unmapped_token_count,
     )
+
+
+@router.get("/{visit_id}/soap")
+def get_soap_note(
+    visit_id: UUID,
+    session: Annotated[Session, Depends(require_session)],
+    visits: Annotated[VisitStore, Depends(_get_visit_store)],
+    request: Request,
+) -> dict[str, object]:
+    """Return the revealed SOAP note for the doctor's view.
+
+    Reads `<visit_dir>/soap.json` (cached during finalize), applies the
+    on-prem token map to replace `<PERSON_n>` placeholders with original
+    names. Fail-soft: missing token map → raw anonymized SOAP returned.
+    The token map never leaves the gateway process.
+    """
+    visit = _load_owned_visit(visit_id, visits=visits, session=session)
+    if visit.status != VisitStatus.completed:
+        raise HTTPException(
+            status_code=409,
+            detail=f"soap_unavailable_in_status:{visit.status.value}",
+        )
+    soap_path = visits.visit_dir(visit.visit_id) / "soap.json"
+    if not soap_path.is_file():
+        raise HTTPException(status_code=404, detail="soap_not_cached")
+    try:
+        raw = json.loads(soap_path.read_text(encoding="utf-8"))
+    except ValueError as exc:
+        raise HTTPException(status_code=500, detail=f"corrupt_soap: {exc}") from exc
+
+    audit_dir = _get_on_premise_audit_dir(request)
+    if audit_dir is None:
+        return raw
+    try:
+        token_map = load_token_map(
+            audit_root=audit_dir,
+            session_id=visit.session_id,
+            visit_date=visit.visit_date,
+        )
+    except TokenMapNotFoundError:
+        log.warning("token map unavailable for SOAP %s", visit.visit_id)
+        return raw
+    revealed, _unmapped = reveal_dict(raw, token_map=token_map)
+    return revealed  # type: ignore[return-value]
+
+
+@router.get("/{visit_id}/transcript")
+async def get_transcript(
+    visit_id: UUID,
+    session: Annotated[Session, Depends(require_session)],
+    visits: Annotated[VisitStore, Depends(_get_visit_store)],
+    on_premise: Annotated[OnPremiseClient, Depends(_get_on_premise_client)],
+) -> dict[str, object]:
+    """Return the un-anonymized transcript for the doctor's view.
+
+    Gateway proxies on-prem `GET /v1/transcripts/{tid}`. The transcript
+    is already un-anonymized (it never crossed the trust boundary), so
+    no reveal step is needed — it's the audit trail of what the doctor
+    actually said and what STT heard.
+    """
+    visit = _load_owned_visit(visit_id, visits=visits, session=session)
+    if not visit.transcript_id:
+        raise HTTPException(status_code=409, detail="transcript_not_yet_generated")
+    try:
+        return await on_premise.get_transcript(visit.transcript_id)
+    except OnPremiseError as exc:
+        raise HTTPException(status_code=502, detail=str(exc)) from exc
 
 
 def _load_owned_visit(

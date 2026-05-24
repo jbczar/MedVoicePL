@@ -1,0 +1,25 @@
+{
+  "scenario_id": "f8a7e3c1",
+  "diagnosis_label": "Objawy okresu okołomenopauzalnego (perimenopauza) z nadmiernymi krwawieniami miesiączkowymi",
+  "diagnostic_only": false,
+  "expected_empty_drug_list": false,
+  "expected_slots": [
+    {
+      "label": "Leczenie objawowe nadmiernych krwawień miesiączkowych (niehormonalne)",
+      "acceptable": [
+        "B02AA02",
+        "M01AB05",
+        "M01AE01",
+        "M01AE02",
+        "M01AG01"
+      ]
+    }
+  ],
+  "expected_referrals": [],
+  "expected_tests": [
+    "FSH",
+    "LH",
+    "Estradiol",
+    "TSH"
+  ]
+}

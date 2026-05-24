@@ -170,8 +170,17 @@ class ScenarioGenerator:
         ) from last_error
 
     def _persist(self, scenario: ScenarioModel) -> Path:
+        from uuid import uuid4
+
+        scenario = scenario.model_copy(update={"id": str(uuid4())})
         filename = f"{scenario.specialization.value}_{scenario.id[:8]}.json"
         path = self._output_dir / filename
+        for _ in range(5):
+            if not path.exists():
+                break
+            scenario = scenario.model_copy(update={"id": str(uuid4())})
+            filename = f"{scenario.specialization.value}_{scenario.id[:8]}.json"
+            path = self._output_dir / filename
         path.write_text(
             scenario.model_dump_json(indent=2),
             encoding="utf-8",

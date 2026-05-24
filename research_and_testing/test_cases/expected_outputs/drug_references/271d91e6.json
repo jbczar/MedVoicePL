@@ -1,0 +1,34 @@
+{
+  "scenario_id": "271d91e6",
+  "diagnosis_label": "Zaostrzenie przewlekłej obturacyjnej choroby płuc (POChP)",
+  "diagnostic_only": false,
+  "expected_empty_drug_list": false,
+  "expected_slots": [
+    {
+      "label": "Antybiotyk (zaostrzenie POChP z cechami infekcji bakteryjnej)",
+      "acceptable": [
+        "J01CA04",
+        "J01CR02",
+        "J01AA02"
+      ]
+    },
+    {
+      "label": "Glikokortykosteroid systemowy (krótka terapia)",
+      "acceptable": [
+        "H02AB04",
+        "H02AB07"
+      ]
+    },
+    {
+      "label": "Krótkodziałający lek rozszerzający oskrzela (SABA/SAMA, do nebulizacji lub doraźnie)",
+      "acceptable": [
+        "R03AC02",
+        "R03AL01",
+        "R03AL02",
+        "R03BB01"
+      ]
+    }
+  ],
+  "expected_referrals": [],
+  "expected_tests": []
+}

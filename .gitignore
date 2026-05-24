@@ -25,11 +25,6 @@ env/
 .python-version
 
 # ------------------------------------------
-# uv
-# ------------------------------------------
-uv.lock
-
-# ------------------------------------------
 # IDE / Editor
 # ------------------------------------------
 .vscode/
@@ -46,6 +41,8 @@ Thumbs.db
 .env
 .env.local
 .env.*.local
+.env.bak
+.env.bak*
 
 # ------------------------------------------
 # Docker
@@ -62,13 +59,9 @@ application/on_premise/models/*.safetensors
 application/on_premise/models/*.gguf
 
 # ------------------------------------------
-# Dataset Pipeline — Generated Output
+# Dataset Pipeline — Generated Output (entire output/ tree is regen-able)
 # ------------------------------------------
-dataset_pipeline/output/scenarios/
-dataset_pipeline/output/raw_audio/
-dataset_pipeline/output/mixed_audio/
-dataset_pipeline/output/audio/
-dataset_pipeline/output/manifest.json
+dataset_pipeline/output/
 
 # Audio binaries — reference voices (from Common Voice), noise library
 # (from Freesound), and any stray WAV/MP3/OGG. README.md in those dirs is
@@ -89,11 +82,9 @@ dataset_pipeline/noise_library/*.wav
 application/on_premise/output/
 
 # ------------------------------------------
-# Research — Experiment Results
+# Research — Experiment Results (raw eval JSONs; reports live in docs/)
 # ------------------------------------------
-research_and_testing/results/benchmarks/
-research_and_testing/results/reports/
-research_and_testing/results/figures/
+research_and_testing/results/
 
 # ------------------------------------------
 # Vector Store (rebuilt from source data)
@@ -108,12 +99,12 @@ application/cloud/data/nfz_formulary/index_*.json
 application/cloud/data/nfz_formulary/atc_cache.json
 application/cloud/data/qdrant/
 
-research_and_testing/results/
-
 application/on_premise/audit/
+application/gateway/output/
+application/gateway/audit/
 
+# Hidden drug_references (rare LLM artifacts; non-hidden are tracked fixtures)
 research_and_testing/test_cases/expected_outputs/drug_references/.*.json
-
 
 # ------------------------------------------
 # Jupyter Notebooks — outputs
@@ -132,31 +123,33 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
+application/frontend/node_modules
+application/frontend/.next
+application/frontend/out
+application/frontend/coverage
+application/frontend/tsconfig.tsbuildinfo
+
 # ------------------------------------------
-# Testing / Coverage
+# Testing / Coverage / Benchmarks
 # ------------------------------------------
 .coverage
 htmlcov/
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
+.benchmarks/
 
 # ------------------------------------------
 # Logs
 # ------------------------------------------
 *.log
 logs/
-.env.bak
-.env.bak2
+
+# ------------------------------------------
+# Claude Code workspace
+# ------------------------------------------
+.claude/
 
 
-application/gateway/output/
-application/gateway/audit/
+Praca_magisterska/
 
-.claude
-
-
-application/frontend/node_modules
-application/frontend/.next
-application/frontend/out
-application/frontend/coverage

@@ -8,8 +8,8 @@
 # Environment
 # ------------------------------------------
 .PHONY: install
-install: ## Install all workspace dependencies via uv
-	uv sync --all-packages
+install: ## Install all workspace dependencies via uv (+ Presidio anonymization extra)
+	uv sync --all-packages --extra anonymization
 
 .PHONY: install-frontend
 install-frontend: ## Install frontend (Next.js) dependencies

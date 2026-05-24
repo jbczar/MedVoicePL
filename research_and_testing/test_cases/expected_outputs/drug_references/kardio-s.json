@@ -1,0 +1,27 @@
+{
+  "scenario_id": "kardio-s",
+  "diagnosis_label": "Podejrzenie napadowego migotania przedsionków z towarzyszącym nadciśnieniem tętniczym",
+  "diagnostic_only": true,
+  "expected_empty_drug_list": false,
+  "expected_slots": [
+    {
+      "label": "Beta-bloker (kontrola częstotliwości rytmu serca i ciśnienia tętniczego)",
+      "acceptable": [
+        "C07AB02",
+        "C07AB07",
+        "C07AB12",
+        "C07AG02"
+      ]
+    }
+  ],
+  "expected_referrals": [],
+  "expected_tests": [
+    "Holter EKG",
+    "Echokardiografia",
+    "Morfologia krwi",
+    "Elektrolity (sód, potas)",
+    "TSH",
+    "Kreatynina",
+    "Glukoza"
+  ]
+}

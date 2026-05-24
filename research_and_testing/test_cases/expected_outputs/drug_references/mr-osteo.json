@@ -1,0 +1,34 @@
+{
+  "scenario_id": "mr-osteo",
+  "diagnosis_label": "Zaostrzenie choroby zwyrodnieniowej stawu kolanowego",
+  "diagnostic_only": false,
+  "expected_empty_drug_list": false,
+  "expected_slots": [
+    {
+      "label": "Doustny NLPZ (doraźnie)",
+      "acceptable": [
+        "M01AB05",
+        "M01AC06",
+        "M01AE02",
+        "M01AE03",
+        "M01AE17"
+      ]
+    },
+    {
+      "label": "Inhibitor pompy protonowej (osłona przy NLPZ)",
+      "acceptable": [
+        "A02BC01",
+        "A02BC02",
+        "A02BC03",
+        "A02BC04",
+        "A02BC05"
+      ]
+    }
+  ],
+  "expected_referrals": [
+    "ortopedia"
+  ],
+  "expected_tests": [
+    "RTG stawu kolanowego"
+  ]
+}

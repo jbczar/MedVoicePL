@@ -1,6 +1,6 @@
 # MedVoicePL — Przewodnik operacyjny
 
-> Praktyczny dokument: jak uruchomić, gdzie kliknąć, gdzie szukać logów, jak działają poszczególne warstwy. Komplementarny do `CLAUDE.md` (który zawiera decyzje projektowe i pełną historię zmian).
+> Praktyczny dokument: jak uruchomić, gdzie kliknąć, gdzie szukać logów, jak działają poszczególne warstwy. 
 
 **Spis treści**
 
@@ -685,8 +685,6 @@ MedVoicePL/
 
 **Każdy z 5 workspace members** (`dataset_pipeline`, `application/{on_premise,cloud,gateway,shared}`) ma własny `pyproject.toml` z osobnymi deps. Frontend jest oddzielnym npm projektem.
 
-**Test count**: 185 backend + 10 frontend = **195/195 zielonych** (stan na 2026-05-06).
-
 ---
 
 ## 13. Troubleshooting
@@ -762,9 +760,4 @@ MedVoicePL/
 | Phase 3c (frontend) | sekcja "Phase 3c — decyzje projektowe" w CLAUDE.md |
 | Trust boundary lint | [application/on_premise/tests/test_trust_boundary_imports.py](application/on_premise/tests/test_trust_boundary_imports.py) |
 
----
-
-**Wersja dokumentu**: 2026-05-06 · post-Phase 3c live-verified
-**Total testów**: 195/195 (185 backend + 10 frontend)
-**Status faz**: 1a ✅ · 1b ✅ · 1b.1 ✅ · 2a ✅ · 2a.1 ✅ · 2b ✅ · 2c ✅ · 2c.1 ✅ · 3a ✅ · 3b ✅ (live-verified) · 3c ✅ · 4 ⏳
 

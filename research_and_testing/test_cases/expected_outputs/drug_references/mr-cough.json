@@ -1,0 +1,36 @@
+{
+  "scenario_id": "mr-cough",
+  "diagnosis_label": "Ostre zapalenie oskrzeli",
+  "diagnostic_only": false,
+  "expected_empty_drug_list": false,
+  "expected_slots": [
+    {
+      "label": "Wziewny krótko działający beta-2-mimetyk (SABA)",
+      "acceptable": [
+        "R03AC02",
+        "R03AC04"
+      ]
+    },
+    {
+      "label": "Lek mukolityczny",
+      "acceptable": [
+        "R05CB01",
+        "R05CB03",
+        "R05CB06",
+        "R05CB15"
+      ]
+    },
+    {
+      "label": "Lek przeciwkaszlowy (do stosowania doraźnego w nocy)",
+      "acceptable": [
+        "R05DA09",
+        "R05DB13",
+        "R05DB27"
+      ]
+    }
+  ],
+  "expected_referrals": [],
+  "expected_tests": [
+    "RTG klatki piersiowej"
+  ]
+}

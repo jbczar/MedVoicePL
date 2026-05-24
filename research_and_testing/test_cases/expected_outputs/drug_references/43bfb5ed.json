@@ -1,0 +1,34 @@
+{
+  "scenario_id": "43bfb5ed",
+  "diagnosis_label": "Choroba Parkinsona",
+  "diagnostic_only": false,
+  "expected_empty_drug_list": false,
+  "expected_slots": [
+    {
+      "label": "Lewodopa z inhibitorem dekarboksylazy",
+      "acceptable": [
+        "N04BA02",
+        "N04BA03"
+      ]
+    },
+    {
+      "label": "Agonista dopaminy (terapia początkowa)",
+      "acceptable": [
+        "N04BC04",
+        "N04BC05",
+        "N04BC09"
+      ]
+    },
+    {
+      "label": "Inhibitor MAO-B (terapia początkowa)",
+      "acceptable": [
+        "N04BD01",
+        "N04BD02"
+      ]
+    }
+  ],
+  "expected_referrals": [
+    "rehabilitacja"
+  ],
+  "expected_tests": []
+}

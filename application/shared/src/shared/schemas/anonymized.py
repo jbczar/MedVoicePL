@@ -51,6 +51,10 @@ class Specialization(StrEnum):
     """Medical specialization. Duplicated from
     `dataset_pipeline.scenario_generator.schema.Specialization` to keep
     `shared/` self-contained.
+
+    Keep this list in sync with:
+    - `dataset_pipeline/src/dataset_pipeline/scenario_generator/schema.py`
+    - `application/frontend/src/lib/types.ts` (Specialization union)
     """
 
     kardiologia = "kardiologia"
@@ -58,6 +62,10 @@ class Specialization(StrEnum):
     medycyna_rodzinna = "medycyna_rodzinna"
     endokrynologia = "endokrynologia"
     neurologia = "neurologia"
+    # Phase 4 additions — match dataset_pipeline enum.
+    gastrologia = "gastrologia"
+    ginekologia = "ginekologia"
+    pediatria = "pediatria"
 
 
 # ---------------------------------------------------------------------------

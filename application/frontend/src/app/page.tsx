@@ -10,11 +10,14 @@ import { cn } from "@/lib/cn";
 import { useVisitStore, type VisitIndexEntry } from "@/lib/visitStore";
 
 const SPECIALIZATION_LABELS: Record<string, string> = {
-  kardiologia: "Kardiologia",
   endokrynologia: "Endokrynologia",
-  pulmonologia: "Pulmonologia",
+  gastrologia: "Gastrologia",
+  ginekologia: "Ginekologia",
+  kardiologia: "Kardiologia",
+  medycyna_rodzinna: "Medycyna rodzinna",
   neurologia: "Neurologia",
-  urologia: "Urologia",
+  pediatria: "Pediatria",
+  pulmonologia: "Pulmonologia",
 };
 
 const STATUS_LABELS: Record<string, string> = {

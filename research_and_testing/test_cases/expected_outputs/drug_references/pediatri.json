@@ -1,0 +1,26 @@
+{
+  "scenario_id": "pediatri",
+  "diagnosis_label": "Ostre zapalenie oskrzeli z obturacją",
+  "diagnostic_only": false,
+  "expected_empty_drug_list": false,
+  "expected_slots": [
+    {
+      "label": "Krótko działający lek rozszerzający oskrzela (nebulizacja)",
+      "acceptable": [
+        "R03AC02",
+        "R03AL01"
+      ]
+    },
+    {
+      "label": "Wziewny glikokortykosteroid (nebulizacja)",
+      "acceptable": [
+        "R03BA02",
+        "R03BA05"
+      ]
+    }
+  ],
+  "expected_referrals": [
+    "alergologia"
+  ],
+  "expected_tests": []
+}

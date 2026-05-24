@@ -1,0 +1,23 @@
+{
+  "scenario_id": "008130b4",
+  "diagnosis_label": "Ostre obturacyjne zapalenie oskrzeli",
+  "diagnostic_only": false,
+  "expected_empty_drug_list": false,
+  "expected_slots": [
+    {
+      "label": "Wziewny glikokortykosteroid (wGKS) do nebulizacji",
+      "acceptable": [
+        "R03BA02",
+        "R03BA05"
+      ]
+    },
+    {
+      "label": "Wziewny krótko-działający beta-2-mimetyk (SABA)",
+      "acceptable": [
+        "R03AC02"
+      ]
+    }
+  ],
+  "expected_referrals": [],
+  "expected_tests": []
+}

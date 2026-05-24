@@ -1,0 +1,32 @@
+{
+  "scenario_id": "f516a8d4",
+  "diagnosis_label": "Zespół jelita drażliwego z przewagą biegunki (IBS-D)",
+  "diagnostic_only": true,
+  "expected_empty_drug_list": false,
+  "expected_slots": [
+    {
+      "label": "Lek spazmolityczny",
+      "acceptable": [
+        "A03AA04",
+        "A03AA05",
+        "A03AD02",
+        "A03BB01"
+      ]
+    },
+    {
+      "label": "Probiotyk o udokumentowanym działaniu w IBS",
+      "acceptable": [
+        "A07FA01",
+        "A07FA02",
+        "A07FA51"
+      ]
+    }
+  ],
+  "expected_referrals": [],
+  "expected_tests": [
+    "Morfologia krwi",
+    "CRP",
+    "Kalprotektyna w kale",
+    "Badania w kierunku celiakii"
+  ]
+}

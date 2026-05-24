@@ -1,0 +1,18 @@
+{
+  "scenario_id": "2d1f9a8b",
+  "diagnosis_label": "Objawy okresu okołomenopauzalnego",
+  "diagnostic_only": true,
+  "expected_empty_drug_list": true,
+  "expected_slots": [],
+  "expected_referrals": [
+    "mammografia"
+  ],
+  "expected_tests": [
+    "Cytologia",
+    "Estradiol",
+    "FSH",
+    "Glukoza",
+    "Lipidogram",
+    "TSH"
+  ]
+}

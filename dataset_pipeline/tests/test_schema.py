@@ -78,8 +78,13 @@ def test_too_few_turns_rejected() -> None:
 
 
 def test_age_out_of_range_rejected() -> None:
+    # Phase 4: MIN_AGE lowered 18 → 0 for pediatric scenarios.
+    # Out-of-range now means < 0 or > MAX_AGE (95).
     kwargs = _valid_kwargs()
-    kwargs["patient_age"] = 15
+    kwargs["patient_age"] = -1
+    with pytest.raises(ValidationError):
+        ScenarioModel(**kwargs)  # type: ignore[arg-type]
+    kwargs["patient_age"] = 200
     with pytest.raises(ValidationError):
         ScenarioModel(**kwargs)  # type: ignore[arg-type]
 

@@ -1,0 +1,22 @@
+{
+  "scenario_id": "f51a8b94",
+  "diagnosis_label": "Endometrioza",
+  "diagnostic_only": false,
+  "expected_empty_drug_list": false,
+  "expected_slots": [
+    {
+      "label": "Leczenie hormonalne endometriozy (pierwsza linia)",
+      "acceptable": [
+        "G03AA07",
+        "G03AA10",
+        "G03AA12",
+        "G03AA16",
+        "G03DB08"
+      ]
+    }
+  ],
+  "expected_referrals": [],
+  "expected_tests": [
+    "CA-125"
+  ]
+}

@@ -76,6 +76,9 @@ ignore = ["E501"]  # line length handled by formatter
 "**/cloud/llm_integration/prompts.py" = ["RUF001", "TC001"]
 "**/cloud/data/nfz_formulary/ingest_nfz.py" = ["B008", "TC003"]
 "**/cloud/data/nfz_formulary/build_atc_map.py" = ["B008", "F541"]
+"**/cloud/data/chpl_excerpts/generate_chpl.py" = ["B008", "TC001", "TC003"]
+"**/cloud/scripts/rebuild_chpl_index.py" = ["B008", "TC003", "ANN001"]
+"**/research_and_testing/scripts/generate_ground_truth.py" = ["B008", "TC001", "TC003", "N806"]
 # Phase 2c.1 — eponym filter strips multiple Unicode apostrophe variants
 # from medical names ("Whipple'a", "Reye'a"); each variant is intentional.
 "**/anonymization/eponym_filter.py" = ["RUF001", "TC002"]
@@ -91,6 +94,9 @@ ignore = ["E501"]  # line length handled by formatter
 # long-s in regex char class (Latin Extended-A range), and the
 # `Violation` exception name is intentional (semantic over PEP-conventional).
 "**/trust_gate.py" = ["RUF001", "RUF002", "RUF003", "N818"]
+# trust_gate tests deliberately exercise real Polish medical typography
+# (en-dash, Greek alpha/beta, ± ° µ etc.) — every ambiguous char is intentional.
+"**/tests/test_trust_gate.py" = ["RUF001", "RUF002", "RUF003"]
 # Phase 2c FastAPI app: `UUID`/`date`/`AsyncIterator` are imported at
 # runtime because FastAPI's parameter validation reads runtime
 # annotations; TC003 doesn't apply. `Query(...)` in defaults is the

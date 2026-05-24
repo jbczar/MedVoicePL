@@ -1,0 +1,15 @@
+{
+  "scenario_id": "f5e8c1a2",
+  "diagnosis_label": "Podejrzenie napadowego migotania przedsionków",
+  "diagnostic_only": true,
+  "expected_empty_drug_list": true,
+  "expected_slots": [],
+  "expected_referrals": [],
+  "expected_tests": [
+    "EKG Holter 24h",
+    "morfologia krwi",
+    "elektrolity (Na, K)",
+    "TSH",
+    "echokardiografia"
+  ]
+}

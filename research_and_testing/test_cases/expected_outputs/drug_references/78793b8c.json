@@ -1,0 +1,30 @@
+{
+  "scenario_id": "78793b8c",
+  "diagnosis_label": "Nadczynność tarczycy w przebiegu choroby Gravesa-Basedowa",
+  "diagnostic_only": false,
+  "expected_empty_drug_list": false,
+  "expected_slots": [
+    {
+      "label": "Beta-bloker (kontrola objawów nadczynności tarczycy)",
+      "acceptable": [
+        "C07AA05",
+        "C07AB02",
+        "C07AB07"
+      ]
+    }
+  ],
+  "expected_referrals": [
+    "okulistyka"
+  ],
+  "expected_tests": [
+    "ALT",
+    "AST",
+    "EKG",
+    "FT3",
+    "FT4",
+    "Morfologia krwi",
+    "Przeciwciała p/receptorom TSH (TRAb)",
+    "TSH",
+    "USG tarczycy"
+  ]
+}

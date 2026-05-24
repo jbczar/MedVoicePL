@@ -1,9 +1,0 @@
-{
-  "scenario_id": "endo-acr",
-  "diagnosis_label": "podejrzenie akromegalii",
-  "diagnostic_only": true,
-  "expected_empty_drug_list": true,
-  "expected_drugs": [],
-  "expected_referrals": ["endokrynologia"],
-  "expected_tests": ["IGF-1", "test hamowania GH glukozą", "MRI przysadki"]
-}

@@ -1,0 +1,28 @@
+{
+  "scenario_id": "a9e3b4c1",
+  "diagnosis_label": "Przewlekła obturacyjna choroba płuc (POChP)",
+  "diagnostic_only": false,
+  "expected_empty_drug_list": false,
+  "expected_slots": [
+    {
+      "label": "Długo działający lek rozszerzający oskrzela (LAMA lub LABA)",
+      "acceptable": [
+        "R03AC12",
+        "R03AC13",
+        "R03AC18",
+        "R03AC19",
+        "R03BB04",
+        "R03BB05",
+        "R03BB06",
+        "R03BB07"
+      ]
+    }
+  ],
+  "expected_referrals": [
+    "poradnia antynikotynowa"
+  ],
+  "expected_tests": [
+    "spirometria",
+    "RTG klatki piersiowej"
+  ]
+}

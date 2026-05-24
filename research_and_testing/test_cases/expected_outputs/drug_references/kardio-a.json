@@ -1,0 +1,34 @@
+{
+  "scenario_id": "kardio-a",
+  "diagnosis_label": "Podejrzenie napadowego migotania przedsionków przy współistniejącym nadciśnieniu tętniczym",
+  "diagnostic_only": true,
+  "expected_empty_drug_list": false,
+  "expected_slots": [
+    {
+      "label": "Inhibitor ACE (kontynuacja leczenia nadciśnienia tętniczego)",
+      "acceptable": [
+        "C09AA02",
+        "C09AA03",
+        "C09AA04",
+        "C09AA05"
+      ]
+    },
+    {
+      "label": "Beta-bloker (kontrola częstotliwości rytmu serca i ciśnienia tętniczego)",
+      "acceptable": [
+        "C07AB02",
+        "C07AB07",
+        "C07AB12",
+        "C07AG02"
+      ]
+    }
+  ],
+  "expected_referrals": [],
+  "expected_tests": [
+    "Holter EKG",
+    "Echo serca",
+    "TSH",
+    "Kreatynina",
+    "Elektrolity"
+  ]
+}

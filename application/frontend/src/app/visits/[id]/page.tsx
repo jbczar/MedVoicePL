@@ -7,19 +7,25 @@ import { useEffect, useState } from "react";
 
 import { AudioUploader } from "@/components/AudioUploader";
 import { AuthGuard } from "@/components/AuthGuard";
+import { DiagnosisBanner } from "@/components/DiagnosisBanner";
 import { FinalizeProgress } from "@/components/FinalizeProgress";
 import { Header } from "@/components/Header";
+import { SOAPViewer } from "@/components/SOAPViewer";
 import { SuggestionView } from "@/components/SuggestionView";
+import { TranscriptViewer } from "@/components/TranscriptViewer";
 import * as api from "@/lib/api";
 import type { FinalizeResponse } from "@/lib/types";
 import { useVisitStore } from "@/lib/visitStore";
 
 const SPECIALIZATION_LABELS: Record<string, string> = {
-  kardiologia: "Kardiologia",
   endokrynologia: "Endokrynologia",
-  pulmonologia: "Pulmonologia",
+  gastrologia: "Gastrologia",
+  ginekologia: "Ginekologia",
+  kardiologia: "Kardiologia",
+  medycyna_rodzinna: "Medycyna rodzinna",
   neurologia: "Neurologia",
-  urologia: "Urologia",
+  pediatria: "Pediatria",
+  pulmonologia: "Pulmonologia",
 };
 
 export default function VisitDetailPage() {
@@ -45,6 +51,26 @@ function VisitDetail() {
     queryKey: ["visit", visitId],
     queryFn: () => api.getVisit(visitId),
     enabled: !!visitId,
+  });
+
+  // SOAP + transcript only when the visit is completed. Both endpoints
+  // 404 / 409 in earlier states, so we gate on status to avoid noise.
+  const isCompleted = visitQuery.data?.status === "completed";
+
+  const soapQuery = useQuery({
+    queryKey: ["visit-soap", visitId],
+    queryFn: () => api.getVisitSoap(visitId),
+    enabled: !!visitId && isCompleted,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const transcriptQuery = useQuery({
+    queryKey: ["visit-transcript", visitId],
+    queryFn: () => api.getVisitTranscript(visitId),
+    enabled: !!visitId && isCompleted,
+    staleTime: 5 * 60 * 1000,
+    // Transcript is a nice-to-have; failure shouldn't block the rest.
+    retry: 1,
   });
 
   // Mirror status into local visit store so dashboard list reflects.
@@ -142,10 +168,24 @@ function VisitDetail() {
         )}
 
         {showResults && finalizeResult && (
-          <SuggestionView
-            suggestion={finalizeResult.revealed_suggestion}
-            unmappedTokenCount={finalizeResult.unmapped_token_count}
-          />
+          <>
+            {soapQuery.data && (
+              <DiagnosisBanner assessment={soapQuery.data.assessment} />
+            )}
+            {soapQuery.data && <SOAPViewer soap={soapQuery.data} />}
+            <SuggestionView
+              suggestion={finalizeResult.revealed_suggestion}
+              unmappedTokenCount={finalizeResult.unmapped_token_count}
+            />
+            {transcriptQuery.data && (
+              <TranscriptViewer transcript={transcriptQuery.data} />
+            )}
+            {soapQuery.isLoading && (
+              <div className="card text-sm text-slate-500">
+                Ładowanie notatki SOAP…
+              </div>
+            )}
+          </>
         )}
       </div>
     </main>

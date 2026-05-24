@@ -170,6 +170,46 @@ def diagnosis_match(soap: SOAPNote, scenario: ScenarioModel) -> bool:
     return exp_stems.issubset(pred_stems) or pred_stems.issubset(exp_stems)
 
 
+def diagnosis_match_semantic(
+    soap: SOAPNote,
+    scenario: ScenarioModel,
+    *,
+    embedder: object,
+    threshold: float = 0.85,
+) -> tuple[bool, float]:
+    """Semantic similarity between scenario.expected_diagnosis and
+    soap.assessment.primary_diagnosis via mmlw-roberta-large embeddings.
+
+    Returns (match_bool, cosine_similarity_float).
+
+    Why this complements `diagnosis_match`:
+
+    - `diagnosis_match` is lexical (substring + 5-char stems). Misses
+      true paraphrases like "POChP zaostrzenie" ↔ "Zaostrzenie
+      przewlekłej obturacyjnej choroby płuc". These get stem-set hits
+      sometimes but not always.
+
+    - `diagnosis_match_semantic` is dense semantic — uses the same
+      `sdadas/mmlw-roberta-large` (1024-dim Polish embedder) we already
+      load for the ChPL RAG. Polish-tuned, 0 USD cost, ~10 ms per pair.
+
+    Threshold 0.85 is a clinically-defensible cutoff: paraphrases with
+    same medical content score ≥0.90, distinct conditions (e.g.
+    "POChP" vs "astma") score 0.60-0.75. Tuned empirically; consider
+    sweep in writeup if needed.
+    """
+    predicted = (soap.assessment.primary_diagnosis or "").strip()
+    expected = (scenario.expected_diagnosis or "").strip()
+    if not predicted or not expected:
+        return False, 0.0
+    # Embedder must expose `embed_query(str) -> list[float]`.
+    v1 = embedder.embed_query(expected)
+    v2 = embedder.embed_query(predicted)
+    # Cosine sim (vectors already L2-normalized by mmlw default).
+    dot = sum(a * b for a, b in zip(v1, v2, strict=True))
+    return dot >= threshold, float(dot)
+
+
 def icd10_match(soap: SOAPNote, scenario: ScenarioModel) -> bool:
     """Equality OR boundary-aware prefix match.
 

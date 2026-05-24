@@ -1,0 +1,11 @@
+{
+  "scenario_id": "e7b8c2d1",
+  "diagnosis_label": "Choroba Parkinsona",
+  "diagnostic_only": true,
+  "expected_empty_drug_list": true,
+  "expected_slots": [],
+  "expected_referrals": [],
+  "expected_tests": [
+    "SPECT (DaTSCAN)"
+  ]
+}

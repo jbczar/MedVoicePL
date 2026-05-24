@@ -1,0 +1,25 @@
+{
+  "scenario_id": "a9e6b5c3",
+  "diagnosis_label": "Ostre wirusowe zapalenie żołądka i jelit z cechami odwodnienia",
+  "diagnostic_only": false,
+  "expected_empty_drug_list": false,
+  "expected_slots": [
+    {
+      "label": "Doustny płyn nawadniający (DPN)",
+      "acceptable": [
+        "A07CA"
+      ]
+    },
+    {
+      "label": "Leczenie wspomagające biegunkę",
+      "acceptable": [
+        "A07BC05",
+        "A07FA01",
+        "A07FA02",
+        "A07XA04"
+      ]
+    }
+  ],
+  "expected_referrals": [],
+  "expected_tests": []
+}

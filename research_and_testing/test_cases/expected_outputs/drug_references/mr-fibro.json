@@ -1,0 +1,32 @@
+{
+  "scenario_id": "mr-fibro",
+  "diagnosis_label": "Fibromialgia",
+  "diagnostic_only": false,
+  "expected_empty_drug_list": false,
+  "expected_slots": [
+    {
+      "label": "Lek pierwszego rzutu w fibromialgii (neuromodulator)",
+      "acceptable": [
+        "N03AX12",
+        "N05BQ01",
+        "N06AA09",
+        "N06AX21"
+      ]
+    }
+  ],
+  "expected_referrals": [
+    "reumatologia",
+    "fizjoterapia"
+  ],
+  "expected_tests": [
+    "morfologia krwi",
+    "OB",
+    "CRP",
+    "TSH",
+    "anty-TPO",
+    "anty-TG",
+    "czynnik reumatoidalny (RF)",
+    "anty-CCP",
+    "przeciwciała przeciwjądrowe (ANA)"
+  ]
+}

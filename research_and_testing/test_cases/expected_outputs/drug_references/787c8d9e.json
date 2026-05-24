@@ -1,0 +1,35 @@
+{
+  "scenario_id": "787c8d9e",
+  "diagnosis_label": "Migotanie przedsionków",
+  "diagnostic_only": false,
+  "expected_empty_drug_list": false,
+  "expected_slots": [
+    {
+      "label": "Antykoagulant (prewencja udaru w migotaniu przedsionków)",
+      "acceptable": [
+        "B01AE07",
+        "B01AF01",
+        "B01AF02",
+        "B01AF03"
+      ]
+    },
+    {
+      "label": "Beta-bloker (kontrola częstości rytmu serca)",
+      "acceptable": [
+        "C07AB02",
+        "C07AB07",
+        "C07AB12",
+        "C07AG02"
+      ]
+    }
+  ],
+  "expected_referrals": [],
+  "expected_tests": [
+    "EKG",
+    "Holter EKG",
+    "Echo serca",
+    "Morfologia krwi",
+    "Jonogram (Na, K)",
+    "TSH"
+  ]
+}

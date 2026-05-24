@@ -1,0 +1,11 @@
+{
+  "scenario_id": "a7b3c9d1",
+  "diagnosis_label": "Podejrzenie przewlekłej obturacyjnej choroby płuc (POChP)",
+  "diagnostic_only": true,
+  "expected_empty_drug_list": true,
+  "expected_slots": [],
+  "expected_referrals": [],
+  "expected_tests": [
+    "spirometria"
+  ]
+}

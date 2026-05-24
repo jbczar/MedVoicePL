@@ -1,9 +1,0 @@
-{
-  "scenario_id": "a9d8f7e6",
-  "diagnosis_label": "podejrzenie choroby Parkinsona",
-  "diagnostic_only": true,
-  "expected_empty_drug_list": true,
-  "expected_drugs": [],
-  "expected_referrals": ["neurologia"],
-  "expected_tests": ["MRI głowy"]
-}

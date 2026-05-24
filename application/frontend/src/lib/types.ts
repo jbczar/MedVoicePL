@@ -7,12 +7,16 @@
  * Python schema changes, update here in lock-step.
  */
 
+// Keep in sync with `application/shared/src/shared/schemas/anonymized.py::Specialization`.
 export type Specialization =
   | "kardiologia"
-  | "endokrynologia"
   | "pulmonologia"
+  | "medycyna_rodzinna"
+  | "endokrynologia"
   | "neurologia"
-  | "urologia";
+  | "gastrologia"
+  | "ginekologia"
+  | "pediatria";
 
 export type VisitStatus =
   | "draft"
@@ -97,73 +101,103 @@ export interface AgentSuggestion {
   metadata: AgentMetadata;
 }
 
-// --- Anonymized SOAP (subset used by the doctor's UI) ---
+// --- SOAP note (revealed for doctor view; mirrors AnonymizedSOAPNote
+// shape from `application/shared/src/shared/schemas/anonymized.py` but
+// with `<PERSON_n>` placeholders already replaced by the gateway).
 
-export interface AnonymizedSubjective {
+export interface SOAPSubjective {
   chief_complaint: string;
   history_of_present_illness: string;
   review_of_systems: string[];
-  past_medical_history: string[];
-  medications: string[];
+  medical_history: string[];
+  medications_current: string[];
   allergies: string[];
-  social_history: string;
-  family_history: string;
   provenance: number[];
 }
 
-export interface AnonymizedVital {
+export interface SOAPVital {
   name: string;
   value: string;
   unit: string | null;
 }
 
-export interface AnonymizedLabMention {
+export interface SOAPLabMention {
   name: string;
   value: string | null;
   unit: string | null;
-  context: string;
 }
 
-export interface AnonymizedObjective {
-  vitals: AnonymizedVital[];
-  physical_examination: string;
-  labs_mentioned: AnonymizedLabMention[];
-  imaging_mentioned: string[];
+export interface SOAPObjective {
+  physical_exam: string[];
+  vitals: SOAPVital[];
+  labs_mentioned: SOAPLabMention[];
   provenance: number[];
 }
 
-export interface AnonymizedAssessment {
+export interface SOAPAssessment {
   primary_diagnosis: string;
-  differential_diagnoses: string[];
   icd10_code: string | null;
+  differential: string[];
   clinical_reasoning: string;
   provenance: number[];
 }
 
-export interface AnonymizedPlan {
+export interface SOAPPlan {
   medications_prescribed: string[];
   diagnostic_tests: string[];
   referrals: string[];
-  follow_up: string;
-  patient_education: string;
+  follow_up: string | null;
+  patient_education: string[];
   provenance: number[];
 }
 
-export interface AnonymizedMetadata {
+export interface SOAPMetadata {
   anonymizer_version: string;
-  n_entities_per_type: Record<string, number>;
-  visit_date: string;
-  specialization: Specialization;
-  session_id: string;
+  n_entities_per_type?: Record<string, number>;
+  visit_date?: string;
+  specialization?: Specialization;
+  session_id?: string;
 }
 
-export interface AnonymizedSOAPNote {
-  subjective: AnonymizedSubjective;
-  objective: AnonymizedObjective;
-  assessment: AnonymizedAssessment;
-  plan: AnonymizedPlan;
+export interface SOAPNote {
+  subjective: SOAPSubjective;
+  objective: SOAPObjective;
+  assessment: SOAPAssessment;
+  plan: SOAPPlan;
   red_flags: string[];
-  metadata: AnonymizedMetadata;
+  red_flags_provenance?: number[];
+  metadata: SOAPMetadata;
+}
+
+// --- Transcript (un-anonymized; doctor sees verbatim STT output). ---
+
+export interface TranscriptWordTiming {
+  word: string;
+  start_s: number;
+  end_s: number;
+}
+
+export interface TranscriptSegment {
+  speaker: "doctor" | "patient" | string;
+  start_s: number;
+  end_s: number;
+  text: string;
+  words?: TranscriptWordTiming[];
+}
+
+export interface TranscriptMetadata {
+  engine?: string;
+  model?: string;
+  language?: string;
+}
+
+export interface Transcript {
+  scenario_id: string;
+  audio_path: string;
+  audio_sha256: string;
+  duration_s: number;
+  segments: TranscriptSegment[];
+  metadata: TranscriptMetadata;
 }
 
 export interface FinalizeResponse {

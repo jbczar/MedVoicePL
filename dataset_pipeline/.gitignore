@@ -1,0 +1,8 @@
+# Per-module gitignore. Root .gitignore already covers most cases —
+# this file is a defense in depth for dataset_pipeline-specific outputs.
+
+output/
+*.wav
+*.mp3
+*.ogg
+*.flac

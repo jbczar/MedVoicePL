@@ -20,11 +20,37 @@ Zasady jakości:
 języka potocznego, lekarz — profesjonalnej terminologii medycznej.
 2. Pierwsza kwestia zawsze należy do lekarza (powitanie, pytanie otwierające).
 3. Kwestie muszą występować naprzemiennie: lekarz → pacjent → lekarz → ...
-4. Liczba tur: od 6 do 20. Dobieraj pod złożoność przypadku.
-5. Wywiad medyczny musi być spójny: objawy → badanie/pytania różnicujące \
+4. Wywiad medyczny musi być spójny: objawy → badanie/pytania różnicujące \
 → rozpoznanie wstępne → zalecenia.
-6. Rozpoznanie (`expected_diagnosis`) musi pasować do objawów.
-7. Jeśli to możliwe, podaj kod ICD-10 w `icd10_code`.
+5. Rozpoznanie (`expected_diagnosis`) musi pasować do objawów.
+6. Jeśli to możliwe, podaj kod ICD-10 w `icd10_code`.
+
+DŁUGOŚĆ DIALOGU (Phase 4 — kluczowe):
+- TARGET: **30-40 wymian (turn)**, odpowiadające ~5 minutom rzeczywistej \
+rozmowy w gabinecie.
+- Pole `target_duration_seconds`: zazwyczaj 300 (sekund).
+- Krótszy dialog (poniżej 25 tur) traktuj jako wyjątek — tylko gdy \
+przypadek jest naprawdę banalny (np. wypisanie powtórki recepty).
+- Few-shot examples poniżej są ZWIĘZŁE (8 tur) celowo, jako format \
+anchor — IGNORUJ ich długość, kotwicz się na strukturze JSON i polskim \
+rejestrze klinicznym. DŁUGOŚĆ kontroluj według tej sekcji.
+
+STRUKTURA — naturalne fazy konsultacji (NIE numeruj ich w outpucie, \
+to ma być naturalna rozmowa):
+1. OTWARCIE (5-8 tur) — powitanie, pytanie otwierające lekarza, \
+pacjent przedstawia chief complaint, pierwsze dopytania.
+2. WYWIAD (12-18 tur) — historia obecnej choroby (kiedy, gdzie, jak \
+często, czynniki nasilające/łagodzące), choroby przewlekłe, leki \
+przyjmowane, alergie, wywiad rodzinny gdy istotny. Pacjent może \
+dygresjować (codzienne sprawy, obawy, podobne przypadki znajomych) — \
+lekarz delikatnie wraca do tematu.
+3. BADANIE (5-8 tur) — krótkie wymiany przy badaniu fizykalnym: \
+"Proszę otworzyć usta", "Czy tu boli?", "Niech pani głęboko odetchnie". \
+Odpowiedzi pacjenta zwykle krótkie ("tak, mocno", "tylko trochę", \
+"bez bólu"). Krótkie tury są naturalne i ważne dla diaryzacji.
+4. PLAN (5-10 tur) — diagnoza/podejrzenie kliniczne, lekarz tłumaczy \
+pacjentowi co znalazł, zaleca badania/leki/skierowania, pacjent \
+dopytuje (dawki, skutki uboczne, kolejna wizyta).
 
 Zasady dot. danych osobowych (ważne — to dataset do trenowania \
 anonimizatora):
@@ -32,10 +58,16 @@ anonimizatora):
 (FIKCYJNEGO, nie znanej osoby publicznej).
 - `patient_pesel`: wygeneruj ciąg 11 cyfr w formacie PESEL (może być \
 niepoprawny matematycznie — chodzi o wzorzec).
+- `patient_age`: dla pediatrii 0-17, dla ginekologii zawsze K, reszta \
+swobodnie 18-95. Wiek wpleć w dialog naturalnie ("mam 47 lat" lub \
+"od 60. roku życia").
 - W treści dialogu wpleć naturalnie: imię pacjenta, nazwisko, \
 czasem wiek, adres lub miasto, numer telefonu. Te dane będą celem \
 treningowym dla modułu anonimizacji — muszą być obecne w tekście, nie \
 tylko w polach metadanych.
+- Dla pediatrii (0-5 lat): "pacjentem" w dialogu jest rodzic (mama/tata) \
+mówiący w imieniu dziecka. Dla 6-17 lat: dziecko mówi samo (krótszymi \
+zdaniami) z okazjonalnym wsparciem rodzica.
 - NIE używaj danych prawdziwych osób.
 
 Zasady techniczne:
@@ -43,6 +75,8 @@ Zasady techniczne:
 `doctor`, `patient`).
 - Pole `model` pozostaw puste ("") — zostanie uzupełnione przez system.
 - Pole `generated_at` pozostaw puste — zostanie uzupełnione przez system.
+- Pole `target_duration_seconds` ustaw na 300 (chyba że scenariusz \
+naprawdę jest banalny — wtedy 120-180).
 """
 
 
@@ -51,11 +85,15 @@ Wygeneruj JEDEN scenariusz wizyty lekarskiej dla specjalizacji: \
 **{specialization}**.
 
 Wymagania:
-- Liczba tur dialogu: od {min_turns} do {max_turns}.
-- Przypadek kliniczny typowy dla tej specjalizacji, ale zróżnicuj objawy \
-i stopień ciężkości.
-- Pamiętaj o wplecieniu w treść dialogu danych osobowych pacjenta \
-(imię, nazwisko, czasem miasto/telefon) jako celu dla anonimizatora.
+- Schema-level walidacja: liczba tur w zakresie [{min_turns}, {max_turns}].
+- TARGET zgodnie z systemowym promptem: **30-40 tur, ~5 min rozmowy** \
+(`target_duration_seconds`: {target_duration_seconds}).
+- Pełna struktura konsultacji: OTWARCIE → WYWIAD → BADANIE → PLAN \
+(naturalnie, bez numerowania w tekście).
+- Przypadek kliniczny typowy dla tej specjalizacji, ale zróżnicuj objawy, \
+stopień ciężkości, dane demograficzne pacjenta.
+- Wplecz w treść dialogu dane osobowe pacjenta (imię, nazwisko, czasem \
+miasto/telefon/wiek) jako cel dla anonimizatora.
 
 Zwróć wyłącznie JSON zgodny ze schematem ScenarioModel.
 """
@@ -65,11 +103,14 @@ def render_user_prompt(
     specialization: Specialization,
     min_turns: int,
     max_turns: int,
+    *,
+    target_duration_seconds: int = 300,
 ) -> str:
     return USER_PROMPT_TEMPLATE.format(
         specialization=specialization.value,
         min_turns=min_turns,
         max_turns=max_turns,
+        target_duration_seconds=target_duration_seconds,
     )
 
 

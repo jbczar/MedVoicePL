@@ -268,6 +268,7 @@ def _synthesize_scenario(
             speaker=turn.speaker,
             patient_sex=scenario.patient_sex,
             scenario_id=scenario.id,
+            patient_age=scenario.patient_age,  # Phase 4: age-aware bucket
         )
         # 32-bit seed — torch.manual_seed accepts up to 2**64-1 but most
         # downstream ops are uint32-friendly.

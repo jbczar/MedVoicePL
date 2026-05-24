@@ -1,0 +1,23 @@
+{
+  "scenario_id": "e45f9a6c",
+  "diagnosis_label": "Podejrzenie kaszlu polekowego po inhibitorze ACE (ramipryl)",
+  "diagnostic_only": false,
+  "expected_empty_drug_list": false,
+  "expected_slots": [
+    {
+      "label": "Antagonista receptora angiotensyny II (sartan) - zmiana z inhibitora ACE",
+      "acceptable": [
+        "C09CA01",
+        "C09CA03",
+        "C09CA04",
+        "C09CA07",
+        "C09CA08"
+      ]
+    }
+  ],
+  "expected_referrals": [],
+  "expected_tests": [
+    "Spirometria",
+    "RTG klatki piersiowej"
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "scenario_id": "f8e2c1a0",
+  "diagnosis_label": "Mięśniaki macicy powodujące obfite krwawienia miesiączkowe i niedokrwistość z niedoboru żelaza",
+  "diagnostic_only": false,
+  "expected_empty_drug_list": false,
+  "expected_slots": [
+    {
+      "label": "Lek przeciwfibrynolityczny (zmniejszenie obfitości krwawienia)",
+      "acceptable": [
+        "B02AA02"
+      ]
+    },
+    {
+      "label": "Preparat żelaza (leczenie niedokrwistości)",
+      "acceptable": [
+        "B03AA02",
+        "B03AA07"
+      ]
+    },
+    {
+      "label": "Niesteroidowy lek przeciwzapalny (kontrola bólu i krwawienia)",
+      "acceptable": [
+        "M01AB05",
+        "M01AE01",
+        "M01AE02",
+        "M01AE03",
+        "M01AG01"
+      ]
+    }
+  ],
+  "expected_referrals": [],
+  "expected_tests": [
+    "morfologia krwi obwodowej",
+    "ferrytyna",
+    "badanie cytologiczne szyjki macicy"
+  ]
+}
