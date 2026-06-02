@@ -89,4 +89,4 @@ make eval              # Benchmarki ewaluacyjne
 
 ## Licencja
 
-MIT
+For now MIT

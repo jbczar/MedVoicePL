@@ -36,7 +36,7 @@ env/
 Thumbs.db
 
 # ------------------------------------------
-# Environment variables (NEVER commit secrets)
+# Environment variables and secrets 
 # ------------------------------------------
 .env
 .env.local
@@ -50,7 +50,7 @@ Thumbs.db
 docker-compose.override.yml
 
 # ------------------------------------------
-# ML Models (too large for git)
+# ML Models 
 # ------------------------------------------
 application/on_premise/models/*.bin
 application/on_premise/models/*.pt

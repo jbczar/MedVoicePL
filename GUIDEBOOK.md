@@ -622,7 +622,7 @@ graph TB
     end
 ```
 
-### Wybory kluczowe i dlaczego:
+### Wybory/decyzje kluczowe i dlaczego:
 
 | Wybór | Alternatywy odrzucone | Dlaczego |
 |---|---|---|
